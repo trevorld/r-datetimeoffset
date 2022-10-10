@@ -26,6 +26,10 @@ Initial features
       - `format_pdfmark.default()` anything convertible to `datetime_offset()`
       - `format_pdfmark.datetime_offset()`
 
+* Support for converting to other R datetime objects:
+
+  + `as.Date()` converts the local date to a `base::Date()` object
+
 * Support for several `{lubridate}` accessor functions
 
   + `date()` and `date()<-`

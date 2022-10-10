@@ -2,6 +2,7 @@
 
 S3method("hour_offset<-",datetime_offset)
 S3method("minute_offset<-",datetime_offset)
+S3method(as.Date,datetime_offset)
 S3method(as_datetime_offset,Date)
 S3method(as_datetime_offset,character)
 S3method(as_datetime_offset,default)
