@@ -51,5 +51,6 @@ Initial features
 
 * Some additional accessor functions
 
+  + `nanosecond()` and `nanosecond()<-`
   + `hour_offset()` and `hour_offset()<-`
   + `minute_offset()` and `minute_offset()<-`

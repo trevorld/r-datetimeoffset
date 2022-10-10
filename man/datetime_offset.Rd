@@ -11,6 +11,7 @@ datetime_offset(
   hour = NA_integer_,
   minute = NA_integer_,
   second = NA_integer_,
+  nanosecond = NA_integer_,
   hour_offset = NA_integer_,
   minute_offset = NA_integer_,
   tz = NA_character_
@@ -28,6 +29,8 @@ datetime_offset(
 \item{minute}{Minute (integer, optional)}
 
 \item{second}{Second (integer, optional)}
+
+\item{nanosecond}{Nanosecond (integer, optional)}
 
 \item{hour_offset}{UTC offset in hours (integer, optional)}
 
@@ -54,6 +57,6 @@ It can be used to represent datetimes with possible UTC offsets
   if ("US/Pacific" \%in\% OlsonNames())
     datetime_offset(2020, 5, 15, 8, 23, 16, tz = "US/Pacific")
   datetime_offset(2020, 5, 15, 8, 23, 16, tz = "GMT")
-  datetime_offset(2020, 5, 15, 8, 23, 16, -7)
-  datetime_offset(2020, 5, 15, 8, 23, 16, -7, 30)
+  datetime_offset(2020, 5, 15, 8, 23, 16, hour_offset = -7)
+  datetime_offset(2020, 5, 15, 8, 23, 16, hour_offset = -7, minute_offset = 30)
 }

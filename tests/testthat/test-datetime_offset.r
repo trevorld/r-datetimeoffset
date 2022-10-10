@@ -19,8 +19,12 @@ test_that("format.datetime_offset()", {
                      "2020-05-15T08:23:16-04:00")
     expect_equal(format(datetime_offset(2020, 5, 15, 8, 23, 16, tz = "GMT")),
                  "2020-05-15T08:23:16Z")
-    expect_equal(format(datetime_offset(2020, 5, 15, 8, 23, 16, -7)),
+    expect_equal(format(datetime_offset(2020, 5, 15, 8, 23, 16,
+                                        hour_offset = -7)),
                  "2020-05-15T08:23:16-07")
-    expect_equal(format(datetime_offset(2020, 5, 15, 8, 23, 16, -7, 0)),
+    expect_equal(format(datetime_offset(2020, 5, 15, 8, 23, 16,
+                                       hour_offset = -7, minute_offset = 0)),
                  "2020-05-15T08:23:16-07:00")
+    expect_equal(format(datetime_offset(2020, 5, 15, 8, 23, 16, 200)),
+                 "2020-05-15T08:23:16.0000002")
 })

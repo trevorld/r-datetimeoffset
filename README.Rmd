@@ -42,7 +42,7 @@ library("lubridate", exclude = c("date", "force_tz", "tz<-"), warn.conflicts = F
 # import/export for several datetime formats with possible UTC offsets
 as_datetime_offset("2020-05") |> format()
 as_datetime_offset("2020-05-10 20:10") |> format()
-as_datetime_offset("2020-05-10 20:10:15-07") |> format()
+as_datetime_offset("2020-05-10 20:10:15.003-07") |> format()
 as_datetime_offset("2020-05-10 20:10:15Z") |> format()
 as_datetime_offset("2020-05") |> format_pdfmark()
 as_datetime_offset("2020-05-10 20:10:15Z") |> format_pdfmark()
@@ -57,7 +57,7 @@ as_datetime_offset("D:20200510201015+0000") |> format()
 
     - Suitable for use as a column in data frames and tibbles
     - Separate `{vctrs}` accessible record "fields" for year, month, day, hour, 
-      minute, second, hour\_offset, minute\_offset, and time zone all of which 
+      minute, second, nanosecond, hour\_offset, minute\_offset, and time zone all of which 
       can be missing except year and can all be accessed by `{lubridate}` (style) 
       accessor functions.  
     - Non-missing time zones need not all be the same value 
@@ -106,6 +106,7 @@ as_datetime_offset("D:20200510201015+0000") |> format()
 
 * Some additional accessor functions
 
+  + `nanosecond()` and `nanosecond()<-`
   + `hour_offset()` and `hour_offset()<-`
   + `minute_offset()` and `minute_offset()<-`
 

@@ -159,7 +159,6 @@ methods::setMethod("second<-", "datetime_offset", function(x, value) {
     x
 })
 
-
 # Not a {lubridate} generic
 # `force_tz()` (which is used by `tz<-`) and `with_tz()`
 

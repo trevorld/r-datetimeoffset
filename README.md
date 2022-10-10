@@ -58,11 +58,11 @@ as_datetime_offset("2020-05-10 20:10") |> format()
 ```
 
 ```r
-as_datetime_offset("2020-05-10 20:10:15-07") |> format()
+as_datetime_offset("2020-05-10 20:10:15.003-07") |> format()
 ```
 
 ```
-## [1] "2020-05-10T20:10:15-07"
+## [1] "2020-05-10T20:10:15.003-07"
 ```
 
 ```r
@@ -102,7 +102,15 @@ as_datetime_offset("D:20200510201015+0000") |> format()
 * `datetime_offset()` objects
  
   + A `{vctrs}` "record" object that supports datetimes with possible UTC offsets
-  + Suitable for use as a column in data frames and tibbles
+
+    - Suitable for use as a column in data frames and tibbles
+    - Separate `{vctrs}` accessible record "fields" for year, month, day, hour, 
+      minute, second, nanosecond, hour\_offset, minute\_offset, and time zone all of which 
+      can be missing except year and can all be accessed by `{lubridate}` (style) 
+      accessor functions.  
+    - Non-missing time zones need not all be the same value 
+      (as required by other R datetime objects such as `POSIXct()`).
+
   + Supports lossless import/export of pdfmark datetime strings and a decent subset of 
     ISO 8601 datetime strings even when datetime elements are unknown
 
@@ -113,13 +121,17 @@ as_datetime_offset("D:20200510201015+0000") |> format()
   + The datetime strings understood by the default `tryFormats` of `as.POSIXlt()`
   + `Date()` objects
 
-* Support for formatting output strings:
+* Support for formatting output datetime strings:
 
     + `format.datetime_offset()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
     + `format_pdfmark()` returns [pdfmark datetimes](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
 
       - `format_pdfmark.default()` anything convertible to `datetime_offset()`
       - `format_pdfmark.datetime_offset()`
+
+* Support for converting to other R datetime objects:
+
+  + `as.Date()` converts the local date to a `base::Date()` object
 
 * Support for several `{lubridate}` accessor functions
 
@@ -142,6 +154,7 @@ as_datetime_offset("D:20200510201015+0000") |> format()
 
 * Some additional accessor functions
 
+  + `nanosecond()` and `nanosecond()<-`
   + `hour_offset()` and `hour_offset()<-`
   + `minute_offset()` and `minute_offset()<-`
 

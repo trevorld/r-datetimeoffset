@@ -28,8 +28,23 @@ format.datetime_offset <- function(x, ...) {
     hour_str <- my_format(field(x, "hour"), prefix = "T")
     minute_str <- my_format(field(x, "minute"), prefix = ":")
     second_str <- my_format(field(x, "second"), prefix = ":")
+    nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"))
     offset_str <- my_format_tz(x)
-    paste0(year_str, month_str, day_str, hour_str, minute_str, second_str, offset_str)
+    paste0(year_str, month_str, day_str,
+           hour_str, minute_str, second_str, nanosecond_str,
+           offset_str)
+}
+
+my_format_nanosecond <- function(ns) {
+    s <- character(length(ns))
+    idx <- which(!is.na(ns))
+    if (length(idx > 0L)) {
+        s_ns <- formatC(ns[idx], format = "d", flag = "0", width = 9L)
+        stopifnot(all(nchar(s_ns) <= 9L))
+        s_ns <- gsub("0{1,}$", "", s_ns)
+        s[idx] <- paste0(".", s_ns)
+    }
+    s
 }
 
 #' @rdname format
@@ -70,8 +85,6 @@ update_nas <- function(x, pdfmark = FALSE) {
     hour_offset(x) <- ifelse(is.na(hour(x)), NA_integer_, hour_offset(x))
     minute_offset(x) <- ifelse(is.na(hour(x)), NA_integer_, minute_offset(x))
     tz(x) <- ifelse(is.na(hour(x)), NA_character_, tz(x))
-    # no minute offsets if no minutes
-    minute_offset(x) <- ifelse(is.na(minute(x)), NA_integer_, minute_offset(x))
 
     if (pdfmark) { # if missing seconds then pdfmark offsets are missing
         tz(x) <- ifelse(is.na(second(x)), NA_character_, tz(x))
