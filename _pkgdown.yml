@@ -1,0 +1,4 @@
+destination: "../../websites/R/datetimeoffset/"
+url: "https://trevorldavis.com/R/datetimeoffset"
+development:
+    mode: auto
