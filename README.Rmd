@@ -23,8 +23,7 @@ Datetimes with UTC offsets
 
 ## <a name="installation">Installation</a>
 
-
-```r
+```{r install, eval = FALSE}
 remotes::install_github("trevorld/r-datetimeoffset")
 ```
 
@@ -35,66 +34,19 @@ remotes::install_github("trevorld/r-datetimeoffset")
 `{datetimeoffset}` can import/export a number of datetime formats including
 all pdfmark datetime strings and a decent subset of ISO 8601 strings.
 
-
-```r
+```{r examples}
 library("datetimeoffset", warn.conflicts = FALSE) # masks `date()`
 # `{lubridate}` masks from `{base}` `date`, `intersect`, `setdiff`, `union`
 library("lubridate", exclude = c("date", "force_tz", "tz<-"), warn.conflicts = FALSE)
 
 # import/export for several datetime formats with possible UTC offsets
 as_datetime_offset("2020-05") |> format()
-```
-
-```
-## [1] "2020-05"
-```
-
-```r
 as_datetime_offset("2020-05-10 20:10") |> format()
-```
-
-```
-## [1] "2020-05-10T20:10"
-```
-
-```r
 as_datetime_offset("2020-05-10 20:10:15-07") |> format()
-```
-
-```
-## [1] "2020-05-10T20:10:15-07"
-```
-
-```r
 as_datetime_offset("2020-05-10 20:10:15Z") |> format()
-```
-
-```
-## [1] "2020-05-10T20:10:15Z"
-```
-
-```r
 as_datetime_offset("2020-05") |> format_pdfmark()
-```
-
-```
-## [1] "D:202005"
-```
-
-```r
 as_datetime_offset("2020-05-10 20:10:15Z") |> format_pdfmark()
-```
-
-```
-## [1] "D:20200510201015+0000"
-```
-
-```r
 as_datetime_offset("D:20200510201015+0000") |> format()
-```
-
-```
-## [1] "2020-05-10T20:10:15+00:00"
 ```
 
 ## <a name="features">Features</a>

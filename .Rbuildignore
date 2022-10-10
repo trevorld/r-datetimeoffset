@@ -1,5 +1,8 @@
 ^LICENSE.md$
 ^_pkgdown.yml$
+^Rakefile$
+^README.Rmd$
+^README.html$
 ^tmp$
 ^\.github$
 ^codecov\.yml$
