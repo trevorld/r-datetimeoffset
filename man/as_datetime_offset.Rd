@@ -4,23 +4,34 @@
 \alias{as_datetime_offset}
 \alias{as_datetime_offset.Date}
 \alias{as_datetime_offset.default}
+\alias{as_datetime_offset.POSIXct}
+\alias{as_datetime_offset.POSIXlt}
 \alias{as_datetime_offset.character}
+\alias{as_datetime_offset.nanotime}
 \title{Coerce to datetime with possible UTC offset object}
 \usage{
 as_datetime_offset(x, tz = "", ...)
 
-\method{as_datetime_offset}{Date}(x, tz = "", ...)
+\method{as_datetime_offset}{Date}(x, tz = NA_character_, ...)
 
-\method{as_datetime_offset}{default}(x, tz = "", ...)
+\method{as_datetime_offset}{default}(x, tz = lubridate::tz(as.POSIXct(x)), ...)
+
+\method{as_datetime_offset}{POSIXct}(x, tz = lubridate::tz(x), ...)
+
+\method{as_datetime_offset}{POSIXlt}(x, tz = lubridate::tz(x), ...)
 
 \method{as_datetime_offset}{character}(x, tz = NA_character_, ...)
+
+\method{as_datetime_offset}{nanotime}(x, tz = "GMT", ...)
 }
 \arguments{
-\item{x}{An R object that can be coerced to a \code{\link[=datetime_offset]{datetime_offset()}} object
+\item{x}{An R object that can reasonably be coerced to a \code{\link[=datetime_offset]{datetime_offset()}} object
 such as a string in pdfmark date or ISO 8601 datetime formats
-or something with an \code{\link[base:as.POSIXlt]{base::as.POSIXlt()}} method.}
+or something with an \code{\link[=as.nanotime]{as.nanotime()}} or \code{\link[=as.POSIXct]{as.POSIXct()}} method.}
 
-\item{tz}{Time zone to use for the conversion.}
+\item{tz}{Time zone to use for the conversion.
+Ignored by \code{as_datetime_offset.Date()}.
+Need not be a single value for \code{as_datetime_offset.nanotime()}.}
 
 \item{...}{Further arguments to certain methods.}
 }

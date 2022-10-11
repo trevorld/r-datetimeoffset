@@ -3,9 +3,21 @@
 \name{from_datetime_offset}
 \alias{from_datetime_offset}
 \alias{as.Date.datetime_offset}
+\alias{as.nanotime,datetime_offset-method}
 \title{Convert to other datetime objects}
 \usage{
 \method{as.Date}{datetime_offset}(x, month = 1, day = 1, ...)
+
+\S4method{as.nanotime}{datetime_offset}(
+  from,
+  month = 1,
+  day = 1,
+  hour = 0,
+  minute = 0,
+  second = 0,
+  tz = "GMT",
+  ...
+)
 }
 \arguments{
 \item{x}{A \code{\link[=datetime_offset]{datetime_offset()}} object}
@@ -15,6 +27,16 @@
 \item{day}{If missing what day to assume}
 
 \item{...}{Ignored}
+
+\item{from}{A \code{\link[=datetime_offset]{datetime_offset()}} object}
+
+\item{hour}{If missing what hour to assume}
+
+\item{minute}{If missing what minute to assume}
+
+\item{second}{If missing what second to assume}
+
+\item{tz}{If missing and hour offset also missing what time zone to assume}
 }
 \description{
 We provide methods to convert \code{\link[=datetime_offset]{datetime_offset()}} objects to the following
@@ -29,4 +51,6 @@ other R datetime objects:
   as.Date(as_datetime_offset("2020-03-05"))
   as.Date(as_datetime_offset("2020"))
   as.Date(as_datetime_offset("2020"), 6, 15)
+
+  as.nanotime
 }

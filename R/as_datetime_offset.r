@@ -2,10 +2,12 @@
 #'
 #' `as_datetime_offset()` coerces to [datetime_offset()] objects.
 #'
-#' @param x An R object that can be coerced to a [datetime_offset()] object
+#' @param x An R object that can reasonably be coerced to a [datetime_offset()] object
 #'          such as a string in pdfmark date or ISO 8601 datetime formats
-#'          or something with an [base::as.POSIXlt()] method.
+#'          or something with an [as.nanotime()] or [as.POSIXct()] method.
 #' @param tz Time zone to use for the conversion.
+#'           Ignored by `as_datetime_offset.Date()`.
+#'           Need not be a single value for `as_datetime_offset.nanotime()`.
 #' @param ... Further arguments to certain methods.
 #' @examples
 #' # ISO 8601 examples
@@ -32,14 +34,30 @@ as_datetime_offset <- function(x, tz = "", ...) {
 
 #' @rdname as_datetime_offset
 #' @export
-as_datetime_offset.Date <- function(x, tz = "", ...) {
-    as_datetime_offset(format(x))
+as_datetime_offset.Date <- function(x, tz = NA_character_, ...) {
+    as_datetime_offset(format(x), tz = tz)
+}
+
+is_datetime_offset <- function(x) inherits(x, "datetime_offset")
+
+#' @rdname as_datetime_offset
+#' @importFrom nanotime as.nanotime
+#' @export
+as_datetime_offset.default <- function(x, tz = lubridate::tz(as.POSIXct(x)), ...) {
+    dt <- as.POSIXct(x)
+    as_datetime_offset(as.nanotime(x), tz = tz)
 }
 
 #' @rdname as_datetime_offset
 #' @export
-as_datetime_offset.default <- function(x, tz = "", ...) {
-    as_datetime_offset(format(x, tz = tz, ...))
+as_datetime_offset.POSIXct <- function(x, tz = lubridate::tz(x), ...) {
+    as_datetime_offset(as.nanotime(x), tz = tz)
+}
+
+#' @rdname as_datetime_offset
+#' @export
+as_datetime_offset.POSIXlt <- function(x, tz = lubridate::tz(x), ...) {
+    as_datetime_offset(as.nanotime(x), tz = tz)
 }
 
 #' @rdname as_datetime_offset
@@ -51,6 +69,18 @@ as_datetime_offset.character <- function(x, tz = NA_character_, ...) {
     datetime_offset(df$year, df$month, df$day,
                     df$hour, df$minute, df$second, df$nanosecond,
                     df$hour_offset, df$minute_offset, tz)
+}
+
+#' @rdname as_datetime_offset
+#' @export
+as_datetime_offset.nanotime <- function(x, tz = "GMT", ...) {
+    if (isTRUE(any(tz == "")))
+        tz[which(tz == "")] <- Sys.timezone()
+    df <- data.frame(dt = x, tz = tz)
+    l <- purrr::pmap(df, function(dt, tz) {
+                       as_datetime_offset(format(dt, tz = tz), tz = tz)
+                     })
+    do.call(c, l)
 }
 
 get_ns <- function(x) {

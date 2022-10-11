@@ -5,7 +5,7 @@ Version: 0.1.0-0
 Authors@R: c(
         person("Trevor L", "Davis", role=c("aut", "cre"), email="trevor.l.davis@gmail.com",
                comment = c(ORCID = "0000-0001-6341-4639")))
-Description: Provides utilities for datetimes expressed with UTC offsets instead of time zones such as 'pdfmark' or 'ISO 8601' datetimes.
+Description: Utilities for datetimes expressed with UTC offsets instead of time zones such as 'pdfmark' or 'ISO 8601' datetimes.
 URL: https://trevorldavis.com/R/datetimeoffset/dev/, https://github.com/trevorld/r-datetimeoffset
 BugReports: https://github.com/trevorld/r-datetimeoffset
 License: MIT + file LICENSE
@@ -16,6 +16,7 @@ Depends:
     R (>= 3.4.0)
 Imports:
     lubridate,
+    nanotime,
     purrr,
     vctrs,
 Suggests:

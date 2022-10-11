@@ -11,12 +11,16 @@ Initial features
   + Supports lossless import/export of pdfmark datetime strings and a decent subset of 
     ISO 8601 datetime strings even when datetime elements are unknown
 
-* `as_datetime_offset()`
+* `as_datetime_offset()` converts from other R datetime objects:
 
   + All pdfmark datetime strings
   + Decent subset of ISO 8601 datetime strings
   + The datetime strings understood by the default `tryFormats` of `as.POSIXlt()`
   + `Date()` objects
+  + `POSIXct()` objects
+  + `POSIXlt()` objects
+  + `nanotime()` objects
+  + Datetime objects with an `as.POSIXct()` method
 
 * Support for formatting output strings:
 
@@ -29,6 +33,7 @@ Initial features
 * Support for converting to other R datetime objects:
 
   + `as.Date()` converts the local date to a `base::Date()` object
+  + `as.nanotime()` converts the datetime to a `nanotime::nanotime()` object
 
 * Support for several `{lubridate}` accessor functions
 

@@ -99,7 +99,7 @@ as_ymd_hms_str <- function(x, ...) {
     year_str <- my_format(field(x, "year"), width = 4L)
     month_str <- my_format(field(x, "month"), prefix = "-")
     day_str <- my_format(field(x, "day"), prefix = "-")
-    hour_str <- my_format(field(x, "hour"), prefix = " ")
+    hour_str <- my_format(field(x, "hour"), prefix = "T")
     minute_str <- my_format(field(x, "minute"), prefix = ":")
     second_str <- my_format(field(x, "second"), prefix = ":")
     paste0(year_str, month_str, day_str, hour_str, minute_str, second_str)
@@ -130,15 +130,15 @@ my_format_tz <- function(x, sep = ":", no_zulu = FALSE) {
         }
     }
 
-    id_tz <- which(!is.na(tz) && !is_utc(tz))
+    id_tz <- which(!is.na(tz) & !is_utc(tz))
     if (length(id_tz) > 0L) {
         tz_id <- tz[id_tz]
         df <- data.frame(x = as_ymd_hms_str(x[id_tz]), tz = tz_id,
                          stringsAsFactors = FALSE)
-        dts <- purrr::pmap(df, function(x, tz) lubridate::ymd_hms(x, tz = tz))
-        offsets <- vapply(dts,
-                          function(x) strftime(x, format = "%z", tz = tz(x)),
-                          character(1), USE.NAMES = FALSE)
+        offsets <- purrr::pmap_chr(df, function(x, tz) {
+                                       dt <- as.nanotime(x, tz = tz)
+                                       format(dt, format = "%z", tz = tz)
+                                   })
         offsets <- ifelse(is_utc(tz_id), "Z",
                           paste0(substr(offsets, 1, 3), sep, substr(offsets, 4, 5)))
         s[id_tz] <- offsets

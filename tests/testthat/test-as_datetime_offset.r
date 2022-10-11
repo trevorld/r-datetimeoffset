@@ -87,9 +87,7 @@ test_that("as_datetime_offset()", {
                  "2020-05-15T08:23:16.003")
     expect_equal(format(as_datetime_offset("20200515T082316.003")),
                  "2020-05-15T08:23:16.003")
-    dt <- Sys.time()
-    expect_equal(format(as_datetime_offset(dt)),
-                 format(dt, format = "%FT%T"))
+
     # YMDhmso
     expect_equal(format(as_datetime_offset("D:20200515082316+03")),
                  "2020-05-15T08:23:16+03")
@@ -141,4 +139,24 @@ test_that("as_datetime_offset()", {
                  "2020-05-15T08:23:16.003+03:30")
     expect_equal(format(as_datetime_offset("20200515T082316-0330")),
                  "2020-05-15T08:23:16-03:30")
+
+    # Date
+    expect_equal(format(as_datetime_offset(as.Date("2020-05-15"))),
+                 "2020-05-15")
+
+    if ("US/Eastern" %in% OlsonNames()) {
+        # POSIXct
+        dt <- as.POSIXct("2022-10-10 10:00:00", tz = "US/Eastern")
+        expect_equal(format(as_datetime_offset(dt)),
+                     "2022-10-10T10:00:00-04:00")
+
+        # POSIXlt
+        dt <- as.POSIXlt("2022-10-10 10:00:00", tz = "US/Eastern")
+        expect_equal(format(as_datetime_offset(dt)),
+                     "2022-10-10T10:00:00-04:00")
+    }
+
+    # nanotime
+    expect_equal(format(as_datetime_offset(nanotime::nanotime("2020-05-15T08:23:16.03Z"))),
+                 "2020-05-15T08:23:16.03Z")
 })
