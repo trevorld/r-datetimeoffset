@@ -1,16 +1,23 @@
-#' Format for datetime objects with possible UTC offsets
+#' Convert datetime objects to character
 #'
 #' `format()` returns an ISO 8601 datetime string with as much **known** information possible.
+#' `format_ISO8601()` returns an ISO 8601 datetime string.
 #' `format_pdfmark()` returns a pdfmark datetime string with as much **known** information possible.
 #' @name format
 #' @param x A [datetime_offset()] object.
+#' @param usetz Include the time zone in the formatting (of outputs including
+#'        time; date outputs never include time zone information).
+#' @param precision The amount of precision to represent with substrings of
+#'        "ymdhmsn", as "y"ear, "m"onth, "d"ay, "h"our, "m"inute,
+#'        "s"econd, and "n"anosecond. (e.g. "ymdhm" would show precision through minutes.
+#'        When ‘NULL’, full precision for the object is shown.
 #' @param ... Ignored
 #' @return A character vector
 #' @examples
 #'   # ISO 8601 datetimes
-#'   format(as_datetime_offset("2020-05"))
-#'   format(as_datetime_offset("2020-05-10 20:15"))
-#'   format(as_datetime_offset("2020-05-10 20:15:05-07"))
+#'   format_ISO8601(as_datetime_offset("2020-05"))
+#'   format_ISO8601(as_datetime_offset("2020-05-10 20:15"))
+#'   format_ISO8601(as_datetime_offset("2020-05-10 20:15:05-07"))
 #'
 #'   # pdfmark datetimes
 #'   format_pdfmark(as_datetime_offset("2020-05"))
@@ -46,6 +53,35 @@ my_format_nanosecond <- function(ns) {
     }
     s
 }
+
+setOldClass("datetime_offset")
+
+#' @rdname format
+#' @importFrom lubridate format_ISO8601
+#' @export
+methods::setMethod("format_ISO8601", signature = "datetime_offset", function(x, usetz = TRUE, precision = NULL, ...) {
+    precision <- precision %||% "ymdhmsn"
+    stopifnot(precision %in% c("y", "ym", "ymd", "ymdh", "ymdhm", "ymdhms", "ymdhmsn"))
+    if (precision == "y")
+        month(x) <- NA_integer_
+    if (precision == "ym")
+        day(x) <- NA_integer_
+    if (precision == "ymd")
+        hour(x) <- NA_integer_
+    if (precision == "ymdh")
+        minute(x) <- NA_integer_
+    if (precision == "ymdhm")
+        second(x) <- NA_integer_
+    if (precision == "ymdhms")
+        nanosecond(x) <- NA_integer_
+    if (isFALSE(usetz)) {
+        hour_offset(x) <- NA_integer_
+        minute_offset(x) <- NA_integer_
+        tz(x) <- NA_character_
+    }
+    x <- update_nas(x)
+    format(x)
+})
 
 #' @rdname format
 #' @export
@@ -96,6 +132,9 @@ update_nas <- function(x, pdfmark = FALSE) {
 }
 
 as_ymd_hms_str <- function(x, ...) {
+    minute(x) <- update_missing(minute(x), 0)
+    second(x) <- update_missing(second(x), 0)
+
     year_str <- my_format(field(x, "year"), width = 4L)
     month_str <- my_format(field(x, "month"), prefix = "-")
     day_str <- my_format(field(x, "day"), prefix = "-")

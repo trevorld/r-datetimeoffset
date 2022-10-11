@@ -32,6 +32,7 @@ Initial features
 * Support for formatting output strings:
 
     + `format.datetime_offset()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
+    + `format_ISO8601().datetime_offset()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
     + `format_pdfmark()` returns [pdfmark datetimes](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
 
       - `format_pdfmark.default()` anything convertible to `datetime_offset()`

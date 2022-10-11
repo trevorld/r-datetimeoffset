@@ -2,7 +2,7 @@
 % Please edit documentation in R/datetime_offset.r
 \name{datetime_offset}
 \alias{datetime_offset}
-\title{Datetime with possible UTC offset object}
+\title{Datetime object with optional UTC offsets and/or timezones}
 \usage{
 datetime_offset(
   year,

@@ -11,11 +11,13 @@
 * [Installation](#installation)
 * [Examples](#examples)
 
-  + [Importing/exporting datetime formats](#formats)
+  + [Importing/exporting datetime string formats](#formats)
 
 * [Features](#features)
-* [Datetime standards with UTC offsets](#standards)
-* [Related Software](#similar)
+* [External links](#links)
+
+  + [Datetime standards with UTC offsets](#standards)
+  + [Related Software](#similar)
 
 ## <a name="overview">Overview</a>
 
@@ -45,9 +47,13 @@ Supports lossless re-export of any original reduced precision.
 library("datetimeoffset", warn.conflicts = FALSE) # masks `date()`
 # `{lubridate}` masks from `{base}` `date`, `intersect`, `setdiff`, `union`
 library("lubridate", exclude = c("date", "force_tz", "tz<-"), warn.conflicts = FALSE)
+```
 
-# import/export for several datetime formats with possible UTC offsets
-as_datetime_offset("2020-05") |> format()
+#### ISO 8601 datetimes
+
+
+```r
+as_datetime_offset("2020-05") |> format_ISO8601()
 ```
 
 ```
@@ -55,7 +61,7 @@ as_datetime_offset("2020-05") |> format()
 ```
 
 ```r
-as_datetime_offset("2020-05-10 20:10") |> format()
+as_datetime_offset("2020-05-10T20:10") |> format_ISO8601()
 ```
 
 ```
@@ -63,7 +69,7 @@ as_datetime_offset("2020-05-10 20:10") |> format()
 ```
 
 ```r
-as_datetime_offset("2020-05-10 20:10:15.003-07") |> format()
+as_datetime_offset("2020-05-10T20:10:15.003-07") |> format_ISO8601()
 ```
 
 ```
@@ -71,15 +77,18 @@ as_datetime_offset("2020-05-10 20:10:15.003-07") |> format()
 ```
 
 ```r
-as_datetime_offset("2020-05-10 20:10:15Z") |> format()
+as_datetime_offset("2020-05-10 20:10:15Z") |> format_ISO8601()
 ```
 
 ```
 ## [1] "2020-05-10T20:10:15Z"
 ```
 
+#### pdfmark datetimes
+
+
 ```r
-as_datetime_offset("2020-05") |> format_pdfmark()
+as_datetime_offset("D:202005") |> format_pdfmark()
 ```
 
 ```
@@ -87,19 +96,39 @@ as_datetime_offset("2020-05") |> format_pdfmark()
 ```
 
 ```r
-as_datetime_offset("2020-05-10 20:10:15Z") |> format_pdfmark()
+as_datetime_offset("D:20200510201015+0000") |> format_pdfmark()
 ```
 
 ```
 ## [1] "D:20200510201015+0000"
 ```
 
+#### Miscellaneous datetimes
+
+
 ```r
-as_datetime_offset("D:20200510201015+0000") |> format()
+as_datetime_offset("1918/11/11 11:11") |> format()
 ```
 
 ```
-## [1] "2020-05-10T20:10:15+00:00"
+## [1] "1918-11-11T11:11"
+```
+
+```r
+if ("Europe/Paris" %in% OlsonNames())
+    as_datetime_offset("1918/11/11 11:11", tz = "Europe/Paris") |> format()
+```
+
+```
+## [1] "1918-11-11T11:11+00:00"
+```
+
+```r
+as_datetime_offset("1918/11/11 11:11:11.11") |> format()
+```
+
+```
+## [1] "1918-11-11T11:11:11.11"
 ```
 
 ## <a name="features">Features</a>
@@ -132,6 +161,7 @@ as_datetime_offset("D:20200510201015+0000") |> format()
 * Support for formatting output datetime strings:
 
     + `format.datetime_offset()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
+    + `format_ISO8601().datetime_offset()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
     + `format_pdfmark()` returns [pdfmark datetimes](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
 
       - `format_pdfmark.default()` anything convertible to `datetime_offset()`
@@ -174,15 +204,18 @@ as_datetime_offset("D:20200510201015+0000") |> format()
   + `mode_tz()` gets most common time zone for a time date object
     that may support heteregeneous time zones.
 
-## <a name="standards">Datetime standards with UTC offsets</a>
+## <a name="links">External links</a>
+
+Please feel free to [open a pull request to add any missing relevant links](https://github.com/trevorld/r-datetimeoffset/edit/main/README.Rmd).
+
+### <a name="standards">Datetime standards with UTC offsets</a>
 
 * [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations)
 * [pdfmark datetimes](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo)
 * [SQL Server datetimeoffset](https://learn.microsoft.com/en-us/sql/t-sql/data-types/datetimeoffset-transact-sql?view=sql-server-ver16)
 
-## <a name="similar">Related software</a>
+### <a name="similar">Related software</a>
 
-Please feel free to [open a pull request to add any missing relevant R packages](https://github.com/trevorld/r-datetimeoffset/edit/main/README.Rmd).
 
 * [lubridate](https://lubridate.tidyverse.org/index.html)
 * [nanotime](https://eddelbuettel.github.io/nanotime)

@@ -1,4 +1,4 @@
-#' Coerce to datetime with possible UTC offset object
+#' Coerce to "datetime_offset" objects
 #'
 #' `as_datetime_offset()` coerces to [datetime_offset()] objects.
 #'

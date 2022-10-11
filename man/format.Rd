@@ -3,12 +3,15 @@
 \name{format}
 \alias{format}
 \alias{format.datetime_offset}
+\alias{format_ISO8601,datetime_offset-method}
 \alias{format_pdfmark}
 \alias{format_pdfmark.default}
 \alias{format_pdfmark.datetime_offset}
-\title{Format for datetime objects with possible UTC offsets}
+\title{Convert datetime objects to character}
 \usage{
 \method{format}{datetime_offset}(x, ...)
+
+\S4method{format_ISO8601}{datetime_offset}(x, usetz = TRUE, precision = NULL, ...)
 
 format_pdfmark(x, ...)
 
@@ -20,19 +23,28 @@ format_pdfmark(x, ...)
 \item{x}{A \code{\link[=datetime_offset]{datetime_offset()}} object.}
 
 \item{...}{Ignored}
+
+\item{usetz}{Include the time zone in the formatting (of outputs including
+time; date outputs never include time zone information).}
+
+\item{precision}{The amount of precision to represent with substrings of
+"ymdhmsn", as "y"ear, "m"onth, "d"ay, "h"our, "m"inute,
+"s"econd, and "n"anosecond. (e.g. "ymdhm" would show precision through minutes.
+When ‘NULL’, full precision for the object is shown.}
 }
 \value{
 A character vector
 }
 \description{
 \code{format()} returns an ISO 8601 datetime string with as much \strong{known} information possible.
+\code{format_ISO8601()} returns an ISO 8601 datetime string.
 \code{format_pdfmark()} returns a pdfmark datetime string with as much \strong{known} information possible.
 }
 \examples{
   # ISO 8601 datetimes
-  format(as_datetime_offset("2020-05"))
-  format(as_datetime_offset("2020-05-10 20:15"))
-  format(as_datetime_offset("2020-05-10 20:15:05-07"))
+  format_ISO8601(as_datetime_offset("2020-05"))
+  format_ISO8601(as_datetime_offset("2020-05-10 20:15"))
+  format_ISO8601(as_datetime_offset("2020-05-10 20:15:05-07"))
 
   # pdfmark datetimes
   format_pdfmark(as_datetime_offset("2020-05"))

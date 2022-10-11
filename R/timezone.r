@@ -61,15 +61,16 @@ force_tz.datetime_offset <- function(time, tzone = "", roll = FALSE) {
 #' @param ... Ignored
 #' @return Timezone string
 #' @examples
-#'   mode_tz(as_datetime_object(Sys.time()))
-#'   if (all(c("US/Pacific", "US/Eastern") %in% OlsonNames)) {
-#'     dt <- as_datetime_object("2020-01-01",
+#'   dt <- as_datetime_offset(Sys.time())
+#'   print(mode_tz(dt))
+#'   if (all(c("US/Pacific", "US/Eastern") %in% OlsonNames())) {
+#'     dt <- as_datetime_offset("2020-01-01",
 #'                              tz = c("US/Pacific", "US/Eastern"))
-#'     mode_tz(dt)
+#'     print(mode_tz(dt))
 #'
-#'     dt <- as_datetime_object("2020-01-01",
+#'     dt <- as_datetime_offset("2020-01-01",
 #'                              tz = c("US/Pacific", "US/Eastern", NA_character_, NA_character_))
-#'     mode_tz(dt)
+#'     print(mode_tz(dt))
 #'   }
 #' @export
 mode_tz <- function(time, tzone = "", ...) {

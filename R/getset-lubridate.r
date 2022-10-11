@@ -1,6 +1,6 @@
-#' Get/set datetime components
+#' Get/set datetime components supported by lubridate
 #'
-#' S3 methods for [datetime_offset()] objects for the following
+#' Methods for [datetime_offset()] objects for the following
 #' datetime component getter/setter functions from `lubridate`:
 #'
 #' * [lubridate::date()]
@@ -15,6 +15,7 @@
 #' @param x A [datetime_offset()] object.
 #' @param value Replacement value
 #' @name getset_lubridate
+#' @seealso [getset_other]
 #' @examples
 #' library("lubridate", exclude = c("date", "force_tz", "tz<-"))
 #' dt <- datetime_offset(1984)
@@ -40,10 +41,10 @@ NULL
 methods::setOldClass("datetime_offset") # needed for {lubridate}'s setters
 
 #' @rdname getset_lubridate
-#' @name getset_lubridate
-#' @importFrom lubridate date
-#' @export date
-NULL
+#' @export
+date <- function(x) {
+    UseMethod("date")
+}
 
 #' @rdname getset_lubridate
 #' @export

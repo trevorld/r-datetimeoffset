@@ -21,9 +21,9 @@
   tz = "GMT"
 )
 
-\method{as.POSIXct}{datetime_offset}(x, tz = mode_tz(x))
+\method{as.POSIXct}{datetime_offset}(x, tz = mode_tz(x), ...)
 
-\method{as.POSIXlt}{datetime_offset}(x, tz = mode_tz(x))
+\method{as.POSIXlt}{datetime_offset}(x, tz = mode_tz(x), ...)
 }
 \arguments{
 \item{x}{A \code{\link[=datetime_offset]{datetime_offset()}} object}

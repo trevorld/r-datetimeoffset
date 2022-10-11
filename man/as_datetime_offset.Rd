@@ -8,7 +8,7 @@
 \alias{as_datetime_offset.POSIXlt}
 \alias{as_datetime_offset.character}
 \alias{as_datetime_offset.nanotime}
-\title{Coerce to datetime with possible UTC offset object}
+\title{Coerce to "datetime_offset" objects}
 \usage{
 as_datetime_offset(x, tz = "", ...)
 

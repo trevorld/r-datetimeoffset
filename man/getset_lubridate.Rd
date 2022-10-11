@@ -2,6 +2,7 @@
 % Please edit documentation in R/getset-lubridate.r
 \name{getset_lubridate}
 \alias{getset_lubridate}
+\alias{date}
 \alias{date.datetime_offset}
 \alias{date<-,datetime_offset-method}
 \alias{year.datetime_offset}
@@ -18,8 +19,10 @@
 \alias{second<-,datetime_offset-method}
 \alias{tz.datetime_offset}
 \alias{tz<-}
-\title{Get/set datetime components}
+\title{Get/set datetime components supported by lubridate}
 \usage{
+date(x)
+
 \method{date}{datetime_offset}(x)
 
 \S4method{date}{datetime_offset}(x) <- value
@@ -58,7 +61,7 @@ tz(x) <- value
 \item{value}{Replacement value}
 }
 \description{
-S3 methods for \code{\link[=datetime_offset]{datetime_offset()}} objects for the following
+Methods for \code{\link[=datetime_offset]{datetime_offset()}} objects for the following
 datetime component getter/setter functions from \code{lubridate}:
 }
 \details{
@@ -93,4 +96,7 @@ if ("Europe/Paris" \%in\% OlsonNames()) {
   tz(dt)
 }
 
+}
+\seealso{
+\link{getset_other}
 }

@@ -19,7 +19,7 @@ new_datetime_offset <- function(year = integer(), month = integer(), day = integ
              class = "datetime_offset")
 }
 
-#' Datetime with possible UTC offset object
+#' Datetime object with optional UTC offsets and/or timezones
 #'
 #' `datetime_offset()` creates a datetime with possible UTC offset object.
 #' It can be used to represent datetimes with possible UTC offsets
