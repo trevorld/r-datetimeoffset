@@ -1,25 +1,26 @@
 #' Change timezones
 #'
 #' `force_tz()` returns a datetime with the same clock time as the input but in the new time zone
-#' (so will likely result in a different UTC datetime).
+#' (so will likely result in a different global UTC datetime).
+#' `with_tz()` returns a datetime with the same global UTC datetime as the input but in the new time zone.
 #'
-#' Since `lubridate` doesn't make [lubridate::force_tz()] generic we define a generic version which
-#' by default uses the `lubridate` version but has a special [datetime_offset()] method.
+#' Since `lubridate` doesn't make [lubridate::force_tz()] or [lubridate::with_tz()] generic we
+#' define a generic version which
+#' by default uses the `lubridate` version but also has a special [datetime_offset()] method.
 #' @param time A datetime object.
 #' @param tzone A timezone string.
 #'              `force_tz.datetime_offset()` allows a vector of different valued time zones (in contrast [lubridate::force_tz()] allows only one).
 #' @param roll Used by [lubridate::force_tz()] but ignored by `force_tz.datetime_offset()`.
 #' @seealso \link[=tz]{getset_lubridate} and \link[=tz<-]{getset_lubridate}.
 #' @examples
-#'  dt <- as_datetime_offset("1918-11-11T11:11:11")
-#'  print(dt)
-#'  if ("Europe/Paris" %in% OlsonNames()) {
-#'    dt <- force_tz(dt, "Europe/Paris")
-#'    print(dt)
-#'  }
-#'  # `force_tz()` doesn't change "clock" time but may change global UTC time
+#'  dt0 <- as_datetime_offset("1918-11-11T11:11:11", tz = "GMT")
+#'  print(dt0)
 #'  if ("US/Pacific" %in% OlsonNames()) {
-#'    dt <- force_tz(dt, "US/Pacific")
+#'    # `force_tz()` doesn't change "clock" time but may change global UTC time
+#'    dt <- force_tz(dt0, "US/Pacific")
+#'    print(dt)
+#'    # `with_tz()` doesn't change global UTC time but my change "clock" time
+#'    dt <- with_tz(dt0, "US/Pacific")
 #'    print(dt)
 #'  }
 #' @name timezone
@@ -47,6 +48,25 @@ force_tz.datetime_offset <- function(time, tzone = "", roll = FALSE) {
     stopifnot(is_valid_tz(tzone))
     field(time, "tz") <- tzone
     time
+}
+
+#' @rdname timezone
+#' @export
+with_tz <- function(time, tzone = "") {
+    UseMethod("with_tz")
+}
+
+#' @rdname timezone
+#' @export
+with_tz.default <- function(time, tzone = "") {
+    lubridate::with_tz(time, tzone)
+}
+
+#' @rdname timezone
+#' @export
+with_tz.datetime_offset <- function(time, tzone = "") {
+    tzone <- clean_tz(tzone)
+    as_datetime_offset(as.nanotime(time), tz = tzone)
 }
 
 #' Get most common time zone

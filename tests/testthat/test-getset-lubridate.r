@@ -78,3 +78,13 @@ test_that("hour_offset() methods", {
     expect_equal(hour_offset(dt), 0L)
     expect_equal(minute_offset(dt), 0L)
 })
+
+test_that("force_tz() and with_tz()", {
+    dt <- as_datetime_offset("1918-11-11T11:11:11", tz = "GMT")
+    if ("US/Pacific" %in% OlsonNames()) {
+        expect_equal(format(force_tz(dt, "US/Pacific")),
+                     "1918-11-11T11:11:11-08:00")
+        expect_equal(format(with_tz(dt, "US/Pacific")),
+                     "1918-11-11T03:11:11-08:00")
+    }
+})

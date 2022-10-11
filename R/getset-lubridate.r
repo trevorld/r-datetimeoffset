@@ -17,7 +17,7 @@
 #' @name getset_lubridate
 #' @seealso [getset_other]
 #' @examples
-#' library("lubridate", exclude = c("date", "force_tz", "tz<-"))
+#' library("lubridate", exclude = c("date", "force_tz", "tz<-", "with_tz"))
 #' dt <- datetime_offset(1984)
 #' year(dt) <- 1918
 #' year(dt)

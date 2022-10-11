@@ -46,7 +46,8 @@ Supports lossless re-export of any original reduced precision.
 ```r
 library("datetimeoffset", warn.conflicts = FALSE) # masks `date()`
 # `{lubridate}` masks from `{base}` `date`, `intersect`, `setdiff`, `union`
-library("lubridate", exclude = c("date", "force_tz", "tz<-"), warn.conflicts = FALSE)
+library("lubridate", exclude = c("date", "force_tz", "tz<-", "with_tz"),
+        warn.conflicts = FALSE)
 ```
 
 #### ISO 8601 datetimes
@@ -186,12 +187,14 @@ as_datetime_offset("1918/11/11 11:11:11.11") |> format()
   + `hour()` and `hour()<-`
   + `minute()` and `minute()<-`
   + `second()` and `second()<-`
-  + `tz()`, `tz()<-`, and `force_tz()`
+  + `tz()`, `tz()<-`
 
     - We export a `force_tz()` S3 generic which defaults to `lubridate::force_tz()`
       but provides a special method for `datetime_offset()` objects
     - We export a `tz()<-` which uses the new generic `force_tz()`
       instead of `lubridate::force_tz()`
+    - We export a `with_tz()` S3 generic which defaults to `lubridate::with_tz()`
+      but provides a special method for `datetime_offset()` objects
 
 * Some additional accessor functions
 

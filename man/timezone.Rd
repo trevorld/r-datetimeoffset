@@ -5,6 +5,9 @@
 \alias{force_tz}
 \alias{force_tz.default}
 \alias{force_tz.datetime_offset}
+\alias{with_tz}
+\alias{with_tz.default}
+\alias{with_tz.datetime_offset}
 \title{Change timezones}
 \usage{
 force_tz(time, tzone = "", roll = FALSE)
@@ -12,6 +15,12 @@ force_tz(time, tzone = "", roll = FALSE)
 \method{force_tz}{default}(time, tzone = "", roll = FALSE)
 
 \method{force_tz}{datetime_offset}(time, tzone = "", roll = FALSE)
+
+with_tz(time, tzone = "")
+
+\method{with_tz}{default}(time, tzone = "")
+
+\method{with_tz}{datetime_offset}(time, tzone = "")
 }
 \arguments{
 \item{time}{A datetime object.}
@@ -23,22 +32,23 @@ force_tz(time, tzone = "", roll = FALSE)
 }
 \description{
 \code{force_tz()} returns a datetime with the same clock time as the input but in the new time zone
-(so will likely result in a different UTC datetime).
+(so will likely result in a different global UTC datetime).
+\code{with_tz()} returns a datetime with the same global UTC datetime as the input but in the new time zone.
 }
 \details{
-Since \code{lubridate} doesn't make \code{\link[lubridate:force_tz]{lubridate::force_tz()}} generic we define a generic version which
-by default uses the \code{lubridate} version but has a special \code{\link[=datetime_offset]{datetime_offset()}} method.
+Since \code{lubridate} doesn't make \code{\link[lubridate:force_tz]{lubridate::force_tz()}} or \code{\link[lubridate:with_tz]{lubridate::with_tz()}} generic we
+define a generic version which
+by default uses the \code{lubridate} version but also has a special \code{\link[=datetime_offset]{datetime_offset()}} method.
 }
 \examples{
- dt <- as_datetime_offset("1918-11-11T11:11:11")
- print(dt)
- if ("Europe/Paris" \%in\% OlsonNames()) {
-   dt <- force_tz(dt, "Europe/Paris")
-   print(dt)
- }
- # `force_tz()` doesn't change "clock" time but may change global UTC time
+ dt0 <- as_datetime_offset("1918-11-11T11:11:11", tz = "GMT")
+ print(dt0)
  if ("US/Pacific" \%in\% OlsonNames()) {
-   dt <- force_tz(dt, "US/Pacific")
+   # `force_tz()` doesn't change "clock" time but may change global UTC time
+   dt <- force_tz(dt0, "US/Pacific")
+   print(dt)
+   # `with_tz()` doesn't change global UTC time but my change "clock" time
+   dt <- with_tz(dt0, "US/Pacific")
    print(dt)
  }
 }

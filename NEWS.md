@@ -57,12 +57,14 @@ Initial features
   + `hour()` and `hour()<-`
   + `minute()` and `minute()<-`
   + `second()` and `second()<-`
-  + `tz()`, `tz()<-`, and `force_tz()`
+  + `tz()` and `tz()<-`
 
     - We export a `force_tz()` S3 generic which defaults to `lubridate::force_tz()`
       but provides a special method for `datetime_offset()` objects
     - We export a `tz()<-` which uses the new generic `force_tz()`
       instead of always using `lubridate::force_tz()`
+    - We export a `with_tz()` S3 generic which defaults to `lubridate::with_tz()`
+      but provides a special method for `datetime_offset()` objects
 
 * Some additional accessor functions
 
