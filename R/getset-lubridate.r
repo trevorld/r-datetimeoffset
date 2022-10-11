@@ -40,10 +40,10 @@ NULL
 methods::setOldClass("datetime_offset") # needed for {lubridate}'s setters
 
 #' @rdname getset_lubridate
-#' @export
-date <- function(x) {
-    UseMethod("date")
-}
+#' @name getset_lubridate
+#' @importFrom lubridate date
+#' @export date
+NULL
 
 #' @rdname getset_lubridate
 #' @export
@@ -177,55 +177,3 @@ tz.datetime_offset <- function(x) {
   force_tz(x, value)
 }
 
-#' Change timezones
-#'
-#' `force_tz()` returns a datetime with the same clock time as the input but in the new time zone
-#' (so will likely result in a different UTC datetime).
-#'
-#' Since `lubridate` doesn't make [lubridate::force_tz()] generic we define a generic version which
-#' by default uses the `lubridate` version but has a special [datetime_offset()] method.
-#' @param time A datetime object.
-#' @param tzone A timezone string.
-#'              `force_tz.datetime_offset()` allows a vector of different valued time zones (in contrast [lubridate::force_tz()] allows only one).
-#' @param roll Used by [lubridate::force_tz()] but ignored by `force_tz.datetime_offset()`.
-#' @seealso \link[=tz]{getset_lubridate} and \link[=tz<-]{getset_lubridate}.
-#' @examples
-#'  dt <- as_datetime_offset("1918-11-11T11:11:11")
-#'  print(dt)
-#'  if ("Europe/Paris" %in% OlsonNames()) {
-#'    dt <- force_tz(dt, "Europe/Paris")
-#'    print(dt)
-#'  }
-#'  # `force_tz()` doesn't change "clock" time but may change global UTC time
-#'  if ("US/Pacific" %in% OlsonNames()) {
-#'    dt <- force_tz(dt, "US/Pacific")
-#'    print(dt)
-#'  }
-#' @name timezone
-NULL
-
-
-# Because `lubridate::force_tz()` is not generic must export our own `tz<-` and `force_tz()`
-
-#' @rdname timezone
-#' @export
-force_tz <- function(time, tzone = "", roll = FALSE) {
-    UseMethod("force_tz")
-}
-
-#' @rdname timezone
-#' @export
-force_tz.default <- function(time, tzone = "", roll = FALSE) {
-    lubridate::force_tz(time, tzone, roll)
-}
-
-#' @rdname timezone
-#' @export
-force_tz.datetime_offset <- function(time, tzone = "", roll = FALSE) {
-    tz <- as.character(tzone)
-    if (isTRUE(any(tz == "")))
-        tz[which(tz == "")] <- Sys.timezone()
-    stopifnot(all(na_omit(tz) %in% OlsonNames()))
-    field(time, "tz") <- tz
-    time
-}

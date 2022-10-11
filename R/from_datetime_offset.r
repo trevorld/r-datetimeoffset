@@ -41,8 +41,8 @@ setOldClass("datetime_offset")
 #' @rdname from_datetime_offset
 #' @export
 methods::setMethod("as.nanotime", methods::signature(from="datetime_offset"),
-    function(from, month = 1, day = 1,
-             hour = 0, minute = 0, second = 0, tz = "GMT", ...) {
+    function(from, ..., month = 1, day = 1,
+             hour = 0, minute = 0, second = 0, tz = "GMT") {
         x <- from
         month(x) <- ifelse(is.na(month(x)), month, month(x))
         day(x) <- ifelse(is.na(day(x)), day, day(x))
@@ -52,3 +52,15 @@ methods::setMethod("as.nanotime", methods::signature(from="datetime_offset"),
         tz(x) <- ifelse(is.na(tz(x)) & is.na(hour_offset(x)), tz, tz(x))
         as.nanotime(format(x))
 })
+
+#' @rdname from_datetime_offset
+#' @export
+as.POSIXct.datetime_offset <- function(x, tz = mode_tz(x)) {
+    as.POSIXct(as.nanotime(x), tz = tz)
+}
+
+#' @rdname from_datetime_offset
+#' @export
+as.POSIXlt.datetime_offset <- function(x, tz = mode_tz(x)) {
+    as.POSIXlt(as.nanotime(x), tz = tz)
+}

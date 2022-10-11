@@ -65,7 +65,13 @@ as_datetime_offset.POSIXlt <- function(x, tz = lubridate::tz(x), ...) {
 as_datetime_offset.character <- function(x, tz = NA_character_, ...) {
     l <- lapply(x, as_dtos_character_helper)
     df <- do.call(rbind, l)
-    tz <- ifelse(is.na(df$tz), tz, df$tz)
+
+    tz_df <- df$tz
+    n <- max(length(tz_df), length(tz))
+    tz_df <- rep_len(tz_df, n)
+    tz <- rep_len(tz, n)
+    tz <- ifelse(is.na(tz_df), tz, tz_df)
+
     datetime_offset(df$year, df$month, df$day,
                     df$hour, df$minute, df$second, df$nanosecond,
                     df$hour_offset, df$minute_offset, tz)
@@ -74,8 +80,7 @@ as_datetime_offset.character <- function(x, tz = NA_character_, ...) {
 #' @rdname as_datetime_offset
 #' @export
 as_datetime_offset.nanotime <- function(x, tz = "GMT", ...) {
-    if (isTRUE(any(tz == "")))
-        tz[which(tz == "")] <- Sys.timezone()
+    tz <- clean_tz(tz)
     df <- data.frame(dt = x, tz = tz)
     l <- purrr::pmap(df, function(dt, tz) {
                        as_datetime_offset(format(dt, tz = tz), tz = tz)

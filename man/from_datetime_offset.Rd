@@ -4,20 +4,26 @@
 \alias{from_datetime_offset}
 \alias{as.Date.datetime_offset}
 \alias{as.nanotime,datetime_offset-method}
+\alias{as.POSIXct.datetime_offset}
+\alias{as.POSIXlt.datetime_offset}
 \title{Convert to other datetime objects}
 \usage{
 \method{as.Date}{datetime_offset}(x, month = 1, day = 1, ...)
 
 \S4method{as.nanotime}{datetime_offset}(
   from,
+  ...,
   month = 1,
   day = 1,
   hour = 0,
   minute = 0,
   second = 0,
-  tz = "GMT",
-  ...
+  tz = "GMT"
 )
+
+\method{as.POSIXct}{datetime_offset}(x, tz = mode_tz(x))
+
+\method{as.POSIXlt}{datetime_offset}(x, tz = mode_tz(x))
 }
 \arguments{
 \item{x}{A \code{\link[=datetime_offset]{datetime_offset()}} object}
