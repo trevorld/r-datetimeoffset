@@ -24,7 +24,7 @@ new_datetime_offset <- function(year = integer(), month = integer(), day = integ
 #' `datetime_offset()` creates a datetime with possible UTC offset object.
 #' It can be used to represent datetimes with possible UTC offsets
 #' (without necessarily any knowledge of the time zone).
-#' @param year Year (integer, mandatory)
+#' @param year Year (integer, optional)
 #' @param month Month (integer, optional)
 #' @param day Day (integer, optional)
 #' @param hour Hour (integer, optional)
@@ -49,7 +49,7 @@ new_datetime_offset <- function(year = integer(), month = integer(), day = integ
 #'   datetime_offset(2020, 5, 15, 8, 23, 16, hour_offset = -7, minute_offset = 30)
 #' @return A `vctrs` record with class `datetime_offset`.
 #' @export
-datetime_offset <- function(year, month = NA_integer_, day = NA_integer_,
+datetime_offset <- function(year = NA_integer_, month = NA_integer_, day = NA_integer_,
                             hour = NA_integer_, minute = NA_integer_, second = NA_integer_,
                             nanosecond = NA_integer_,
                             hour_offset = NA_integer_, minute_offset = NA_integer_, tz = NA_character_) {

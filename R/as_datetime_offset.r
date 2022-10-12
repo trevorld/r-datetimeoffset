@@ -28,8 +28,14 @@
 #' as_datetime_offset("D:20200515082316")
 #' as_datetime_offset("D:20200515082316+0330")
 #' @export
-as_datetime_offset <- function(x, tz = "", ...) {
+as_datetime_offset <- function(x, ...) {
     UseMethod("as_datetime_offset")
+}
+
+#' @rdname as_datetime_offset
+#' @export
+as_datetime_offset.datetime_offset <- function(x, ...) {
+    x
 }
 
 #' @rdname as_datetime_offset
@@ -44,8 +50,7 @@ is_datetime_offset <- function(x) inherits(x, "datetime_offset")
 #' @importFrom nanotime as.nanotime
 #' @export
 as_datetime_offset.default <- function(x, tz = lubridate::tz(as.POSIXct(x)), ...) {
-    dt <- as.POSIXct(x)
-    as_datetime_offset(as.nanotime(x), tz = tz)
+    as_datetime_offset(as.nanotime(as.POSIXct(x)), tz = tz)
 }
 
 #' @rdname as_datetime_offset
@@ -63,7 +68,7 @@ as_datetime_offset.POSIXlt <- function(x, tz = lubridate::tz(x), ...) {
 #' @rdname as_datetime_offset
 #' @export
 as_datetime_offset.character <- function(x, tz = NA_character_, ...) {
-    l <- lapply(x, as_dtos_character_helper)
+    l <- lapply(x, as_dtos_character)
     df <- do.call(rbind, l)
 
     tz_df <- df$tz
@@ -81,29 +86,19 @@ as_datetime_offset.character <- function(x, tz = NA_character_, ...) {
 #' @export
 as_datetime_offset.nanotime <- function(x, tz = "GMT", ...) {
     tz <- clean_tz(tz)
-    df <- data.frame(dt = x, tz = tz)
+    df <- data.frame(dt = x, tz = tz, stringsAsFactors = FALSE)
     l <- purrr::pmap(df, function(dt, tz) {
-                       as_datetime_offset(format(dt, tz = tz), tz = tz)
+                       as_datetime_offset(format(dt, tz = tz, format = "%Y-%m-%dT%H:%M:%E9S%Ez"), tz = tz)
                      })
     do.call(c, l)
 }
 
-get_ns <- function(x) {
-    v <- rep_len(NA_integer_, length(x))
-    ns <- gsub("([^.]*)(\\.[[:digit:]]{1,}){0,1}(.*)", "\\2", x)
-    idx <- which(ns != "")
-    if (length(idx) > 0L) {
-        ns <- substr(ns, 2L, nchar(ns))
-        stopifnot(any(nchar(ns) <= 9L))
-        ns <- vapply(ns, function(x) {
-                           n <- nchar(x)
-                           x <- paste0(x, paste(rep_len("0", 9L - n), collapse = ""))
-                           as.integer(x)
-                     },
-                     integer(1L), USE.NAMES = FALSE)
-        v[idx] <- ns
-    }
-    v
+parse_nanoseconds <- function(x) {
+    x <- substr(x, 2L, nchar(x))
+    stopifnot(nchar(x) <= 9L)
+    n <- nchar(x)
+    x <- paste0(x, paste(rep_len("0", 9L - n), collapse = ""))
+    as.integer(x)
 }
 
 strip_ns <- function(x) {
@@ -111,170 +106,60 @@ strip_ns <- function(x) {
     ns
 }
 
+as_dtos_character <- function(x) {
+    tryCatch(as_dtos_character_helper(x),
+             error = function(e) stop(paste("Can't parse datetime string", sQuote(x)))
+             )
+}
+
 as_dtos_character_helper <- function(x) {
     if (grepl("^D:[[:digit:]+-]{4,}$", x)) # pdfmark prefix
         s <- substr(x, 3L, nchar(x))
     else
         s <- x
+    s <- sub("^([[:digit:]]{4})[-/]([[:digit:]]{2})", "\\1\\2", s)
+    s <- sub("^([[:digit:]]{6})[-/]([[:digit:]]{2})", "\\1\\2", s)
+    s <- gsub("([[:digit:]])[T ]([[:digit:]+-])", "\\1\\2", s)
+    s <- gsub(":", "", s)
     l <- list(year = NA_integer_, month = NA_integer_, day = NA_integer_,
               hour = NA_integer_, minute = NA_integer_, second = NA_integer_,
               nanosecond = NA_integer_,
               hour_offset = NA_integer_, minute_offset = NA_integer_, tz = NA_character_)
     # "2020-05-15T08:23:16-07:00"
-    if (grepl("^[[:digit:]]{4}$", s)) { # "2020"
+    if (s == "") {
+        invisible(NULL)
+    } else if (grepl("^.+Z$", s)) { # ends in Z means "GMT" time
+        l <- as_dtos_character_helper(substr(s, 1L, nchar(s) - 1L))
+        l$hour_offset <- 0
+        l$minute_offset <- 0
+        l$tz <- "GMT"
+    } else if (grepl("^.+[+-][[:digit:]]{2}$", s)) { # ends in -07 or +07 means hour offset
+        l <- as_dtos_character_helper(substr(s, 1L, nchar(s) - 3L))
+        l$hour_offset <- as.integer(substr(s, nchar(s) - 2L, nchar(s)))
+    } else if (grepl("^.+[+-][[:digit:]]{4}$", s)) { # ends in -0700 or +0700 means hour/minute offset
+        l <- as_dtos_character_helper(substr(s, 1L, nchar(s) - 5L))
+        l$hour_offset <- as.integer(substr(s, nchar(s) - 4L, nchar(s) - 2L))
+        l$minute_offset <- as.integer(substr(s, nchar(s) - 1L, nchar(s)))
+    } else if (grepl("^[[:digit:]]{4}$", s)) { # "2020"
         l$year <- as.integer(s)
     } else if (grepl("^[[:digit:]]{6}$", s)) { # "202005"
         l <- as_dtos_character_helper(substr(s, 1L, 4L))
         l$month <- as.integer(substr(s, 5L, 6L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}$", s)) { # "2020-05"
-        l <- as_dtos_character_helper(substr(s, 1L, 4L))
-        l$month <- as.integer(substr(s, 6L, 7L))
     } else if (grepl("^[[:digit:]]{8}$", s)) { # "20200515"
         l <- as_dtos_character_helper(substr(s, 1L, 6L))
         l$day <- as.integer(substr(s, 7L, 8L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}$", s)) { # "2020-05-15"
-        l <- as_dtos_character_helper(substr(s, 1L, 7L))
-        l$day <- as.integer(substr(s, 9L, 10L))
     } else if (grepl("^[[:digit:]]{10}$", s)) { # "2020051508"
         l <- as_dtos_character_helper(substr(s, 1L, 8L))
         l$hour <- as.integer(substr(s, 9L, 10L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}$", s)) { # "2020-05-15T08"
-        l <- as_dtos_character_helper(substr(s, 1L, 10L))
-        l$hour <- as.integer(substr(s, 12L, 13L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}Z$", s)) { # "2020-05-15T08Z"
-        l <- as_dtos_character_helper(substr(s, 1L, 13L))
-        l$hour_offset <- 0
-        l$minute_offset <- 0
-        l$tz <- "GMT"
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}[+-][[:digit:]]{2}$", s)) { # "2020-05-15T08-07"
-        l <- as_dtos_character_helper(substr(s, 1L, 13L))
-        l$hour_offset <- as.integer(substr(s, 14L, 16L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}[+-][[:digit:]]{4}$", s)) { # "2020-05-15T08-0700"
-        l <- as_dtos_character_helper(substr(s, 1L, 16L))
-        l$minute_offset <- as.integer(substr(s, 17L, 18L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}[+-][[:digit:]]{2}:[[:digit:]]{2}$", s)) { # "2020-05-15T08-07:00"
-        l <- as_dtos_character_helper(substr(s, 1L, 16L))
-        l$minute_offset <- as.integer(substr(s, 18L, 19L))
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{2}$", s)) { # "20200515T08"
-        l <- as_dtos_character_helper(substr(s, 1L, 8L))
-        l$hour <- as.integer(substr(s, 10L, 11L))
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{2}Z$", s)) { # "20200515T08Z"
-        l <- as_dtos_character_helper(substr(s, 1L, 11L))
-        l$hour_offset <- 0
-        l$minute_offset <- 0
-        l$tz <- "GMT"
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{2}[+-][[:digit:]]{2}$", s)) { # "20200515T08-07"
-        l <- as_dtos_character_helper(substr(s, 1L, 11L))
-        l$hour_offset <- as.integer(substr(s, 12L, 14L))
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{2}[+-][[:digit:]]{4}$", s)) { # "20200515T08-0700"
-        l <- as_dtos_character_helper(substr(s, 1L, 14L))
-        l$minute_offset <- as.integer(substr(s, 15L, 16L))
     } else if (grepl("^[[:digit:]]{12}$", s)) { # "202005150823"
         l <- as_dtos_character_helper(substr(s, 1L, 10L))
         l$minute <- as.integer(substr(s, 11L, 12L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}:[[:digit:]]{2}$", s)) { # "2020-05-15T08:23"
-        l <- as_dtos_character_helper(substr(s, 1L, 13L))
-        l$minute <- as.integer(substr(s, 15L, 16L))
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{4}$", s)) { # "20200515T0823"
-        l <- as_dtos_character_helper(substr(s, 1L, 11L))
-        l$minute <- as.integer(substr(s, 12L, 13L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}:[[:digit:]]{2}Z$", s)) { # "2020-05-15T08:23Z"
-        l <- as_dtos_character_helper(substr(s, 1L, 16L))
-        l$hour_offset <- 0
-        l$minute_offset <- 0
-        l$tz <- "GMT"
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{4}Z$", s)) { # "20200515T0823Z"
-        l <- as_dtos_character_helper(substr(s, 1L, 13L))
-        l$hour_offset <- 0
-        l$minute_offset <- 0
-        l$tz <- "GMT"
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}:[[:digit:]]{2}[+-][[:digit:]]{2}$", s)) { # "2020-05-15T08:23-07"
-        l <- as_dtos_character_helper(substr(s, 1L, 16L))
-        l$hour_offset <- as.integer(substr(s, 17L, 19L))
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{4}[+-][[:digit:]]{2}$", s)) { # "20200515T0823-07"
-        l <- as_dtos_character_helper(substr(s, 1L, 13L))
-        l$hour_offset <- as.integer(substr(s, 14L, 16L))
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{4}[+-][[:digit:]]{4}$", s)) { # "20200515T0823-0700"
-        l <- as_dtos_character_helper(substr(s, 1L, 16L))
-        l$minute_offset <- as.integer(substr(s, 17L, 18L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}:[[:digit:]]{2}[+-][[:digit:]]{2}[[:digit:]]{2}$", s)) { # "2020-05-15T08:23-0700"
-        l <- as_dtos_character_helper(substr(s, 1L, 19L))
-        l$minute_offset <- as.integer(substr(s, 20L, 21L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}:[[:digit:]]{2}[+-][[:digit:]]{2}:[[:digit:]]{2}$", s)) { # "2020-05-15T08:23-07:00"
-        l <- as_dtos_character_helper(substr(s, 1L, 19L))
-        l$minute_offset <- as.integer(substr(s, 21L, 22L))
     } else if (grepl("^[[:digit:]]{14}$", s)) { # "20200515082316"
         l <- as_dtos_character_helper(substr(s, 1L, 12L))
         l$second <- as.integer(substr(s, 13L, 14L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}(:[[:digit:]]{2}){2}$", s)) { # "2020-05-15T08:23:16"
-        l <- as_dtos_character_helper(substr(s, 1L, 16L))
-        l$second <- as.integer(substr(s, 18L, 19L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}(:[[:digit:]]{2}){2}\\.[[:digit:]]{1,}$", s)) { # "2020-05-15T08:23:16.003"
-        l <- as_dtos_character_helper(strip_ns(s))
-        l$nanosecond <-  get_ns(s)
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{6}$", s)) { # "20200515T082316"
-        l <- as_dtos_character_helper(substr(s, 1L, 13L))
-        l$second <- as.integer(substr(s, 14L, 15L))
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{6}\\.[[:digit:]]{1,}$", s)) { # "20200515T082316.003"
-        l <- as_dtos_character_helper(strip_ns(s))
-        l$nanosecond <-  get_ns(s)
-    } else if (grepl("^[[:digit:]]{14}Z$", s)) { # "20200515082316Z"
+    } else if (grepl("^[[:digit:]]{14}\\.[[:digit:]]{1,}$", s)) { # "20200515082316.003"
         l <- as_dtos_character_helper(substr(s, 1L, 14L))
-        l$hour_offset <- 0
-        l$minute_offset <- 0
-        l$tz <- "GMT"
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}(:[[:digit:]]{2}){2}Z$", s)) { # "2020-05-15T08:23:16Z"
-        l <- as_dtos_character_helper(substr(s, 1L, 19L))
-        l$hour_offset <- 0
-        l$minute_offset <- 0
-        l$tz <- "GMT"
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}(:[[:digit:]]{2}){2}\\.[[:digit:]]{1,}Z$", s)) { # "2020-05-15T08:23:16.003Z"
-        l <- as_dtos_character_helper(strip_ns(s))
-        l$nanosecond <-  get_ns(s)
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{6}Z$", s)) { # "20200515T082316Z"
-        l <- as_dtos_character_helper(substr(s, 1L, 15L))
-        l$hour_offset <- 0
-        l$minute_offset <- 0
-        l$tz <- "GMT"
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{6}\\.[[:digit:]]{1,}Z$", s)) { # "20200515T082316.003Z"
-        l <- as_dtos_character_helper(strip_ns(s))
-        l$nanosecond <-  get_ns(s)
-    } else if (grepl("^[[:digit:]]{14}[+-][[:digit:]]{2}$", s)) { # "20200515082316-07"
-        l <- as_dtos_character_helper(substr(s, 1L, 14L))
-        l$hour_offset <- as.integer(substr(s, 15L, 17L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}(:[[:digit:]]{2}){2}[+-][[:digit:]]{2}$", s)) { # "2020-05-15T08:23:16-07"
-        l <- as_dtos_character_helper(substr(s, 1L, 19L))
-        l$hour_offset <- as.integer(substr(s, 20L, 22L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}(:[[:digit:]]{2}){2}\\.[[:digit:]]{1,}[+-][[:digit:]]{2}$", s)) { # "2020-05-15T08:23:16.003-07"
-        l <- as_dtos_character_helper(strip_ns(s))
-        l$nanosecond <-  get_ns(s)
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{6}[+-][[:digit:]]{2}$", s)) { # "20200515T082316-07"
-        l <- as_dtos_character_helper(substr(s, 1L, 15L))
-        l$hour_offset <- as.integer(substr(s, 16L, 18L))
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{6}\\.[[:digit:]]{1,}[+-][[:digit:]]{2}$", s)) { # "20200515T082316.003-07"
-        l <- as_dtos_character_helper(strip_ns(s))
-        l$nanosecond <-  get_ns(s)
-    } else if (grepl("^[[:digit:]]{14}[+-][[:digit:]]{4}$", s)) { # "20200515082316-0700"
-        l <- as_dtos_character_helper(substr(s, 1L, 17L))
-        l$minute_offset <- as.integer(substr(s, 18L, 19L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}(:[[:digit:]]{2}){2}[+-][[:digit:]]{4}$", s)) { # "2020-05-15T08:23:16-0700"
-        l <- as_dtos_character_helper(substr(s, 1L, 22L))
-        l$minute_offset <- as.integer(substr(s, 23L, 24L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}(:[[:digit:]]{2}){2}\\.[[:digit:]]{1,}[+-][[:digit:]]{4}$", s)) { # "2020-05-15T08:23:16.003-0700"
-        l <- as_dtos_character_helper(strip_ns(s))
-        l$nanosecond <-  get_ns(s)
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}(:[[:digit:]]{2}){2}[+-][[:digit:]]{2}:[[:digit:]]{2}$", s)) { # "2020-05-15T08:23:16-07:00"
-        l <- as_dtos_character_helper(substr(s, 1L, 22L))
-        l$minute_offset <- as.integer(substr(s, 24L, 25L))
-    } else if (grepl("^[[:digit:]]{4}[-/][[:digit:]]{2}[-/][[:digit:]]{2}[T ][[:digit:]]{2}(:[[:digit:]]{2}){2}\\.[[:digit:]]{1,}[+-][[:digit:]]{2}:[[:digit:]]{2}$", s)) { # "2020-05-15T08:23:16.003-07:00"
-        l <- as_dtos_character_helper(strip_ns(s))
-        l$nanosecond <-  get_ns(s)
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{6}[+-][[:digit:]]{4}$", s)) { # "20200515T082316-0700"
-        l <- as_dtos_character_helper(substr(s, 1L, 18L))
-        l$minute_offset <- as.integer(substr(s, 19L, 20L))
-    } else if (grepl("^[[:digit:]]{8}[T ][[:digit:]]{6}\\.[[:digit:]]{1,}[+-][[:digit:]]{4}$", s)) { # "20200515T082316.003-0700"
-        l <- as_dtos_character_helper(strip_ns(s))
-        l$nanosecond <-  get_ns(s)
+        l$nanosecond <-  parse_nanoseconds(substr(s, 15L, nchar(s)))
     } else {
         stop(paste("Can't parse datetime", x))
     }

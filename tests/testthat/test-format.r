@@ -51,3 +51,20 @@ test_that("format_pdfmark()", {
     second(dt) <- NA_integer_
     expect_equal(format_pdfmark(dt), "D:202005150823")
 })
+
+test_that("format_strftime()", {
+    dt <- as_datetime_offset("2020-04-04T10:10:10")
+    expect_equal(format_strftime(dt), "2020-04-04 10:10:10")
+})
+
+test_that("format_CCTZ()", {
+    dt <- as_datetime_offset("2020-04-04T10:10:10Z")
+    expect_equal(format_CCTZ(dt, tz = "GMT"),
+                 "2020-04-04T10:10:10.000000000+00:00")
+    expect_equal(format_CCTZ(dt, format = "%F %T %Ez", tz = "GMT"),
+                 "2020-04-04 10:10:10 +00:00")
+    if ("America/Los_Angeles" %in% OlsonNames()) {
+        expect_equal(format_CCTZ(dt, tz = "America/Los_Angeles"),
+                     "2020-04-04T03:10:10.000000000-07:00")
+    }
+})

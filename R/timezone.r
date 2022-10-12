@@ -10,6 +10,7 @@
 #' @param time A datetime object.
 #' @param tzone A timezone string.
 #'              `force_tz.datetime_offset()` allows a vector of different valued time zones (in contrast [lubridate::force_tz()] allows only one).
+#' @param ... In `with_tz.datetime_format()` passed to \code{\link[=from_datetime_offset]{as.nanotime()}}.
 #' @param roll Used by [lubridate::force_tz()] but ignored by `force_tz.datetime_offset()`.
 #' @seealso \link[=tz]{getset_lubridate} and \link[=tz<-]{getset_lubridate}.
 #' @examples
@@ -45,28 +46,27 @@ force_tz.default <- function(time, tzone = "", roll = FALSE) {
 #' @export
 force_tz.datetime_offset <- function(time, tzone = "", roll = FALSE) {
     tzone <- clean_tz(tzone)
-    stopifnot(is_valid_tz(tzone))
     field(time, "tz") <- tzone
     time
 }
 
 #' @rdname timezone
 #' @export
-with_tz <- function(time, tzone = "") {
+with_tz <- function(time, tzone = "", ...) {
     UseMethod("with_tz")
 }
 
 #' @rdname timezone
 #' @export
-with_tz.default <- function(time, tzone = "") {
+with_tz.default <- function(time, tzone = "", ...) {
     lubridate::with_tz(time, tzone)
 }
 
 #' @rdname timezone
 #' @export
-with_tz.datetime_offset <- function(time, tzone = "") {
+with_tz.datetime_offset <- function(time, tzone = "", ...) {
     tzone <- clean_tz(tzone)
-    as_datetime_offset(as.nanotime(time), tz = tzone)
+    as_datetime_offset(as.nanotime(time, ...), tz = tzone)
 }
 
 #' Get most common time zone
@@ -110,13 +110,16 @@ mode_tz.datetime_offset <- function(time, tzone = "", ...) {
     keys[which.max(tbl)]
 }
 
-clean_tz <- function(tz) {
+clean_tz <- function(tz, na = NA_character_) {
     tz <- as.character(tz)
     if (isTRUE(any(tz == "")))
         tz[which(tz == "")] <- Sys.timezone()
+    if (any(is.na(tz)))
+        tz[which(is.na(tz))] <- na
+    # stopifnot(is_valid_tz(tz))
     tz
 }
 
-is_valid_tz <- function(tz) {
-    all(na_omit(tz) %in% OlsonNames())
-}
+# is_valid_tz <- function(tz) {
+#     all(na_omit(tz) %in% OlsonNames())
+# }

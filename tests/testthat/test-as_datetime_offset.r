@@ -148,15 +148,17 @@ test_that("as_datetime_offset()", {
         # POSIXct
         dt <- as.POSIXct("2022-10-10 10:00:00", tz = "US/Eastern")
         expect_equal(format(as_datetime_offset(dt)),
-                     "2022-10-10T10:00:00-04:00")
+                     "2022-10-10T10:00:00.0-04:00")
 
         # POSIXlt
         dt <- as.POSIXlt("2022-10-10 10:00:00", tz = "US/Eastern")
         expect_equal(format(as_datetime_offset(dt)),
-                     "2022-10-10T10:00:00-04:00")
+                     "2022-10-10T10:00:00.0-04:00")
     }
 
     # nanotime
     expect_equal(format(as_datetime_offset(nanotime::nanotime("2020-05-15T08:23:16.03Z"))),
                  "2020-05-15T08:23:16.03Z")
+    dt <- as_datetime_offset(nanotime::nanotime("2020-05-15T08:23:16Z"))
+    expect_equal(nanosecond(dt), 0L)
 })

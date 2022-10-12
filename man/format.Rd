@@ -5,19 +5,24 @@
 \alias{format.datetime_offset}
 \alias{format_ISO8601,datetime_offset-method}
 \alias{format_pdfmark}
-\alias{format_pdfmark.default}
-\alias{format_pdfmark.datetime_offset}
+\alias{format_strftime}
+\alias{format_CCTZ}
 \title{Convert datetime objects to character}
 \usage{
 \method{format}{datetime_offset}(x, ...)
 
 \S4method{format_ISO8601}{datetime_offset}(x, usetz = TRUE, precision = NULL, ...)
 
-format_pdfmark(x, ...)
+format_pdfmark(x)
 
-\method{format_pdfmark}{default}(x, ...)
+format_strftime(
+  x,
+  format = "\%Y-\%m-\%d \%H:\%M:\%S",
+  tz = lubridate::tz(x),
+  usetz = FALSE
+)
 
-\method{format_pdfmark}{datetime_offset}(x, ...)
+format_CCTZ(x, format = "\%Y-\%m-\%dT\%H:\%M:\%E9S\%Ez", tz = lubridate::tz(x))
 }
 \arguments{
 \item{x}{A \code{\link[=datetime_offset]{datetime_offset()}} object.}
@@ -31,6 +36,12 @@ time; date outputs never include time zone information).}
 "ymdhmsn", as "y"ear, "m"onth, "d"ay, "h"our, "m"inute,
 "s"econd, and "n"anosecond. (e.g. "ymdhm" would show precision through minutes.
 When ‘NULL’, full precision for the object is shown.}
+
+\item{format}{For \code{format_strftime()} see \code{\link[base:strptime]{base::strftime()}}.
+For \code{format_CCTZ()} see \url{https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197}.}
+
+\item{tz}{A character string specifying the time zone to be used for the conversion.
+Can be a length greater than one.}
 }
 \value{
 A character vector
@@ -39,6 +50,8 @@ A character vector
 \code{format()} returns an ISO 8601 datetime string with as much \strong{known} information possible.
 \code{format_ISO8601()} returns an ISO 8601 datetime string.
 \code{format_pdfmark()} returns a pdfmark datetime string with as much \strong{known} information possible.
+\code{format_strftime()} allows \code{\link[base:strptime]{base::strftime()}} style formatting.
+\code{format_CCTZ()} allows CCTZ style formatting.
 }
 \examples{
   # ISO 8601 datetimes
@@ -50,4 +63,14 @@ A character vector
   format_pdfmark(as_datetime_offset("2020-05"))
   format_pdfmark(as_datetime_offset("2020-05-10 20:15"))
   format_pdfmark(as_datetime_offset("2020-05-10 20:15:05-07"))
+
+  # strftime style formatting
+  dt <- as_datetime_offset("2020-05-10 20:15")
+  format_strftime(dt)
+  format_strftime(dt, format = "\%c")
+
+  # CCTZ style formatting
+  dt <- as_datetime_offset(Sys.time())
+  format_CCTZ(dt)
+  format_CCTZ(dt, format = "\%F \%H:\%M:\%E7S \%Ez") # SQL Server datetimeoffset
 }

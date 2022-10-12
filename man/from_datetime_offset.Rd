@@ -8,25 +8,51 @@
 \alias{as.POSIXlt.datetime_offset}
 \title{Convert to other datetime objects}
 \usage{
-\method{as.Date}{datetime_offset}(x, month = 1, day = 1, ...)
+\method{as.Date}{datetime_offset}(x, year = 1970L, month = 1L, day = 1L, ...)
 
 \S4method{as.nanotime}{datetime_offset}(
   from,
   ...,
-  month = 1,
-  day = 1,
-  hour = 0,
-  minute = 0,
-  second = 0,
-  tz = "GMT"
+  year = 1970L,
+  month = 1L,
+  day = 1L,
+  hour = 0L,
+  minute = 0L,
+  second = 0L,
+  nanosecond = 0L,
+  tz = ""
 )
 
-\method{as.POSIXct}{datetime_offset}(x, tz = mode_tz(x), ...)
+\method{as.POSIXct}{datetime_offset}(
+  x,
+  tz = mode_tz(x),
+  ...,
+  year = 1970L,
+  month = 1L,
+  day = 1L,
+  hour = 0L,
+  minute = 0L,
+  second = 0L,
+  nanosecond = 0L
+)
 
-\method{as.POSIXlt}{datetime_offset}(x, tz = mode_tz(x), ...)
+\method{as.POSIXlt}{datetime_offset}(
+  x,
+  tz = mode_tz(x),
+  ...,
+  year = 1970L,
+  month = 1L,
+  day = 1L,
+  hour = 0L,
+  minute = 0L,
+  second = 0L,
+  nanosecond = 0L
+)
 }
 \arguments{
 \item{x}{A \code{\link[=datetime_offset]{datetime_offset()}} object}
+
+\item{year}{If missing what year to assume}
 
 \item{month}{If missing what month to assume}
 
@@ -42,6 +68,8 @@
 
 \item{second}{If missing what second to assume}
 
+\item{nanosecond}{If missing what nanosecond to assume}
+
 \item{tz}{If missing and hour offset also missing what time zone to assume}
 }
 \description{
@@ -56,7 +84,8 @@ other R datetime objects:
 \examples{
   as.Date(as_datetime_offset("2020-03-05"))
   as.Date(as_datetime_offset("2020"))
-  as.Date(as_datetime_offset("2020"), 6, 15)
+  as.Date(as_datetime_offset("2020"), month = 6, day = 15)
 
-  as.nanotime
+  as.nanotime(as_datetime_offset(Sys.time()))
+  as.POSIXct(as_datetime_offset(Sys.time()), tz = "GMT")
 }

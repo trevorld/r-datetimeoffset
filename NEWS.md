@@ -38,6 +38,9 @@ Initial features
       - `format_pdfmark.default()` anything convertible to `datetime_offset()`
       - `format_pdfmark.datetime_offset()`
 
+    + `format_strftime()` allows `base::strftime()` style formatting 
+    + `format_CCTZ()` allows [CCTZ style formatting](https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197)
+
 * Support for converting to other R datetime objects:
 
   + `as.Date()` converts the local date to a `base::Date()` object

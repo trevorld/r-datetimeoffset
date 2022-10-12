@@ -85,6 +85,6 @@ test_that("force_tz() and with_tz()", {
         expect_equal(format(force_tz(dt, "US/Pacific")),
                      "1918-11-11T11:11:11-08:00")
         expect_equal(format(with_tz(dt, "US/Pacific")),
-                     "1918-11-11T03:11:11-08:00")
+                     "1918-11-11T03:11:11.0-08:00")
     }
 })

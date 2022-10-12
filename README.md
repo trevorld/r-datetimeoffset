@@ -168,6 +168,9 @@ as_datetime_offset("1918/11/11 11:11:11.11") |> format()
       - `format_pdfmark.default()` anything convertible to `datetime_offset()`
       - `format_pdfmark.datetime_offset()`
 
+    + `format_strftime()` allows `base::strftime()` style formatting 
+    + `format_CCTZ()` allows [CCTZ style formatting](https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197)
+
 * Support for converting to other R datetime objects:
 
   + `as.Date()` converts the local date to a `base::Date()` object
@@ -215,7 +218,6 @@ Please feel free to [open a pull request to add any missing relevant links](http
 
 * [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations)
 * [pdfmark datetimes](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo)
-* [SQL Server datetimeoffset](https://learn.microsoft.com/en-us/sql/t-sql/data-types/datetimeoffset-transact-sql?view=sql-server-ver16)
 
 ### <a name="similar">Related software</a>
 

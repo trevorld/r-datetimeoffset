@@ -5,7 +5,7 @@
 \title{Datetime object with optional UTC offsets and/or timezones}
 \usage{
 datetime_offset(
-  year,
+  year = NA_integer_,
   month = NA_integer_,
   day = NA_integer_,
   hour = NA_integer_,
@@ -18,7 +18,7 @@ datetime_offset(
 )
 }
 \arguments{
-\item{year}{Year (integer, mandatory)}
+\item{year}{Year (integer, optional)}
 
 \item{month}{Month (integer, optional)}
 

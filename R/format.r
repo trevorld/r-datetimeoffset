@@ -3,8 +3,14 @@
 #' `format()` returns an ISO 8601 datetime string with as much **known** information possible.
 #' `format_ISO8601()` returns an ISO 8601 datetime string.
 #' `format_pdfmark()` returns a pdfmark datetime string with as much **known** information possible.
+#' `format_strftime()` allows [base::strftime()] style formatting.
+#' `format_CCTZ()` allows CCTZ style formatting.
 #' @name format
 #' @param x A [datetime_offset()] object.
+#' @param format For `format_strftime()` see [base::strftime()].
+#'               For `format_CCTZ()` see <https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197>.
+#' @param tz A character string specifying the time zone to be used for the conversion.
+#'           Can be a length greater than one.
 #' @param usetz Include the time zone in the formatting (of outputs including
 #'        time; date outputs never include time zone information).
 #' @param precision The amount of precision to represent with substrings of
@@ -23,6 +29,16 @@
 #'   format_pdfmark(as_datetime_offset("2020-05"))
 #'   format_pdfmark(as_datetime_offset("2020-05-10 20:15"))
 #'   format_pdfmark(as_datetime_offset("2020-05-10 20:15:05-07"))
+#'
+#'   # strftime style formatting
+#'   dt <- as_datetime_offset("2020-05-10 20:15")
+#'   format_strftime(dt)
+#'   format_strftime(dt, format = "%c")
+#'
+#'   # CCTZ style formatting
+#'   dt <- as_datetime_offset(Sys.time())
+#'   format_CCTZ(dt)
+#'   format_CCTZ(dt, format = "%F %H:%M:%E7S %Ez") # SQL Server datetimeoffset
 NULL
 
 #' @rdname format
@@ -49,6 +65,7 @@ my_format_nanosecond <- function(ns) {
         s_ns <- formatC(ns[idx], format = "d", flag = "0", width = 9L)
         stopifnot(all(nchar(s_ns) <= 9L))
         s_ns <- gsub("0{1,}$", "", s_ns)
+        s_ns <- ifelse(s_ns == "", "0", s_ns)
         s[idx] <- paste0(".", s_ns)
     }
     s
@@ -85,19 +102,8 @@ methods::setMethod("format_ISO8601", signature = "datetime_offset", function(x, 
 
 #' @rdname format
 #' @export
-format_pdfmark <- function(x, ...) {
-    UseMethod("format_pdfmark")
-}
-
-#' @rdname format
-#' @export
-format_pdfmark.default <- function(x, ...) {
-    format_pdfmark(as_datetime_offset(x))
-}
-
-#' @rdname format
-#' @export
-format_pdfmark.datetime_offset <- function(x, ...) {
+format_pdfmark <- function(x) {
+    x <- as_datetime_offset(x)
     x <- update_nas(x, pdfmark = TRUE)
     year_str <- my_format(field(x, "year"), width = 4L)
     month_str <- my_format(field(x, "month"), prefix = "")
@@ -107,6 +113,24 @@ format_pdfmark.datetime_offset <- function(x, ...) {
     second_str <- my_format(field(x, "second"), prefix = "")
     offset_str <- my_format_tz(x, sep = "", no_zulu = TRUE)
     paste0("D:", year_str, month_str, day_str, hour_str, minute_str, second_str, offset_str)
+}
+
+#' @rdname format
+#' @export
+format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = lubridate::tz(x), usetz = FALSE) {
+    tz <- clean_tz(tz, na = Sys.timezone())
+    x <- as.POSIXct(x)
+    df <- data.frame(x = x, format = format, tz = tz, usetz = usetz, stringsAsFactors = FALSE)
+    purrr::pmap_chr(df, strftime)
+}
+
+#' @rdname format
+#' @export
+format_CCTZ <- function(x, format = "%Y-%m-%dT%H:%M:%E9S%Ez", tz = lubridate::tz(x)) {
+    tz <- clean_tz(tz, na = Sys.timezone())
+    x <- as.nanotime(x)
+    df <- data.frame(x = x, format = format, tz = tz, stringsAsFactors = FALSE)
+    purrr::pmap_chr(df, base::format)
 }
 
 update_nas <- function(x, pdfmark = FALSE) {

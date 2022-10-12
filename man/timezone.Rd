@@ -16,11 +16,11 @@ force_tz(time, tzone = "", roll = FALSE)
 
 \method{force_tz}{datetime_offset}(time, tzone = "", roll = FALSE)
 
-with_tz(time, tzone = "")
+with_tz(time, tzone = "", ...)
 
-\method{with_tz}{default}(time, tzone = "")
+\method{with_tz}{default}(time, tzone = "", ...)
 
-\method{with_tz}{datetime_offset}(time, tzone = "")
+\method{with_tz}{datetime_offset}(time, tzone = "", ...)
 }
 \arguments{
 \item{time}{A datetime object.}
@@ -29,6 +29,8 @@ with_tz(time, tzone = "")
 \code{force_tz.datetime_offset()} allows a vector of different valued time zones (in contrast \code{\link[lubridate:force_tz]{lubridate::force_tz()}} allows only one).}
 
 \item{roll}{Used by \code{\link[lubridate:force_tz]{lubridate::force_tz()}} but ignored by \code{force_tz.datetime_offset()}.}
+
+\item{...}{In \code{with_tz.datetime_format()} passed to \code{\link[=from_datetime_offset]{as.nanotime()}}.}
 }
 \description{
 \code{force_tz()} returns a datetime with the same clock time as the input but in the new time zone
