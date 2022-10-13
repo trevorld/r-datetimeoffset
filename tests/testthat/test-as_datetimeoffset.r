@@ -1,7 +1,6 @@
 test_that("as_datetimeoffset()", {
 
     expect_error(as_datetimeoffset("This is obviously not a date"))
-    expect_error(as_datetimeoffset(200)) # as.POSIXct.numeric() needs an origin
 
     # "2020-05-15T08:23:16-07:00"
     # Y
