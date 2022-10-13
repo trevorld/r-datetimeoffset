@@ -1,6 +1,6 @@
 #' Get/set datetime components supported by lubridate
 #'
-#' Methods for [datetime_offset()] objects for the following
+#' Methods for [datetimeoffset()] objects for the following
 #' datetime component getter/setter functions from `lubridate`:
 #'
 #' * [lubridate::date()]
@@ -12,13 +12,13 @@
 #' * [lubridate::second()]
 #' * [lubridate::tz()]
 #'
-#' @param x A [datetime_offset()] object.
+#' @param x A [datetimeoffset()] object.
 #' @param value Replacement value
 #' @name getset_lubridate
 #' @seealso [getset_other]
 #' @examples
 #' library("lubridate", exclude = c("date", "force_tz", "tz<-", "with_tz"))
-#' dt <- datetime_offset(1984)
+#' dt <- datetimeoffset(1984)
 #' year(dt) <- 1918
 #' year(dt)
 #' month(dt) <- 11
@@ -38,7 +38,7 @@
 #'
 NULL
 
-methods::setOldClass("datetime_offset") # needed for {lubridate}'s setters
+methods::setOldClass("datetimeoffset") # needed for {lubridate}'s setters
 
 #' @rdname getset_lubridate
 #' @export
@@ -48,7 +48,7 @@ date <- function(x) {
 
 #' @rdname getset_lubridate
 #' @export
-date.datetime_offset <- function(x) {
+date.datetimeoffset <- function(x) {
     year <- field(x, "year")
     month <- field(x, "month")
     day <- field(x, "day")
@@ -59,7 +59,7 @@ date.datetime_offset <- function(x) {
 
 #' @rdname getset_lubridate
 #' @importFrom lubridate date<-
-methods::setMethod("date<-", "datetime_offset", function(x, value) {
+methods::setMethod("date<-", "datetimeoffset", function(x, value) {
     if (!inherits(value, "Date"))
         value <- as.Date(value)
     l_ymd <- strsplit(format(value), "-")
@@ -72,13 +72,13 @@ methods::setMethod("date<-", "datetime_offset", function(x, value) {
 #' @importFrom lubridate year
 #' @rdname getset_lubridate
 #' @export
-year.datetime_offset <- function(x) {
+year.datetimeoffset <- function(x) {
     field(x, "year")
 }
 
 #' @rdname getset_lubridate
 #' @importFrom lubridate year<-
-methods::setMethod("year<-", "datetime_offset", function(x, value) {
+methods::setMethod("year<-", "datetimeoffset", function(x, value) {
     value <- as.integer(value)
     field(x, "year") <- value
     x
@@ -87,13 +87,13 @@ methods::setMethod("year<-", "datetime_offset", function(x, value) {
 #' @importFrom lubridate month
 #' @rdname getset_lubridate
 #' @export
-month.datetime_offset <- function(x) {
+month.datetimeoffset <- function(x) {
     field(x, "month")
 }
 
 #' @rdname getset_lubridate
 #' @importFrom lubridate month<-
-methods::setMethod("month<-", "datetime_offset", function(x, value) {
+methods::setMethod("month<-", "datetimeoffset", function(x, value) {
     value <- as.integer(value)
     field(x, "month") <- value
     x
@@ -102,14 +102,14 @@ methods::setMethod("month<-", "datetime_offset", function(x, value) {
 #' @rdname getset_lubridate
 #' @importFrom lubridate mday day
 #' @export
-mday.datetime_offset <- function(x) {
+mday.datetimeoffset <- function(x) {
     field(x, "day")
 }
 
 #' @rdname getset_lubridate
 #' @importFrom lubridate day<-
 #' @export
-methods::setMethod("day<-", "datetime_offset", function(x, value) {
+methods::setMethod("day<-", "datetimeoffset", function(x, value) {
     value <- as.integer(value)
     field(x, "day") <- value
     x
@@ -118,13 +118,13 @@ methods::setMethod("day<-", "datetime_offset", function(x, value) {
 #' @importFrom lubridate hour
 #' @rdname getset_lubridate
 #' @export
-hour.datetime_offset <- function(x) {
+hour.datetimeoffset <- function(x) {
     field(x, "hour")
 }
 
 #' @rdname getset_lubridate
 #' @importFrom lubridate hour<-
-methods::setMethod("hour<-", "datetime_offset", function(x, value) {
+methods::setMethod("hour<-", "datetimeoffset", function(x, value) {
     value <- as.integer(value)
     field(x, "hour") <- value
     x
@@ -133,13 +133,13 @@ methods::setMethod("hour<-", "datetime_offset", function(x, value) {
 #' @importFrom lubridate minute
 #' @rdname getset_lubridate
 #' @export
-minute.datetime_offset <- function(x) {
+minute.datetimeoffset <- function(x) {
     field(x, "minute")
 }
 
 #' @rdname getset_lubridate
 #' @importFrom lubridate minute<-
-methods::setMethod("minute<-", "datetime_offset", function(x, value) {
+methods::setMethod("minute<-", "datetimeoffset", function(x, value) {
     value <- as.integer(value)
     field(x, "minute") <- value
     x
@@ -148,13 +148,13 @@ methods::setMethod("minute<-", "datetime_offset", function(x, value) {
 #' @importFrom lubridate second
 #' @rdname getset_lubridate
 #' @export
-second.datetime_offset <- function(x) {
+second.datetimeoffset <- function(x) {
     field(x, "second")
 }
 
 #' @importFrom lubridate second<-
 #' @rdname getset_lubridate
-methods::setMethod("second<-", "datetime_offset", function(x, value) {
+methods::setMethod("second<-", "datetimeoffset", function(x, value) {
     value <- as.integer(value)
     field(x, "second") <- value
     x
@@ -166,7 +166,7 @@ methods::setMethod("second<-", "datetime_offset", function(x, value) {
 #' @importFrom lubridate tz
 #' @rdname getset_lubridate
 #' @export
-tz.datetime_offset <- function(x) {
+tz.datetimeoffset <- function(x) {
     field(x, "tz")
 }
 

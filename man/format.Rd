@@ -2,16 +2,16 @@
 % Please edit documentation in R/format.r
 \name{format}
 \alias{format}
-\alias{format.datetime_offset}
-\alias{format_ISO8601,datetime_offset-method}
+\alias{format.datetimeoffset}
+\alias{format_ISO8601,datetimeoffset-method}
 \alias{format_pdfmark}
 \alias{format_strftime}
 \alias{format_CCTZ}
 \title{Convert datetime objects to character}
 \usage{
-\method{format}{datetime_offset}(x, ...)
+\method{format}{datetimeoffset}(x, ...)
 
-\S4method{format_ISO8601}{datetime_offset}(x, usetz = TRUE, precision = NULL, ...)
+\S4method{format_ISO8601}{datetimeoffset}(x, usetz = TRUE, precision = NULL, ...)
 
 format_pdfmark(x)
 
@@ -25,7 +25,7 @@ format_strftime(
 format_CCTZ(x, format = "\%Y-\%m-\%dT\%H:\%M:\%E9S\%Ez", tz = lubridate::tz(x))
 }
 \arguments{
-\item{x}{A \code{\link[=datetime_offset]{datetime_offset()}} object.}
+\item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object.}
 
 \item{...}{Ignored}
 
@@ -55,22 +55,22 @@ A character vector
 }
 \examples{
   # ISO 8601 datetimes
-  format_ISO8601(as_datetime_offset("2020-05"))
-  format_ISO8601(as_datetime_offset("2020-05-10 20:15"))
-  format_ISO8601(as_datetime_offset("2020-05-10 20:15:05-07"))
+  format_ISO8601(as_datetimeoffset("2020-05"))
+  format_ISO8601(as_datetimeoffset("2020-05-10 20:15"))
+  format_ISO8601(as_datetimeoffset("2020-05-10 20:15:05-07"))
 
   # pdfmark datetimes
-  format_pdfmark(as_datetime_offset("2020-05"))
-  format_pdfmark(as_datetime_offset("2020-05-10 20:15"))
-  format_pdfmark(as_datetime_offset("2020-05-10 20:15:05-07"))
+  format_pdfmark(as_datetimeoffset("2020-05"))
+  format_pdfmark(as_datetimeoffset("2020-05-10 20:15"))
+  format_pdfmark(as_datetimeoffset("2020-05-10 20:15:05-07"))
 
   # strftime style formatting
-  dt <- as_datetime_offset("2020-05-10 20:15")
+  dt <- as_datetimeoffset("2020-05-10 20:15")
   format_strftime(dt)
   format_strftime(dt, format = "\%c")
 
   # CCTZ style formatting
-  dt <- as_datetime_offset(Sys.time())
+  dt <- as_datetimeoffset(Sys.time())
   format_CCTZ(dt)
   format_CCTZ(dt, format = "\%F \%H:\%M:\%E7S \%Ez") # SQL Server datetimeoffset
 }

@@ -6,20 +6,20 @@
 #' * `hour_offset()` and `hour_offset<-()` can be used to get/set UTC offset hours
 #' * `minute_offset()` and `minute_offset<-()` can be used to get/set UTC offset minutes
 #'
-#' @param x A [datetime_offset()] object.
+#' @param x A [datetimeoffset()] object.
 #' @param value Replacement value
 #' @seealso [getset_lubridate]
 #' @name getset_other
 #' @examples
 #'   nanosecond(Sys.Date())
-#'   dt <- as_datetime_offset("2020-04-04T07:30:20")
+#'   dt <- as_datetimeoffset("2020-04-04T07:30:20")
 #'   nanosecond(dt) <- 3e6 # 3 milliseconds
 #'   nanosecond(dt)
 #'   nanosecond(dt) <- 3e3 # 3 microseconds
 #'   nanosecond(dt)
 #'   nanosecond(dt) <- 3 # 3 nanoseconds
 #'   nanosecond(dt)
-#'   dt <- as_datetime_offset("2020-04-08T20:12:16")
+#'   dt <- as_datetimeoffset("2020-04-08T20:12:16")
 #'   hour_offset(dt) <- -7
 #'   hour_offset(dt)
 #'   minute_offset(dt) <- 30
@@ -38,12 +38,12 @@ nanosecond <- function(x) {
 #' @rdname getset_other
 #' @export
 nanosecond.default <- function(x) {
-    nanosecond(as_datetime_offset(x))
+    nanosecond(as_datetimeoffset(x))
 }
 
 #' @rdname getset_other
 #' @export
-nanosecond.datetime_offset <- function(x) {
+nanosecond.datetimeoffset <- function(x) {
     field(x, "nanosecond")
 }
 
@@ -61,7 +61,7 @@ nanosecond.datetime_offset <- function(x) {
 
 #' @rdname getset_other
 #' @export
-"nanosecond<-.datetime_offset" <- function(x, value) {
+"nanosecond<-.datetimeoffset" <- function(x, value) {
     value <- as.integer(value)
     s <- formatC(value, format = "d", flag = "0", width = 9L)
     stopifnot(isFALSE(any(nchar(s) > 9L)))
@@ -77,7 +77,7 @@ hour_offset <- function(x) {
 
 #' @rdname getset_other
 #' @export
-hour_offset.datetime_offset <- function(x) {
+hour_offset.datetimeoffset <- function(x) {
     field(x, "hour_offset")
 }
 
@@ -108,7 +108,7 @@ hour_offset.default <- function(x) {
 
 #' @rdname getset_other
 #' @export
-"hour_offset<-.datetime_offset" <- function(x, value) {
+"hour_offset<-.datetimeoffset" <- function(x, value) {
     field(x, "hour_offset") <- as.integer(value)
     x
 }
@@ -126,7 +126,7 @@ minute_offset <- function(x) {
 
 #' @rdname getset_other
 #' @export
-minute_offset.datetime_offset <- function(x) {
+minute_offset.datetimeoffset <- function(x) {
     field(x, "minute_offset")
 }
 
@@ -156,7 +156,7 @@ minute_offset.default <- function(x) {
 
 #' @rdname getset_other
 #' @export
-"minute_offset<-.datetime_offset" <- function(x, value) {
+"minute_offset<-.datetimeoffset" <- function(x, value) {
     field(x, "minute_offset") <- as.integer(value)
     x
 }

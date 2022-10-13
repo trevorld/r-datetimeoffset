@@ -1,73 +1,71 @@
-#' Coerce to "datetime_offset" objects
+#' Coerce to "datetimeoffset" objects
 #'
-#' `as_datetime_offset()` coerces to [datetime_offset()] objects.
+#' `as_datetimeoffset()` coerces to [datetimeoffset()] objects.
 #'
-#' @param x An R object that can reasonably be coerced to a [datetime_offset()] object
+#' @param x An R object that can reasonably be coerced to a [datetimeoffset()] object
 #'          such as a string in pdfmark date or ISO 8601 datetime formats
 #'          or something with an [as.nanotime()] or [as.POSIXct()] method.
 #' @param tz Time zone to use for the conversion.
-#'           Ignored by `as_datetime_offset.Date()`.
-#'           Need not be a single value for `as_datetime_offset.nanotime()`.
+#'           Ignored by `as_datetimeoffset.Date()`.
+#'           Need not be a single value for `as_datetimeoffset.nanotime()`.
 #' @param ... Further arguments to certain methods.
 #' @examples
 #' # ISO 8601 examples
-#' as_datetime_offset("2020-05-15")
-#' as_datetime_offset("20200515")
-#' as_datetime_offset("2020-05-15T08:23:16")
-#' as_datetime_offset("20200515T082316")
-#' as_datetime_offset("2020-05-15T08:23:16.003Z")
-#' as_datetime_offset("20200515T082316Z")
-#' as_datetime_offset("2020-05-15T08:23:16+03:30")
-#' as_datetime_offset("20200515T082316+0330")
+#' as_datetimeoffset("2020-05-15")
+#' as_datetimeoffset("20200515")
+#' as_datetimeoffset("2020-05-15T08:23:16")
+#' as_datetimeoffset("20200515T082316")
+#' as_datetimeoffset("2020-05-15T08:23:16.003Z")
+#' as_datetimeoffset("20200515T082316Z")
+#' as_datetimeoffset("2020-05-15T08:23:16+03:30")
+#' as_datetimeoffset("20200515T082316+0330")
 #'
 #' # Misc supported `as.POSIXlt()` `tryFormats` examples
-#' as_datetime_offset("2020/05/15 08:23:16")
+#' as_datetimeoffset("2020/05/15 08:23:16")
 #'
 #' # pdfmark datetime examples
-#' as_datetime_offset("D:20200515")
-#' as_datetime_offset("D:20200515082316")
-#' as_datetime_offset("D:20200515082316+0330")
+#' as_datetimeoffset("D:20200515")
+#' as_datetimeoffset("D:20200515082316")
+#' as_datetimeoffset("D:20200515082316+0330")
 #' @export
-as_datetime_offset <- function(x, ...) {
-    UseMethod("as_datetime_offset")
+as_datetimeoffset <- function(x, ...) {
+    UseMethod("as_datetimeoffset")
 }
 
-#' @rdname as_datetime_offset
+#' @rdname as_datetimeoffset
 #' @export
-as_datetime_offset.datetime_offset <- function(x, ...) {
+as_datetimeoffset.datetimeoffset <- function(x, ...) {
     x
 }
 
-#' @rdname as_datetime_offset
+#' @rdname as_datetimeoffset
 #' @export
-as_datetime_offset.Date <- function(x, tz = NA_character_, ...) {
-    as_datetime_offset(format(x), tz = tz)
+as_datetimeoffset.Date <- function(x, tz = NA_character_, ...) {
+    as_datetimeoffset(format(x), tz = tz)
 }
 
-is_datetime_offset <- function(x) inherits(x, "datetime_offset")
-
-#' @rdname as_datetime_offset
+#' @rdname as_datetimeoffset
 #' @importFrom nanotime as.nanotime
 #' @export
-as_datetime_offset.default <- function(x, tz = lubridate::tz(as.POSIXct(x)), ...) {
-    as_datetime_offset(as.nanotime(as.POSIXct(x)), tz = tz)
+as_datetimeoffset.default <- function(x, tz = lubridate::tz(as.POSIXct(x)), ...) {
+    as_datetimeoffset(as.nanotime(as.POSIXct(x)), tz = tz)
 }
 
-#' @rdname as_datetime_offset
+#' @rdname as_datetimeoffset
 #' @export
-as_datetime_offset.POSIXct <- function(x, tz = lubridate::tz(x), ...) {
-    as_datetime_offset(as.nanotime(x), tz = tz)
+as_datetimeoffset.POSIXct <- function(x, tz = lubridate::tz(x), ...) {
+    as_datetimeoffset(as.nanotime(x), tz = tz)
 }
 
-#' @rdname as_datetime_offset
+#' @rdname as_datetimeoffset
 #' @export
-as_datetime_offset.POSIXlt <- function(x, tz = lubridate::tz(x), ...) {
-    as_datetime_offset(as.nanotime(x), tz = tz)
+as_datetimeoffset.POSIXlt <- function(x, tz = lubridate::tz(x), ...) {
+    as_datetimeoffset(as.nanotime(x), tz = tz)
 }
 
-#' @rdname as_datetime_offset
+#' @rdname as_datetimeoffset
 #' @export
-as_datetime_offset.character <- function(x, tz = NA_character_, ...) {
+as_datetimeoffset.character <- function(x, tz = NA_character_, ...) {
     l <- lapply(x, as_dtos_character)
     df <- do.call(rbind, l)
 
@@ -77,20 +75,23 @@ as_datetime_offset.character <- function(x, tz = NA_character_, ...) {
     tz <- rep_len(tz, n)
     tz <- ifelse(is.na(tz_df), tz, tz_df)
 
-    datetime_offset(df$year, df$month, df$day,
+    datetimeoffset(df$year, df$month, df$day,
                     df$hour, df$minute, df$second, df$nanosecond,
                     df$hour_offset, df$minute_offset, tz)
 }
 
-#' @rdname as_datetime_offset
+#' @rdname as_datetimeoffset
 #' @export
-as_datetime_offset.nanotime <- function(x, tz = "GMT", ...) {
+as_datetimeoffset.nanotime <- function(x, tz = "GMT", ...) {
     tz <- clean_tz(tz)
+    n <- length(tz)
+    if (length(x) < n)
+        x <- rep(x, length.out = n)
     df <- data.frame(dt = x, tz = tz, stringsAsFactors = FALSE)
-    l <- purrr::pmap(df, function(dt, tz) {
-                       as_datetime_offset(format(dt, tz = tz, format = "%Y-%m-%dT%H:%M:%E9S%Ez"), tz = tz)
-                     })
-    do.call(c, l)
+    purrr::pmap_vec(df, function(dt, tz) {
+                       as_datetimeoffset(format(dt, tz = tz, format = "%Y-%m-%dT%H:%M:%E9S%Ez"), tz = tz)
+                    },
+                    .ptype = datetimeoffset())
 }
 
 parse_nanoseconds <- function(x) {
@@ -99,11 +100,6 @@ parse_nanoseconds <- function(x) {
     n <- nchar(x)
     x <- paste0(x, paste(rep_len("0", 9L - n), collapse = ""))
     as.integer(x)
-}
-
-strip_ns <- function(x) {
-    ns <- gsub("([^.]*)(\\.[[:digit:]]{1,}){0,1}(.*)", "\\1\\3", x)
-    ns
 }
 
 as_dtos_character <- function(x) {
@@ -133,6 +129,9 @@ as_dtos_character_helper <- function(x) {
         l$hour_offset <- 0
         l$minute_offset <- 0
         l$tz <- "GMT"
+    } else if (grepl("^.+\\[.+\\]$", s)) { # ends in [US/Pacific] means "US/Pacific" time zone
+        l <- as_dtos_character_helper(gsub("^(.*)(\\[.+\\])$", "\\1", s))
+        l$tz <- gsub("^.*\\[(.+)\\]$", "\\1", s)
     } else if (grepl("^.+[+-][[:digit:]]{2}$", s)) { # ends in -07 or +07 means hour offset
         l <- as_dtos_character_helper(substr(s, 1L, nchar(s) - 3L))
         l$hour_offset <- as.integer(substr(s, nchar(s) - 2L, nchar(s)))

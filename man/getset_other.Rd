@@ -4,41 +4,41 @@
 \alias{getset_other}
 \alias{nanosecond}
 \alias{nanosecond.default}
-\alias{nanosecond.datetime_offset}
+\alias{nanosecond.datetimeoffset}
 \alias{nanosecond<-}
 \alias{nanosecond<-.default}
-\alias{nanosecond<-.datetime_offset}
+\alias{nanosecond<-.datetimeoffset}
 \alias{hour_offset}
-\alias{hour_offset.datetime_offset}
+\alias{hour_offset.datetimeoffset}
 \alias{hour_offset.POSIXlt}
 \alias{hour_offset.POSIXct}
 \alias{hour_offset.default}
 \alias{hour_offset<-}
-\alias{hour_offset<-.datetime_offset}
+\alias{hour_offset<-.datetimeoffset}
 \alias{minute_offset}
-\alias{minute_offset.datetime_offset}
+\alias{minute_offset.datetimeoffset}
 \alias{minute_offset.POSIXlt}
 \alias{minute_offset.POSIXct}
 \alias{minute_offset.default}
 \alias{minute_offset<-}
-\alias{minute_offset<-.datetime_offset}
+\alias{minute_offset<-.datetimeoffset}
 \title{Get/set datetime components not supported by lubridate}
 \usage{
 nanosecond(x)
 
 \method{nanosecond}{default}(x)
 
-\method{nanosecond}{datetime_offset}(x)
+\method{nanosecond}{datetimeoffset}(x)
 
 nanosecond(x) <- value
 
 \method{nanosecond}{default}(x) <- value
 
-\method{nanosecond}{datetime_offset}(x) <- value
+\method{nanosecond}{datetimeoffset}(x) <- value
 
 hour_offset(x)
 
-\method{hour_offset}{datetime_offset}(x)
+\method{hour_offset}{datetimeoffset}(x)
 
 \method{hour_offset}{POSIXlt}(x)
 
@@ -48,11 +48,11 @@ hour_offset(x)
 
 hour_offset(x) <- value
 
-\method{hour_offset}{datetime_offset}(x) <- value
+\method{hour_offset}{datetimeoffset}(x) <- value
 
 minute_offset(x)
 
-\method{minute_offset}{datetime_offset}(x)
+\method{minute_offset}{datetimeoffset}(x)
 
 \method{minute_offset}{POSIXlt}(x)
 
@@ -62,10 +62,10 @@ minute_offset(x)
 
 minute_offset(x) <- value
 
-\method{minute_offset}{datetime_offset}(x) <- value
+\method{minute_offset}{datetimeoffset}(x) <- value
 }
 \arguments{
-\item{x}{A \code{\link[=datetime_offset]{datetime_offset()}} object.}
+\item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object.}
 
 \item{value}{Replacement value}
 }
@@ -81,14 +81,14 @@ Datetime component getter/setter functions not supported by \code{lubridate}:
 }
 \examples{
   nanosecond(Sys.Date())
-  dt <- as_datetime_offset("2020-04-04T07:30:20")
+  dt <- as_datetimeoffset("2020-04-04T07:30:20")
   nanosecond(dt) <- 3e6 # 3 milliseconds
   nanosecond(dt)
   nanosecond(dt) <- 3e3 # 3 microseconds
   nanosecond(dt)
   nanosecond(dt) <- 3 # 3 nanoseconds
   nanosecond(dt)
-  dt <- as_datetime_offset("2020-04-08T20:12:16")
+  dt <- as_datetimeoffset("2020-04-08T20:12:16")
   hour_offset(dt) <- -7
   hour_offset(dt)
   minute_offset(dt) <- 30

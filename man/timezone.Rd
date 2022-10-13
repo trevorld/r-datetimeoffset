@@ -4,33 +4,33 @@
 \alias{timezone}
 \alias{force_tz}
 \alias{force_tz.default}
-\alias{force_tz.datetime_offset}
+\alias{force_tz.datetimeoffset}
 \alias{with_tz}
 \alias{with_tz.default}
-\alias{with_tz.datetime_offset}
+\alias{with_tz.datetimeoffset}
 \title{Change timezones}
 \usage{
 force_tz(time, tzone = "", roll = FALSE)
 
 \method{force_tz}{default}(time, tzone = "", roll = FALSE)
 
-\method{force_tz}{datetime_offset}(time, tzone = "", roll = FALSE)
+\method{force_tz}{datetimeoffset}(time, tzone = "", roll = FALSE)
 
 with_tz(time, tzone = "", ...)
 
 \method{with_tz}{default}(time, tzone = "", ...)
 
-\method{with_tz}{datetime_offset}(time, tzone = "", ...)
+\method{with_tz}{datetimeoffset}(time, tzone = "", ...)
 }
 \arguments{
 \item{time}{A datetime object.}
 
 \item{tzone}{A timezone string.
-\code{force_tz.datetime_offset()} allows a vector of different valued time zones (in contrast \code{\link[lubridate:force_tz]{lubridate::force_tz()}} allows only one).}
+\code{force_tz.datetimeoffset()} allows a vector of different valued time zones (in contrast \code{\link[lubridate:force_tz]{lubridate::force_tz()}} allows only one).}
 
-\item{roll}{Used by \code{\link[lubridate:force_tz]{lubridate::force_tz()}} but ignored by \code{force_tz.datetime_offset()}.}
+\item{roll}{Used by \code{\link[lubridate:force_tz]{lubridate::force_tz()}} but ignored by \code{force_tz.datetimeoffset()}.}
 
-\item{...}{In \code{with_tz.datetime_format()} passed to \code{\link[=from_datetime_offset]{as.nanotime()}}.}
+\item{...}{In \code{with_tz.datetime_format()} passed to \code{\link[=from_datetimeoffset]{as.nanotime()}}.}
 }
 \description{
 \code{force_tz()} returns a datetime with the same clock time as the input but in the new time zone
@@ -40,10 +40,10 @@ with_tz(time, tzone = "", ...)
 \details{
 Since \code{lubridate} doesn't make \code{\link[lubridate:force_tz]{lubridate::force_tz()}} or \code{\link[lubridate:with_tz]{lubridate::with_tz()}} generic we
 define a generic version which
-by default uses the \code{lubridate} version but also has a special \code{\link[=datetime_offset]{datetime_offset()}} method.
+by default uses the \code{lubridate} version but also has a special \code{\link[=datetimeoffset]{datetimeoffset()}} method.
 }
 \examples{
- dt0 <- as_datetime_offset("1918-11-11T11:11:11", tz = "GMT")
+ dt0 <- as_datetimeoffset("1918-11-11T11:11:11", tz = "GMT")
  print(dt0)
  if ("US/Pacific" \%in\% OlsonNames()) {
    # `force_tz()` doesn't change "clock" time but may change global UTC time

@@ -2,3 +2,31 @@ destination: "../../websites/R/datetimeoffset/"
 url: "https://trevorldavis.com/R/datetimeoffset"
 development:
     mode: auto
+reference:
+  - title: '"datetimeoffset" objects'
+    desc: 'Datetime object with optional UTC offsets and/or timezones'
+    contents:
+      - datetimeoffset
+      - is_datetimeoffset
+  - title: 'Coerce to/from "datetimeoffset" objects'
+    desc: 'Convert to/from "datetimeoffset" objects and strings or other R datetime objects'
+    contents:
+      - as_datetimeoffset
+      - format.datetimeoffset
+      - as.Date.datetimeoffset
+  - title: 'Get/set "datetimeoffset" object components'
+    desc: '"lubridate" style accessors for "datetimeoffset" object components'
+    contents:
+      - year.datetimeoffset
+      - hour_offset.datetimeoffset
+  - title: "Time zone utilities"
+    desc: "Change time zones and find most common time zone"
+    contents:
+      - with_tz
+      - mode_tz
+  - title: "Add/subtract datetime durations and periods"
+    desc: 'Add/subtract "lubridate" and "nanotime" datetime durations and periods'
+    contents:
+      - duration
+      - period
+

@@ -1,4 +1,4 @@
-new_datetime_offset <- function(year = integer(), month = integer(), day = integer(),
+new_datetimeoffset <- function(year = integer(), month = integer(), day = integer(),
                                 hour = integer(), minute = integer(), second = integer(),
                                 nanosecond = integer(),
                                 hour_offset = integer(), minute_offset = integer(), tz = character()) {
@@ -16,12 +16,12 @@ new_datetime_offset <- function(year = integer(), month = integer(), day = integ
     new_rcrd(list(year = year, month = month, day = day,
                   hour = hour, minute = minute, second = second, nanosecond = nanosecond,
                   hour_offset = hour_offset, minute_offset = minute_offset, tz = tz),
-             class = "datetime_offset")
+             class = "datetimeoffset")
 }
 
 #' Datetime object with optional UTC offsets and/or timezones
 #'
-#' `datetime_offset()` creates a datetime with possible UTC offset object.
+#' `datetimeoffset()` creates a datetime with possible UTC offset object.
 #' It can be used to represent datetimes with possible UTC offsets
 #' (without necessarily any knowledge of the time zone).
 #' @param year Year (integer, optional)
@@ -36,20 +36,20 @@ new_datetime_offset <- function(year = integer(), month = integer(), day = integ
 #'                      Will be coerced to a non-negative value.
 #' @param tz Time zone (character, optional)
 #' @examples
-#'   datetime_offset(2020)
-#'   datetime_offset(2020, 5)
-#'   datetime_offset(2020, 5, 15)
-#'   datetime_offset(2020, 5, 15, 8)
-#'   datetime_offset(2020, 5, 15, 8, 23)
-#'   datetime_offset(2020, 5, 15, 8, 23, 16) # local time with unknown timezone
+#'   datetimeoffset(2020)
+#'   datetimeoffset(2020, 5)
+#'   datetimeoffset(2020, 5, 15)
+#'   datetimeoffset(2020, 5, 15, 8)
+#'   datetimeoffset(2020, 5, 15, 8, 23)
+#'   datetimeoffset(2020, 5, 15, 8, 23, 16) # local time with unknown timezone
 #'   if ("US/Pacific" %in% OlsonNames())
-#'     datetime_offset(2020, 5, 15, 8, 23, 16, tz = "US/Pacific")
-#'   datetime_offset(2020, 5, 15, 8, 23, 16, tz = "GMT")
-#'   datetime_offset(2020, 5, 15, 8, 23, 16, hour_offset = -7)
-#'   datetime_offset(2020, 5, 15, 8, 23, 16, hour_offset = -7, minute_offset = 30)
-#' @return A `vctrs` record with class `datetime_offset`.
+#'     datetimeoffset(2020, 5, 15, 8, 23, 16, tz = "US/Pacific")
+#'   datetimeoffset(2020, 5, 15, 8, 23, 16, tz = "GMT")
+#'   datetimeoffset(2020, 5, 15, 8, 23, 16, hour_offset = -7)
+#'   datetimeoffset(2020, 5, 15, 8, 23, 16, hour_offset = -7, minute_offset = 30)
+#' @return A `vctrs` record with class `datetimeoffset`.
 #' @export
-datetime_offset <- function(year = NA_integer_, month = NA_integer_, day = NA_integer_,
+datetimeoffset <- function(year = NA_integer_, month = NA_integer_, day = NA_integer_,
                             hour = NA_integer_, minute = NA_integer_, second = NA_integer_,
                             nanosecond = NA_integer_,
                             hour_offset = NA_integer_, minute_offset = NA_integer_, tz = NA_character_) {
@@ -86,13 +86,39 @@ datetime_offset <- function(year = NA_integer_, month = NA_integer_, day = NA_in
     minute_offset <- rc[[9]]
     tz <- rc[[10]]
 
-    new_datetime_offset(year, month, day,
+    new_datetimeoffset(year, month, day,
                         hour, minute, second, nanosecond,
                         hour_offset, minute_offset, tz)
 }
 
+na_omit <- function(x) Filter(Negate(is.na), x)
+
+#' Various "datetimeoffset" object utilities
+#'
+#' `is_datetimeoffset()` tests whether a datetime object is of the "datetimeoffset" class.
+#' `NA_datetimeoffset_` provides a "missing" "datetimeoffset" object.
+#' @param x An object to be tested
+#'
+#' @examples
+#'   is_datetimeoffset(as_datetimeoffset(Sys.time()))
+#'   is_datetimeoffset(Sys.time())
+#'
+#'   is.na(NA_datetimeoffset_)
+#'   is.na(as_datetimeoffset(""))
+#'
+#' @name datetimeoffset_utilities
+NULL
+
+#' @rdname datetimeoffset_utilities
 #' @export
-vec_ptype_abbr.datetime_offset <- function(x, ...) "dt_os"
+is_datetimeoffset <- function(x) inherits(x, "datetimeoffset")
+
+#' @rdname datetimeoffset_utilities
+#' @export
+NA_datetimeoffset_ <- datetimeoffset()
 
 #' @export
-vec_ptype_full.datetime_offset <- function(x, ...) "datetime_offset"
+vec_ptype_abbr.datetimeoffset <- function(x, ...) "dto"
+
+#' @export
+vec_ptype_full.datetimeoffset <- function(x, ...) "datetimeoffset"

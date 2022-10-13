@@ -3,65 +3,65 @@
 \name{getset_lubridate}
 \alias{getset_lubridate}
 \alias{date}
-\alias{date.datetime_offset}
-\alias{date<-,datetime_offset-method}
-\alias{year.datetime_offset}
-\alias{year<-,datetime_offset-method}
-\alias{month.datetime_offset}
-\alias{month<-,datetime_offset-method}
-\alias{mday.datetime_offset}
-\alias{day<-,datetime_offset-method}
-\alias{hour.datetime_offset}
-\alias{hour<-,datetime_offset-method}
-\alias{minute.datetime_offset}
-\alias{minute<-,datetime_offset-method}
-\alias{second.datetime_offset}
-\alias{second<-,datetime_offset-method}
-\alias{tz.datetime_offset}
+\alias{date.datetimeoffset}
+\alias{date<-,datetimeoffset-method}
+\alias{year.datetimeoffset}
+\alias{year<-,datetimeoffset-method}
+\alias{month.datetimeoffset}
+\alias{month<-,datetimeoffset-method}
+\alias{mday.datetimeoffset}
+\alias{day<-,datetimeoffset-method}
+\alias{hour.datetimeoffset}
+\alias{hour<-,datetimeoffset-method}
+\alias{minute.datetimeoffset}
+\alias{minute<-,datetimeoffset-method}
+\alias{second.datetimeoffset}
+\alias{second<-,datetimeoffset-method}
+\alias{tz.datetimeoffset}
 \alias{tz<-}
 \title{Get/set datetime components supported by lubridate}
 \usage{
 date(x)
 
-\method{date}{datetime_offset}(x)
+\method{date}{datetimeoffset}(x)
 
-\S4method{date}{datetime_offset}(x) <- value
+\S4method{date}{datetimeoffset}(x) <- value
 
-\method{year}{datetime_offset}(x)
+\method{year}{datetimeoffset}(x)
 
-\S4method{year}{datetime_offset}(x) <- value
+\S4method{year}{datetimeoffset}(x) <- value
 
-\method{month}{datetime_offset}(x)
+\method{month}{datetimeoffset}(x)
 
-\S4method{month}{datetime_offset}(x) <- value
+\S4method{month}{datetimeoffset}(x) <- value
 
-\method{mday}{datetime_offset}(x)
+\method{mday}{datetimeoffset}(x)
 
-\S4method{day}{datetime_offset}(x) <- value
+\S4method{day}{datetimeoffset}(x) <- value
 
-\method{hour}{datetime_offset}(x)
+\method{hour}{datetimeoffset}(x)
 
-\S4method{hour}{datetime_offset}(x) <- value
+\S4method{hour}{datetimeoffset}(x) <- value
 
-\method{minute}{datetime_offset}(x)
+\method{minute}{datetimeoffset}(x)
 
-\S4method{minute}{datetime_offset}(x) <- value
+\S4method{minute}{datetimeoffset}(x) <- value
 
-\method{second}{datetime_offset}(x)
+\method{second}{datetimeoffset}(x)
 
-\S4method{second}{datetime_offset}(x) <- value
+\S4method{second}{datetimeoffset}(x) <- value
 
-\method{tz}{datetime_offset}(x)
+\method{tz}{datetimeoffset}(x)
 
 tz(x) <- value
 }
 \arguments{
-\item{x}{A \code{\link[=datetime_offset]{datetime_offset()}} object.}
+\item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object.}
 
 \item{value}{Replacement value}
 }
 \description{
-Methods for \code{\link[=datetime_offset]{datetime_offset()}} objects for the following
+Methods for \code{\link[=datetimeoffset]{datetimeoffset()}} objects for the following
 datetime component getter/setter functions from \code{lubridate}:
 }
 \details{
@@ -78,7 +78,7 @@ datetime component getter/setter functions from \code{lubridate}:
 }
 \examples{
 library("lubridate", exclude = c("date", "force_tz", "tz<-", "with_tz"))
-dt <- datetime_offset(1984)
+dt <- datetimeoffset(1984)
 year(dt) <- 1918
 year(dt)
 month(dt) <- 11

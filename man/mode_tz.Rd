@@ -2,12 +2,12 @@
 % Please edit documentation in R/timezone.r
 \name{mode_tz}
 \alias{mode_tz}
-\alias{mode_tz.datetime_offset}
+\alias{mode_tz.datetimeoffset}
 \title{Get most common time zone}
 \usage{
 mode_tz(time, tzone = "", ...)
 
-\method{mode_tz}{datetime_offset}(time, tzone = "", ...)
+\method{mode_tz}{datetimeoffset}(time, tzone = "", ...)
 }
 \arguments{
 \item{time}{A datetime object.}
@@ -27,14 +27,14 @@ multiple heterogeneous time zones to a datetime object that
 only supports one time zone
 }
 \examples{
-  dt <- as_datetime_offset(Sys.time())
+  dt <- as_datetimeoffset(Sys.time())
   print(mode_tz(dt))
   if (all(c("US/Pacific", "US/Eastern") \%in\% OlsonNames())) {
-    dt <- as_datetime_offset("2020-01-01",
+    dt <- as_datetimeoffset("2020-01-01",
                              tz = c("US/Pacific", "US/Eastern"))
     print(mode_tz(dt))
 
-    dt <- as_datetime_offset("2020-01-01",
+    dt <- as_datetimeoffset("2020-01-01",
                              tz = c("US/Pacific", "US/Eastern", NA_character_, NA_character_))
     print(mode_tz(dt))
   }

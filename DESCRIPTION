@@ -1,11 +1,13 @@
 Package: datetimeoffset
 Type: Package
-Title: Datetimes with UTC offsets
+Title: Datetimes with optional UTC offsets and/or heterogeneous time zones
 Version: 0.1.0-0
 Authors@R: c(
         person("Trevor L", "Davis", role=c("aut", "cre"), email="trevor.l.davis@gmail.com",
                comment = c(ORCID = "0000-0001-6341-4639")))
-Description: Utilities for datetimes expressed with UTC offsets instead of time zones such as 'pdfmark' or 'ISO 8601' datetimes.
+Description: Datetimes with optional UTC offsets and/or (possibly heterogeneous) time zones.
+    Supports import/export for a number of datetime string standards often including lossless re-export of     any original reduced precision including ISO 8601 and pdfmark datetime strings.
+    Can support up to nanosecond precision.
 URL: https://trevorldavis.com/R/datetimeoffset/dev/, https://github.com/trevorld/r-datetimeoffset
 BugReports: https://github.com/trevorld/r-datetimeoffset
 License: MIT + file LICENSE
@@ -17,8 +19,9 @@ Depends:
 Imports:
     lubridate,
     nanotime,
-    purrr,
+    purrr (>= 0.9000.0.9000),
     vctrs,
+Remotes: tidyverse/purrr
 Suggests:
     methods,
     testthat (>= 3.0.0)
