@@ -83,7 +83,7 @@ as_datetimeoffset.character <- function(x, tz = NA_character_, ...) {
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.nanotime <- function(x, tz = "GMT", ...) {
-    tz <- clean_tz(tz)
+    tz <- clean_tz(tz, na = "GMT")
     n <- length(tz)
     if (length(x) < n)
         x <- rep(x, length.out = n)

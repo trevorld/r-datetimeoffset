@@ -18,6 +18,10 @@ test_that("durations", {
     expect_equal(format((nd + (boundary - nd)) + nd),
                  "2009-03-09T02:59:59.0-05:00[America/Chicago]")
 
+    dt <- as_datetimeoffset("1970-01-01T00:00:00-08:00")
+    dt <- dt + nanotime::nanoduration(seconds = 0)
+    expect_equal(format(dt), "1970-01-01T08:00:00.0Z")
+
     expect_equal(boundary - boundary, nanotime::nanoduration(0, 0, 0, 0))
 
     dd <- as.difftime(1, units = "days")
