@@ -115,7 +115,7 @@ as_dtos_character_helper <- function(x) {
         s <- x
     s <- sub("^([[:digit:]]{4})[-/]([[:digit:]]{2})", "\\1\\2", s)
     s <- sub("^([[:digit:]]{6})[-/]([[:digit:]]{2})", "\\1\\2", s)
-    s <- gsub("([[:digit:]])[T ]([[:digit:]+-])", "\\1\\2", s)
+    s <- gsub("([[:digit:]])[Tt ]([[:digit:]+-])", "\\1\\2", s)
     s <- gsub(":", "", s)
     l <- list(year = NA_integer_, month = NA_integer_, day = NA_integer_,
               hour = NA_integer_, minute = NA_integer_, second = NA_integer_,
@@ -124,7 +124,7 @@ as_dtos_character_helper <- function(x) {
     # "2020-05-15T08:23:16-07:00"
     if (s == "") {
         invisible(NULL)
-    } else if (grepl("^.+Z$", s)) { # ends in Z means "GMT" time
+    } else if (grepl("^.+[Zz]$", s)) { # ends in Z or z means "GMT" time
         l <- as_dtos_character_helper(substr(s, 1L, nchar(s) - 1L))
         l$hour_offset <- 0
         l$minute_offset <- 0

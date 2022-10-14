@@ -106,6 +106,10 @@ test_that("as_datetimeoffset()", {
     expect_equal(format(as_datetimeoffset("D:20200515082316-0330")),
                  "2020-05-15T08:23:16-03:30")
 
+    # lower-case "t" and "z"
+    expect_equal(format(as_datetimeoffset("2020-05-15t08:23:16z")),
+                 "2020-05-15T08:23:16Z")
+
     expect_equal(format(as_datetimeoffset("2020-05-15T08:23:16+03")),
                  "2020-05-15T08:23:16+03")
     expect_equal(format(as_datetimeoffset("2020-05-15T08:23:16.003+03")),
@@ -151,7 +155,6 @@ test_that("as_datetimeoffset()", {
     # Date
     expect_equal(format(as_datetimeoffset(as.Date("2020-05-15"))),
                  "2020-05-15")
-
 
     # nanotime
     expect_equal(format(as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16.03Z"))),
