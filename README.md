@@ -15,6 +15,11 @@
   + [Durations / periods / heteregeneous time zones](#heteregeneous)
 
 * [Features](#features)
+* [Comparison with {clock}](#clock)
+
+  + [Things {clock} can do that {datetimeoffset} can't do](#clock-advantages)
+  + [Things {datetimeoffset} can do that {clock} can't do](#datetimeoffset-advantages)
+
 * [External links](#links)
 
   + [Datetime standards with UTC offsets](#standards)
@@ -333,6 +338,141 @@ boundary + nanotime::nanoduration(hour = 24, minute = 0, second = 0, nanosecond 
   + `mode_tz()` gets most common time zone for a time date object
     that may support heteregeneous time zones.
 
+## <a name="clock">Comparison with {clock}</a>
+
+**Note**: Please feel free to [open a pull request to fix any {clock} mis-understandings or statements that are now out-of-date](https://github.com/trevorld/r-datetimeoffset/edit/main/README.Rmd).
+
+`{datetimeoffset}` is most similar to the excellent [{clock}](https://clock.r-lib.org/index.html):
+
+* Both use [{vctrs}](https://vctrs.r-lib.org/index.html) "record" objects
+* Both support variable precision datetimes
+* Both support up to nanosecond precision
+* Both have support for local times (with perhaps unknown time zone or UTC offset), UTC times, and times with time zones
+
+### <a name="clock-advantages">Things {clock} can do that {datetimeoffset} can't do</a>
+
+* `{datetimeoffset}` only supports what `{clock}` considers "year-month-day" "calendars".  `{clock}` supports a wider variety of "calendars":
+
+  + `isoyear_week_day()`
+  + `year_day()`
+  + `year_month_day()`
+  + `year_month_weekday()`
+  + `year_quarter_day()`
+
+* `{clock}` distinguishes between "millisecond", "microsecond", and "nanosecond" sub-second precisions while `{datetimeoffset}` does not distinguish such sub-second precisions (but default output formats omit trailing zeroes)
+
+* `{clock}` has a large, verbose, and explicit API that will force you to explicitly cast your datetimes into unambiguous formats to ensure correctness with respect to invalid dates and daylight saving time issues:
+ 
+  + Datetimes must either be "naive" datetime (roughly local time without UTC offsets or time zones), "sys" datetime (UTC time), and "zoned" datetime (roughly local time with time zone)
+  + `{clock}` will often make you explicitly make casting decisions if necessary to avoid any possibly ambiguous datetimes or else throw an error
+  + More explicit control over the expected format of input strings
+
+### <a name="datetimeoffset-advantages">Things {datetimeoffset} can do that {clock} can't do</a>
+
+* `{datetimeoffset}` vectors can have more than one time zone within it:
+
+  
+  ```r
+  dts <- c("1970-01-01T00:00:00-08:00[America/Los_Angeles]",
+           "1970-01-01T00:00:00-05:00[America/New_York]")
+  as_datetimeoffset(dts)
+  ```
+  
+  ```
+  ## <datetimeoffset[2]>
+  ## [1] 1970-01-01T00:00:00-08:00[America/Los_Angeles]
+  ## [2] 1970-01-01T00:00:00-05:00[America/New_York]
+  ```
+  
+  ```r
+  clock::zoned_time_parse_complete(dts)
+  ```
+  
+  ```
+  ## Error:
+  ## ! All elements of `x` must have the same time zone name. Found different zone names of: 'America/Los_Angeles' and 'America/New_York'.
+  ```
+
+* `{datetimeoffset}` vectors allow datetimes with varying precisions:
+
+  
+  ```r
+  c(datetimeoffset(2020), datetimeoffset(2020, 1, 1))
+  ```
+  
+  ```
+  ## <datetimeoffset[2]>
+  ## [1] 2020       2020-01-01
+  ```
+  
+  ```r
+  c(clock::year_month_day(2020),
+    clock::year_month_day(2020, 1, 1))
+  ```
+  
+  ```
+  ## Error in `vec_c()`:
+  ## ! Can't combine `..1` <year_month_day<year>> and `..2` <year_month_day<day>>.
+  ## Can't combine calendars with different precisions.
+  ```
+
+* `{datetimeoffset}` vectors preserves UTC offsets even when the time zone is unknown:
+
+  
+  ```r
+  as_datetimeoffset("1970-01-01T00:00:00-08:00")
+  ```
+  
+  ```
+  ## <datetimeoffset[1]>
+  ## [1] 1970-01-01T00:00:00-08:00
+  ```
+  
+  ```r
+  clock::sys_time_parse_RFC_3339("1970-01-01T00:00:00-08:00", offset = "%Ez")
+  ```
+  
+  ```
+  ## <clock_sys_time[1]>
+  ## [1] "1970-01-01T08:00:00"
+  ```
+
+  But note `{datetimeoffset}` will convert to UTC and lose UTC offsets (if no time zone is known) 
+  when a duration or period is added to them:
+
+  
+  ```r
+  dt <- as_datetimeoffset(c("1970-01-01T00:00:00-08:00",
+                            "1970-01-01T00:00:00-08:00[America/Los_Angeles]"))
+  dt + nanotime::nanoduration(0L, 0L, 0L, 0L)
+  ```
+  
+  ```
+  ## <datetimeoffset[2]>
+  ## [1] 1970-01-01T08:00:00.0Z                          
+  ## [2] 1970-01-01T00:00:00.0-08:00[America/Los_Angeles]
+  ```
+
+* `{datetimeoffset}` vectors can contain a mix of local/global datetimes with various knowledge of UTC offsets and/or time zones:
+
+  
+  ```r
+  as_datetimeoffset(c("1970-01-01T00:00:00",
+                      "1970-01-01T00:00:00Z",
+                      "1970-01-01T00:00:00-08:00",
+                      "1970-01-01T00:00:00-08:00[America/Los_Angeles]",
+                      "1970-01-01T00:00:00[America/Los_Angeles]"))
+  ```
+  
+  ```
+  ## <datetimeoffset[5]>
+  ## [1] 1970-01-01T00:00:00                           
+  ## [2] 1970-01-01T00:00:00Z                          
+  ## [3] 1970-01-01T00:00:00-08:00                     
+  ## [4] 1970-01-01T00:00:00-08:00[America/Los_Angeles]
+  ## [5] 1970-01-01T00:00:00-08:00[America/Los_Angeles]
+  ```
+
 ## <a name="links">External links</a>
 
 Please feel free to [open a pull request to add any missing relevant links](https://github.com/trevorld/r-datetimeoffset/edit/main/README.Rmd).
@@ -346,6 +486,10 @@ Please feel free to [open a pull request to add any missing relevant links](http
 
 ### <a name="similar">Related software</a>
 
+#### R packages
+
+* [clock](https://clock.r-lib.org/index.html)
 * [lubridate](https://lubridate.tidyverse.org/index.html)
 * [nanotime](https://eddelbuettel.github.io/nanotime)
 * [timechange](https://github.com/vspinu/timechange/)
+* [vctrs](https://vctrs.r-lib.org/index.html)
