@@ -1,3 +1,10 @@
+test_that("format()", {
+    skip_if_not("America/Los_Angeles" %in% OlsonNames())
+    dt <- c("2020", "2020-05-15T08:23:16.0-07:00[America/Los_Angeles]")
+    expect_equal(format(as_datetimeoffset(dt)),
+                 c("2020", "2020-05-15T08:23:16.0-07:00[America/Los_Angeles]"))
+})
+
 test_that("format_ISO8601()", {
     # "2020-05-15T08:23:16-07:00"
     expect_equal(format_ISO8601(as_datetimeoffset("2020")),
@@ -36,6 +43,11 @@ test_that("format_ISO8601()", {
     dt <- as_datetimeoffset("D:20200515082316-0700")
     second(dt) <- NA_integer_
     expect_equal(format_ISO8601(dt), "2020-05-15T08:23-07:00")
+
+    skip_if_not("America/Los_Angeles" %in% OlsonNames())
+    dt <- c("2020", "2020-05-15T08:23:16.0-07:00[America/Los_Angeles]")
+    expect_equal(format_ISO8601(as_datetimeoffset(dt)),
+                 c("2020", "2020-05-15T08:23:16.0-07:00"))
 })
 
 test_that("format_pdfmark()", {
@@ -64,6 +76,11 @@ test_that("format_pdfmark()", {
     dt <- as_datetimeoffset("D:20200515082316-0700")
     second(dt) <- NA_integer_
     expect_equal(format_pdfmark(dt), "D:202005150823")
+
+    skip_if_not("America/Los_Angeles" %in% OlsonNames())
+    dt <- c("2020", "2020-05-15T08:23:16.0-07:00[America/Los_Angeles]")
+    expect_equal(format_pdfmark(as_datetimeoffset(dt)),
+                 c("D:2020", "D:20200515082316-0700"))
 })
 
 test_that("format_strftime()", {
@@ -77,8 +94,7 @@ test_that("format_CCTZ()", {
                  "2020-04-04T10:10:10.000000000+00:00")
     expect_equal(format_CCTZ(dt, format = "%F %T %Ez", tz = "GMT"),
                  "2020-04-04 10:10:10 +00:00")
-    if ("America/Los_Angeles" %in% OlsonNames()) {
-        expect_equal(format_CCTZ(dt, tz = "America/Los_Angeles"),
-                     "2020-04-04T03:10:10.000000000-07:00")
-    }
+    skip_if_not("America/Los_Angeles" %in% OlsonNames())
+    expect_equal(format_CCTZ(dt, tz = "America/Los_Angeles"),
+                 "2020-04-04T03:10:10.000000000-07:00")
 })

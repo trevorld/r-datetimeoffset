@@ -183,7 +183,7 @@ my_format <- function(x, prefix = "", width = 2L, flag = "0") {
     s <- character(length(x))
     idx <- which(!is.na(x))
     if (length(idx))
-        s[idx] <- paste0(prefix, formatC(x, format = "d", flag = flag, width = width))
+        s[idx] <- paste0(prefix, formatC(x[idx], format = "d", flag = flag, width = width))
     s
 }
 
