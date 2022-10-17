@@ -1,0 +1,26 @@
+test_that("getters", {
+    dt <- as_datetimeoffset("1918-11-11T11:11:11")
+    expect_equal(get_year(dt), 1918L)
+    expect_equal(get_month(dt), 11L)
+    expect_equal(get_day(dt), 11L)
+    expect_equal(get_hour(dt), 11L)
+    expect_equal(get_minute(dt), 11L)
+    expect_equal(get_second(dt), 11L)
+    expect_equal(get_nanosecond(dt), NA_integer_)
+    expect_equal(zoned_time_zone(dt), NA_character_)
+    expect_equal(get_time_zone(dt), NA_character_)
+    expect_equal(get_hour_offset(dt), NA_integer_)
+    expect_equal(get_minute_offset(dt), NA_integer_)
+
+    skip_if_not("Europe/Paris" %in% OlsonNames())
+    dts <- "1918-11-11T11:11:11+00:00[Europe/Paris]"
+    dt <- as_datetimeoffset(dts)
+    expect_equal(zoned_time_zone(dt), "Europe/Paris")
+    expect_equal(get_time_zone(dt), "Europe/Paris")
+    expect_equal(get_hour_offset(dt), 0L)
+    expect_equal(get_minute_offset(dt), 0L)
+
+    expect_equal(get_time_zone(dts), "Europe/Paris")
+    expect_equal(get_hour_offset(dts), 0L)
+    expect_equal(get_minute_offset(dts), 0L)
+})

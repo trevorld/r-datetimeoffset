@@ -177,4 +177,3 @@ tz.datetimeoffset <- function(x) {
 "tz<-" <- function(x, value) {
   force_tz(x, value)
 }
-

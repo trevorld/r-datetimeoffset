@@ -137,14 +137,14 @@ setMethod("as.nanoduration", "difftime", function(x) {
     x <- as.numeric(x, units = "secs")
     s <- as.integer(x) # seconds
     n <- as.integer(1e9 * (x - s)) # nanoseconds
-    nd <- nanotime::nanoduration(hour = 0, minute = 0, second = s, nanosecond = n)
+    nd <- nanotime::nanoduration(hours = 0L, minutes = 0L, seconds = s, nanoseconds = n)
 })
 
 setMethod("as.nanoduration", "Duration", function(x) {
     x <- as.numeric(x, "seconds")
     s <- as.integer(x) # seconds
     n <- as.integer(1e9 * (x - s)) # nanoseconds
-    nanotime::nanoduration(hour = 0, minute = 0, second = s, nanosecond = n)
+    nanotime::nanoduration(hours = 0L, minutes = 0L, seconds = s, nanoseconds = n)
 })
 
 #' @rdname duration

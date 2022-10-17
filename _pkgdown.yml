@@ -14,6 +14,10 @@ reference:
       - as_datetimeoffset
       - format.datetimeoffset
       - as.Date.datetimeoffset
+  - title: 'Get "datetimeoffset" object components'
+    desc: '"clock" style accessors for "datetimeoffset" object components'
+    contents:
+      - get_year.datetimeoffset
   - title: 'Get/set "datetimeoffset" object components'
     desc: '"lubridate" style accessors for "datetimeoffset" object components'
     contents:

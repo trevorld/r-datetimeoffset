@@ -262,7 +262,7 @@ boundary + nanotime::nanoduration(hour = 24, minute = 0, second = 0, nanosecond 
     - Suitable for use as a column in data frames and tibbles
     - Separate `{vctrs}` accessible record "fields" for year, month, day, hour, 
       minute, second, nanosecond, hour\_offset, minute\_offset, and time zone all of which 
-      can all be accessed by `{lubridate}` (style) 
+      can all be accessed by `{clock}` or `{lubridate}` (style) 
       accessor functions (and the `{vctrs}` accessor functions).  
     - Non-missing time zones need not all be the same value 
 
@@ -326,11 +326,28 @@ boundary + nanotime::nanoduration(hour = 24, minute = 0, second = 0, nanosecond 
     - We export a `with_tz()` S3 generic which defaults to `lubridate::with_tz()`
       but provides a special method for `datetimeoffset()` objects
 
-* Some additional accessor functions
+* Some additional `{lubridate}` "style" accessor functions
 
   + `nanosecond()` and `nanosecond()<-`
   + `hour_offset()` and `hour_offset()<-`
   + `minute_offset()` and `minute_offset()<-`
+
+* Support for several `{clock}` accessor functions
+
+  + `get_year()`
+  + `get_month()`
+  + `get_day()`
+  + `get_hour()`
+  + `get_minute()`
+  + `get_second()`
+  + `get_nanosecond()`
+  + `zoned_time_zone()`
+
+* Some additional `{clock}` "style" accessor functions
+
+  + `get_time_zone()`
+  + `get_hour_offset()`
+  + `get_minute_offset()`
 
 * Other utilities:
 
