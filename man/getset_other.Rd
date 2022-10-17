@@ -10,15 +10,13 @@
 \alias{nanosecond<-.datetimeoffset}
 \alias{hour_offset}
 \alias{hour_offset.datetimeoffset}
-\alias{hour_offset.POSIXlt}
-\alias{hour_offset.POSIXct}
+\alias{hour_offset.POSIXt}
 \alias{hour_offset.default}
 \alias{hour_offset<-}
 \alias{hour_offset<-.datetimeoffset}
 \alias{minute_offset}
 \alias{minute_offset.datetimeoffset}
-\alias{minute_offset.POSIXlt}
-\alias{minute_offset.POSIXct}
+\alias{minute_offset.POSIXt}
 \alias{minute_offset.default}
 \alias{minute_offset<-}
 \alias{minute_offset<-.datetimeoffset}
@@ -40,9 +38,7 @@ hour_offset(x)
 
 \method{hour_offset}{datetimeoffset}(x)
 
-\method{hour_offset}{POSIXlt}(x)
-
-\method{hour_offset}{POSIXct}(x)
+\method{hour_offset}{POSIXt}(x)
 
 \method{hour_offset}{default}(x)
 
@@ -54,9 +50,7 @@ minute_offset(x)
 
 \method{minute_offset}{datetimeoffset}(x)
 
-\method{minute_offset}{POSIXlt}(x)
-
-\method{minute_offset}{POSIXct}(x)
+\method{minute_offset}{POSIXt}(x)
 
 \method{minute_offset}{default}(x)
 

@@ -79,9 +79,7 @@ year.datetimeoffset <- function(x) {
 #' @rdname getset_lubridate
 #' @importFrom lubridate year<-
 methods::setMethod("year<-", "datetimeoffset", function(x, value) {
-    value <- as.integer(value)
-    field(x, "year") <- value
-    x
+    set_year.datetimeoffset(x, value)
 })
 
 #' @importFrom lubridate month
@@ -94,9 +92,7 @@ month.datetimeoffset <- function(x) {
 #' @rdname getset_lubridate
 #' @importFrom lubridate month<-
 methods::setMethod("month<-", "datetimeoffset", function(x, value) {
-    value <- as.integer(value)
-    field(x, "month") <- value
-    x
+    set_month.datetimeoffset(x, value)
 })
 
 #' @rdname getset_lubridate
@@ -110,9 +106,7 @@ mday.datetimeoffset <- function(x) {
 #' @importFrom lubridate day<-
 #' @export
 methods::setMethod("day<-", "datetimeoffset", function(x, value) {
-    value <- as.integer(value)
-    field(x, "day") <- value
-    x
+    set_day.datetimeoffset(x, value)
 })
 
 #' @importFrom lubridate hour
@@ -125,9 +119,7 @@ hour.datetimeoffset <- function(x) {
 #' @rdname getset_lubridate
 #' @importFrom lubridate hour<-
 methods::setMethod("hour<-", "datetimeoffset", function(x, value) {
-    value <- as.integer(value)
-    field(x, "hour") <- value
-    x
+    set_hour.datetimeoffset(x, value)
 })
 
 #' @importFrom lubridate minute
@@ -140,9 +132,7 @@ minute.datetimeoffset <- function(x) {
 #' @rdname getset_lubridate
 #' @importFrom lubridate minute<-
 methods::setMethod("minute<-", "datetimeoffset", function(x, value) {
-    value <- as.integer(value)
-    field(x, "minute") <- value
-    x
+    set_minute.datetimeoffset(x, value)
 })
 
 #' @importFrom lubridate second
@@ -155,9 +145,7 @@ second.datetimeoffset <- function(x) {
 #' @importFrom lubridate second<-
 #' @rdname getset_lubridate
 methods::setMethod("second<-", "datetimeoffset", function(x, value) {
-    value <- as.integer(value)
-    field(x, "second") <- value
-    x
+    set_second.datetimeoffset(x, value)
 })
 
 # Not a {lubridate} generic
@@ -175,5 +163,5 @@ tz.datetimeoffset <- function(x) {
 #' @rdname getset_lubridate
 #' @export
 "tz<-" <- function(x, value) {
-  force_tz(x, value)
+    force_tz(x, value)
 }

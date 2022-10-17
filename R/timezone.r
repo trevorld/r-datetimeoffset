@@ -45,9 +45,7 @@ force_tz.default <- function(time, tzone = "", roll = FALSE) {
 #' @rdname timezone
 #' @export
 force_tz.datetimeoffset <- function(time, tzone = "", roll = FALSE) {
-    tzone <- clean_tz(tzone)
-    field(time, "tz") <- tzone
-    time
+    set_zone.datetimeoffset(time, tzone)
 }
 
 #' @rdname timezone

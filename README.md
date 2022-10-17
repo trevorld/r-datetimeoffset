@@ -334,20 +334,19 @@ boundary + nanotime::nanoduration(hour = 24, minute = 0, second = 0, nanosecond 
 
 * Support for several `{clock}` accessor functions
 
-  + `get_year()`
-  + `get_month()`
-  + `get_day()`
-  + `get_hour()`
-  + `get_minute()`
-  + `get_second()`
-  + `get_nanosecond()`
-  + `zoned_time_zone()`
+  + `get_year()` and `set_year()`
+  + `get_month()` and `set_month()`
+  + `get_day()` and `set_day()`
+  + `get_hour()` and `set_hour()`
+  + `get_minute()` and `set_minute()`
+  + `get_second()` and `set_second()`
+  + `get_nanosecond()` and `set_nanosecond()`
 
 * Some additional `{clock}` "style" accessor functions
 
-  + `get_time_zone()`
-  + `get_hour_offset()`
-  + `get_minute_offset()`
+  + `get_zone()` and `set_zone()` (changes system time, not clock time)
+  + `get_hour_offset()` and `set_hour_offset()`
+  + `get_minute_offset()` and `set_minute_offset()`
 
 * Other utilities:
 

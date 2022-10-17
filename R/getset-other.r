@@ -62,11 +62,7 @@ nanosecond.datetimeoffset <- function(x) {
 #' @rdname getset_other
 #' @export
 "nanosecond<-.datetimeoffset" <- function(x, value) {
-    value <- as.integer(value)
-    s <- formatC(value, format = "d", flag = "0", width = 9L)
-    stopifnot(isFALSE(any(nchar(s) > 9L)))
-    field(x, "nanosecond") <- value
-    x
+    set_nanosecond.datetimeoffset(x, value)
 }
 
 #' @rdname getset_other
@@ -83,13 +79,7 @@ hour_offset.datetimeoffset <- function(x) {
 
 #' @rdname getset_other
 #' @export
-hour_offset.POSIXlt <- function(x) {
-    as.integer(substr(format(x, format = "%z"), 1, 3))
-}
-
-#' @rdname getset_other
-#' @export
-hour_offset.POSIXct <- function(x) {
+hour_offset.POSIXt <- function(x) {
     as.integer(substr(format(x, format = "%z"), 1, 3))
 }
 
@@ -109,8 +99,7 @@ hour_offset.default <- function(x) {
 #' @rdname getset_other
 #' @export
 "hour_offset<-.datetimeoffset" <- function(x, value) {
-    field(x, "hour_offset") <- as.integer(value)
-    x
+    set_hour_offset.datetimeoffset(x, value)
 }
 
 #' @export
@@ -132,13 +121,7 @@ minute_offset.datetimeoffset <- function(x) {
 
 #' @rdname getset_other
 #' @export
-minute_offset.POSIXlt <- function(x) {
-    as.integer(substr(format(x, format = "%z"), 4, 5))
-}
-
-#' @rdname getset_other
-#' @export
-minute_offset.POSIXct <- function(x) {
+minute_offset.POSIXt <- function(x) {
     as.integer(substr(format(x, format = "%z"), 4, 5))
 }
 
@@ -157,8 +140,7 @@ minute_offset.default <- function(x) {
 #' @rdname getset_other
 #' @export
 "minute_offset<-.datetimeoffset" <- function(x, value) {
-    field(x, "minute_offset") <- as.integer(value)
-    x
+    set_minute_offset.datetimeoffset(x, value)
 }
 
 #' @export

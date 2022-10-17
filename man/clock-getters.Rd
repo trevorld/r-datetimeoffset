@@ -9,16 +9,17 @@
 \alias{get_minute.datetimeoffset}
 \alias{get_second.datetimeoffset}
 \alias{get_nanosecond.datetimeoffset}
-\alias{zoned_time_zone.datetimeoffset}
-\alias{get_time_zone}
-\alias{get_time_zone.datetimeoffset}
-\alias{get_time_zone.default}
+\alias{get_zone}
+\alias{get_zone.datetimeoffset}
+\alias{get_zone.default}
 \alias{get_hour_offset}
 \alias{get_hour_offset.datetimeoffset}
 \alias{get_hour_offset.default}
+\alias{get_hour_offset.POSIXt}
 \alias{get_minute_offset}
 \alias{get_minute_offset.datetimeoffset}
 \alias{get_minute_offset.default}
+\alias{get_minute_offset.POSIXt}
 \title{Get datetime components with "clock" style getters}
 \usage{
 \method{get_year}{datetimeoffset}(x)
@@ -35,13 +36,11 @@
 
 \method{get_nanosecond}{datetimeoffset}(x)
 
-\method{zoned_time_zone}{datetimeoffset}(x)
+get_zone(x)
 
-get_time_zone(x)
+\method{get_zone}{datetimeoffset}(x)
 
-\method{get_time_zone}{datetimeoffset}(x)
-
-\method{get_time_zone}{default}(x)
+\method{get_zone}{default}(x)
 
 get_hour_offset(x)
 
@@ -49,11 +48,15 @@ get_hour_offset(x)
 
 \method{get_hour_offset}{default}(x)
 
+\method{get_hour_offset}{POSIXt}(x)
+
 get_minute_offset(x)
 
 \method{get_minute_offset}{datetimeoffset}(x)
 
 \method{get_minute_offset}{default}(x)
+
+\method{get_minute_offset}{POSIXt}(x)
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object.}
@@ -74,14 +77,13 @@ We implement the following datetime component getter functions from \code{clock}
 \item \code{\link[clock:clock-getters]{clock::get_minute()}}
 \item \code{\link[clock:clock-getters]{clock::get_second()}}
 \item \code{\link[clock:clock-getters]{clock::get_nanosecond()}}
-\item \code{\link[clock:zoned-zone]{clock::zoned_time_zone()}}
 }
 
 We also implement new \code{clock} "style" getter functions (not in \code{clock}):
 \itemize{
 \item \code{get_hour_offset()}
 \item \code{get_minute_offset()}
-\item \code{get_time_zone()}
+\item \code{get_zone()}
 }
 }
 \examples{
@@ -98,8 +100,7 @@ get_hour(dt)
 get_minute(dt)
 get_second(dt)
 get_nanosecond(dt)
-zoned_time_zone(dt)
-get_time_zone(dt)
+get_zone(dt)
 get_hour_offset(dt)
 get_minute_offset(dt)
 }
