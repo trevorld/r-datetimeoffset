@@ -1,9 +1,14 @@
 #' Convert to other datetime objects
 #'
-#' We provide methods to convert [datetimeoffset()] objects to the following
+#' We provide methods to convert [datetimeoffset()] objects to
 #' other R datetime objects:
 #'
-#' * `as.Date()` returns the "local" date as a [base::Date()] object
+#' We provide the following methods:
+#'
+#' * `as.Date()` and `as_date()` returns the "local" date as a [base::Date()] object
+#' * `as.POSIXct()` and `as_date_time()` returns the "local" datetime as a [base::POSIXct()] object
+#' * `as.POSIXlt()` returns the "local" datetime as a [base::POSIXlt()] object
+#' * `as.nanotime()` returns the "global" datetime as a [nanotime::nanotime()] object
 #'
 #' @param x A [datetimeoffset()] object
 #' @param from A [datetimeoffset()] object
@@ -14,21 +19,28 @@
 #' @param minute   If missing what minute to assume
 #' @param second   If missing what second to assume
 #' @param nanosecond   If missing what nanosecond to assume
-#' @param tz   If missing and hour offset also missing what time zone to assume
+#' @param tz,zone   If missing and hour offset also missing what time zone to assume
 #' @param ... Ignored
 #' @name from_datetimeoffset
 #' @examples
+#'   # {base}
 #'   as.Date(as_datetimeoffset("2020-03-05"))
 #'   as.Date(as_datetimeoffset("2020"))
 #'   as.Date(as_datetimeoffset("2020"), month = 6, day = 15)
+#'   as.POSIXct(as_datetimeoffset(Sys.time()))
+#'   as.POSIXlt(as_datetimeoffset(Sys.time()))
 #'
-#'   as.nanotime(as_datetimeoffset(Sys.time()))
-#'   as.POSIXct(as_datetimeoffset(Sys.time()), tz = "GMT")
+#'   # {clock}
+#'   clock::as_date(as_datetimeoffset(Sys.Date()))
+#'   clock::as_date_time(as_datetimeoffset(Sys.time()))
+#'
+#'   # {nanotime}
+#'   nanotime::as.nanotime(as_datetimeoffset(Sys.time()))
 NULL
 
 #' @rdname from_datetimeoffset
 #' @export
-as.Date.datetimeoffset <- function(x, year = 1970L, month = 1L, day = 1L, ...) {
+as.Date.datetimeoffset <- function(x, ..., year = 1970L, month = 1L, day = 1L) {
     year(x) <- update_missing(year(x), year)
     month(x) <- update_missing(month(x), month)
     day(x) <- update_missing(day(x), day)
@@ -38,6 +50,13 @@ as.Date.datetimeoffset <- function(x, year = 1970L, month = 1L, day = 1L, ...) {
     day_str <- my_format(field(x, "day"), prefix = "-")
     s <- paste0(year_str, month_str, day_str)
     as.Date(s)
+}
+
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_date
+#' @export
+as_date.datetimeoffset <- function(x) {
+    as.Date.datetimeoffset(x)
 }
 
 setOldClass("datetimeoffset")
@@ -76,6 +95,17 @@ as.POSIXct.datetimeoffset <- function(x, tz = mode_tz(x), ...,
                            hour = hour, minute = minute, second = second, nanosecond = nanosecond,
                            tz = tz),
                tz = tz)
+}
+
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_date_time
+#' @export
+as_date_time.datetimeoffset <- function(x, zone = mode_tz(x), ...,
+                                       year = 1970L, month = 1L, day = 1L,
+                                       hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
+    as.POSIXct.datetimeoffset(x, tz = zone, ...,
+                              year = year, month = month, day = day,
+                              hour = hour, minute = minute, second = second, nanosecond = nanosecond)
 }
 
 #' @rdname from_datetimeoffset

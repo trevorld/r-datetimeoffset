@@ -45,8 +45,8 @@ Initial features
 
 * Support for converting to other R datetime objects:
 
-  + `as.Date()` converts the local date to a `base::Date()` object
-  + `as.POSIXct()` converts the datetime to a `base::POSIXct()` object
+  + `as.Date()` and `as_date()` converts the local date to a `base::Date()` object
+  + `as.POSIXct()` and `as_date_time()` converts the datetime to a `base::POSIXct()` object
   + `as.POSIXlt()` converts the datetime to a `base::POSIXlt()` object
   + `as.nanotime()` converts the datetime to a `nanotime::nanotime()` object
 

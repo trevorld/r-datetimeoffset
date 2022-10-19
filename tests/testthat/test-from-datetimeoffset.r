@@ -5,6 +5,8 @@ test_that("as.Date()", {
                  as.Date("2020-06-15"))
     expect_equal(as.Date(as_datetimeoffset("2020-03-23")),
                  as.Date("2020-03-23"))
+    expect_equal(as_date(as_datetimeoffset("2020-03-23")),
+                 as.Date("2020-03-23"))
 })
 
 test_that("as.nanotime()", {
@@ -17,6 +19,8 @@ test_that("as.nanotime()", {
 test_that("as.POSIXct()", {
     expect_equal(format(as.POSIXct("2020-03-23 04:04:04")),
                  format(as.POSIXct(as_datetimeoffset("2020-03-23 04:04:04", tz=""))))
+    expect_equal(format(as.POSIXct("2020-03-23 04:04:04")),
+                 format(as_date_time(as_datetimeoffset("2020-03-23 04:04:04", tz=""))))
 })
 
 test_that("as.POSIXlt()", {

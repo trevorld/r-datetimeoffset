@@ -3,12 +3,16 @@
 \name{from_datetimeoffset}
 \alias{from_datetimeoffset}
 \alias{as.Date.datetimeoffset}
+\alias{as_date.datetimeoffset}
 \alias{as.nanotime,datetimeoffset-method}
 \alias{as.POSIXct.datetimeoffset}
+\alias{as_date_time.datetimeoffset}
 \alias{as.POSIXlt.datetimeoffset}
 \title{Convert to other datetime objects}
 \usage{
-\method{as.Date}{datetimeoffset}(x, year = 1970L, month = 1L, day = 1L, ...)
+\method{as.Date}{datetimeoffset}(x, ..., year = 1970L, month = 1L, day = 1L)
+
+\method{as_date}{datetimeoffset}(x)
 
 \S4method{as.nanotime}{datetimeoffset}(
   from,
@@ -36,6 +40,19 @@
   nanosecond = 0L
 )
 
+\method{as_date_time}{datetimeoffset}(
+  x,
+  zone = mode_tz(x),
+  ...,
+  year = 1970L,
+  month = 1L,
+  day = 1L,
+  hour = 0L,
+  minute = 0L,
+  second = 0L,
+  nanosecond = 0L
+)
+
 \method{as.POSIXlt}{datetimeoffset}(
   x,
   tz = mode_tz(x),
@@ -52,13 +69,13 @@
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object}
 
+\item{...}{Ignored}
+
 \item{year}{If missing what year to assume}
 
 \item{month}{If missing what month to assume}
 
 \item{day}{If missing what day to assume}
-
-\item{...}{Ignored}
 
 \item{from}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object}
 
@@ -70,22 +87,33 @@
 
 \item{nanosecond}{If missing what nanosecond to assume}
 
-\item{tz}{If missing and hour offset also missing what time zone to assume}
+\item{tz, zone}{If missing and hour offset also missing what time zone to assume}
 }
 \description{
-We provide methods to convert \code{\link[=datetimeoffset]{datetimeoffset()}} objects to the following
+We provide methods to convert \code{\link[=datetimeoffset]{datetimeoffset()}} objects to
 other R datetime objects:
 }
 \details{
+We provide the following methods:
 \itemize{
-\item \code{as.Date()} returns the "local" date as a \code{\link[base:Dates]{base::Date()}} object
+\item \code{as.Date()} and \code{as_date()} returns the "local" date as a \code{\link[base:Dates]{base::Date()}} object
+\item \code{as.POSIXct()} and \code{as_date_time()} returns the "local" datetime as a \code{\link[base:DateTimeClasses]{base::POSIXct()}} object
+\item \code{as.POSIXlt()} returns the "local" datetime as a \code{\link[base:DateTimeClasses]{base::POSIXlt()}} object
+\item \code{as.nanotime()} returns the "global" datetime as a \code{\link[nanotime:nanotime]{nanotime::nanotime()}} object
 }
 }
 \examples{
+  # {base}
   as.Date(as_datetimeoffset("2020-03-05"))
   as.Date(as_datetimeoffset("2020"))
   as.Date(as_datetimeoffset("2020"), month = 6, day = 15)
+  as.POSIXct(as_datetimeoffset(Sys.time()))
+  as.POSIXlt(as_datetimeoffset(Sys.time()))
 
-  as.nanotime(as_datetimeoffset(Sys.time()))
-  as.POSIXct(as_datetimeoffset(Sys.time()), tz = "GMT")
+  # {clock}
+  clock::as_date(as_datetimeoffset(Sys.Date()))
+  clock::as_date_time(as_datetimeoffset(Sys.time()))
+
+  # {nanotime}
+  nanotime::as.nanotime(as_datetimeoffset(Sys.time()))
 }

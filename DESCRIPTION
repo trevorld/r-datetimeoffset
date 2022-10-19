@@ -1,12 +1,13 @@
 Package: datetimeoffset
 Type: Package
 Title: Datetimes with optional UTC offsets and/or heterogeneous time zones
-Version: 0.1.0-3
+Version: 0.1.0-4
 Authors@R: c(
         person("Trevor L", "Davis", role=c("aut", "cre"), email="trevor.l.davis@gmail.com",
                comment = c(ORCID = "0000-0001-6341-4639")))
 Description: Datetimes with optional UTC offsets and/or (possibly heterogeneous) time zones.
-    Supports import/export for a number of datetime string standards often including lossless re-export of     any original reduced precision including ISO 8601 and pdfmark datetime strings.
+    Supports import/export for a number of datetime string standards often including lossless re-export of     
+    any original reduced precision including ISO 8601 and pdfmark datetime strings.
     Can support up to nanosecond precision.
 URL: https://trevorldavis.com/R/datetimeoffset/dev/, https://github.com/trevorld/r-datetimeoffset
 BugReports: https://github.com/trevorld/r-datetimeoffset
