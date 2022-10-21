@@ -97,6 +97,12 @@ Initial features
   + `get_hour_offset()` and `set_hour_offset()`
   + `get_minute_offset()` and `set_minute_offset()`
 
+* Additional supported `{clock}` methods
+
+  + `calendar_narrow()`
+  + `calendar_precision()`
+  + `calendar_widen()`
+
 * Other utilities:
 
   + `is_datetimeoffset()` and `NA_datetimeoffset_`
