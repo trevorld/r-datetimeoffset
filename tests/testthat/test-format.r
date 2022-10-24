@@ -67,20 +67,20 @@ test_that("format_pdfmark()", {
     expect_equal(format_pdfmark(as_datetimeoffset("D:20200515082316")),
                  "D:20200515082316")
     expect_equal(format_pdfmark(as_datetimeoffset("2020-05-15T08:23:16Z")),
-                 "D:20200515082316+0000")
-    expect_equal(format_pdfmark(as_datetimeoffset("D:20200515082316-07")),
-                 "D:20200515082316-07")
-    expect_equal(format_pdfmark(as_datetimeoffset("D:20200515082316-0700")),
-                 "D:20200515082316-0700")
+                 "D:20200515082316+00'00'")
+    expect_equal(format_pdfmark(as_datetimeoffset("D:20200515082316-07'")),
+                 "D:20200515082316-07'")
+    expect_equal(format_pdfmark(as_datetimeoffset("D:20200515082316-07'00'")),
+                 "D:20200515082316-07'00'")
 
-    dt <- as_datetimeoffset("D:20200515082316-0700")
+    dt <- as_datetimeoffset("D:20200515082316-07'00'")
     second(dt) <- NA_integer_
     expect_equal(format_pdfmark(dt), "D:202005150823")
 
     skip_if_not("America/Los_Angeles" %in% OlsonNames())
     dt <- c("2020", "2020-05-15T08:23:16.0-07:00[America/Los_Angeles]")
     expect_equal(format_pdfmark(as_datetimeoffset(dt)),
-                 c("D:2020", "D:20200515082316-0700"))
+                 c("D:2020", "D:20200515082316-07'00'"))
 })
 
 test_that("format_strftime()", {

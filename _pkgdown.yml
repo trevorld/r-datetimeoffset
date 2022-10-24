@@ -29,6 +29,10 @@ reference:
     contents:
       - with_tz
       - mode_tz
+  - title: 'Other utilities'
+    desc: 'Other utilities'
+    contents:
+      - calendar_precision.datetimeoffset
   - title: "Add/subtract datetime durations and periods"
     desc: 'Add/subtract "lubridate" and "nanotime" datetime durations and periods'
     contents:

@@ -103,11 +103,11 @@ as_datetimeoffset("D:202005") |> format_pdfmark()
 ```
 
 ```r
-as_datetimeoffset("D:20200510201015+0000") |> format_pdfmark()
+as_datetimeoffset("D:20200510201015+00'00'") |> format_pdfmark()
 ```
 
 ```
-## [1] "D:20200510201015+0000"
+## [1] "D:20200510201015+00'00'"
 ```
 
 #### neo4j Cypher datetimes
@@ -296,8 +296,8 @@ boundary + nanotime::nanoduration(hour = 24, minute = 0, second = 0, nanosecond 
 
 * Support for converting to other R datetime objects:
 
-  + `as.Date()` converts the local date to a `base::Date()` object
-  + `as.POSIXct()` converts the datetime to a `base::POSIXct()` object
+  + `as.Date()` and `as_date()` converts the local date to a `base::Date()` object
+  + `as.POSIXct()` and `as_date_time()` converts the datetime to a `base::POSIXct()` object
   + `as.POSIXlt()` converts the datetime to a `base::POSIXlt()` object
   + `as.nanotime()` converts the datetime to a `nanotime::nanotime()` object
 
@@ -347,6 +347,12 @@ boundary + nanotime::nanoduration(hour = 24, minute = 0, second = 0, nanosecond 
   + `get_zone()` and `set_zone()` (changes system time, not clock time)
   + `get_hour_offset()` and `set_hour_offset()`
   + `get_minute_offset()` and `set_minute_offset()`
+
+* Additional supported `{clock}` methods
+
+  + `calendar_narrow()`
+  + `calendar_precision()`
+  + `calendar_widen()`
 
 * Other utilities:
 

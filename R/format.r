@@ -121,7 +121,8 @@ format_pdfmark <- function(x) {
     hour_str <- my_format(field(x, "hour"), prefix = "")
     minute_str <- my_format(field(x, "minute"), prefix = "")
     second_str <- my_format(field(x, "second"), prefix = "")
-    offset_str <- my_format_tz(x, sep = "", no_zulu = TRUE)
+    offset_str <- my_format_tz(x, sep = "'", no_zulu = TRUE)
+    offset_str <- ifelse(offset_str == "", "", paste0(offset_str, "'"))
     paste0("D:", year_str, month_str, day_str, hour_str, minute_str, second_str, offset_str)
 }
 

@@ -26,7 +26,7 @@
 #' # pdfmark datetime examples
 #' as_datetimeoffset("D:20200515")
 #' as_datetimeoffset("D:20200515082316")
-#' as_datetimeoffset("D:20200515082316+0330")
+#' as_datetimeoffset("D:20200515082316+03'30'")
 #' @export
 as_datetimeoffset <- function(x, ...) {
     UseMethod("as_datetimeoffset")
@@ -109,10 +109,12 @@ as_dtos_character <- function(x) {
 }
 
 as_dtos_character_helper <- function(x) {
-    if (grepl("^D:[[:digit:]+-]{4,}$", x)) # pdfmark prefix
-        s <- substr(x, 3L, nchar(x))
-    else
+    if (grepl("^D:[[:digit:]+-\\']{4,}$", x)) { # pdfmark prefix
+        s <- gsub("'", "", x)
+        s <- substr(s, 3L, nchar(s))
+    } else {
         s <- x
+    }
     s <- sub("^([[:digit:]]{4})[-/]([[:digit:]]{2})", "\\1\\2", s)
     s <- sub("^([[:digit:]]{6})[-/]([[:digit:]]{2})", "\\1\\2", s)
     s <- gsub("([[:digit:]])[Tt ]([[:digit:]+-])", "\\1\\2", s)

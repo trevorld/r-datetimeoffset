@@ -67,7 +67,7 @@ as_datetimeoffset("2020-05-10 20:10:15Z") |> format_ISO8601()
 
 ```{r examples-pdfmark}
 as_datetimeoffset("D:202005") |> format_pdfmark()
-as_datetimeoffset("D:20200510201015+0000") |> format_pdfmark()
+as_datetimeoffset("D:20200510201015+00'00'") |> format_pdfmark()
 ```
 
 #### neo4j Cypher datetimes

@@ -106,6 +106,9 @@ test_that("as_datetimeoffset()", {
     expect_equal(format(as_datetimeoffset("D:20200515082316-0330")),
                  "2020-05-15T08:23:16-03:30")
 
+    expect_equal(format(as_datetimeoffset("D:20060926213913+02'00'")),
+                 "2006-09-26T21:39:13+02:00")
+
     # lower-case "t" and "z"
     expect_equal(format(as_datetimeoffset("2020-05-15t08:23:16z")),
                  "2020-05-15T08:23:16Z")
