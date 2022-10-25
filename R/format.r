@@ -1,14 +1,14 @@
 #' Convert datetime objects to character
 #'
 #' `format()` returns an ISO 8601 datetime string with as much **known** information possible.
-#' `format_ISO8601()` returns an ISO 8601 datetime string.
+#' `format_iso8601()` returns an ISO 8601 datetime string.
 #' `format_pdfmark()` returns a pdfmark datetime string with as much **known** information possible.
 #' `format_strftime()` allows [base::strftime()] style formatting.
-#' `format_CCTZ()` allows CCTZ style formatting.
+#' `format_nanotime()` allows CCTZ style formatting.
 #' @name format
 #' @param x A [datetimeoffset()] object.
 #' @param format For `format_strftime()` see [base::strftime()].
-#'               For `format_CCTZ()` see <https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197>.
+#'               For `format_nanotime()` see <https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197>.
 #' @param tz A character string specifying the time zone to be used for the conversion.
 #'           Can be a length greater than one.
 #' @param usetz Include the time zone in the formatting (of outputs including
@@ -21,9 +21,9 @@
 #' @return A character vector
 #' @examples
 #'   # ISO 8601 datetimes
-#'   format_ISO8601(as_datetimeoffset("2020-05"))
-#'   format_ISO8601(as_datetimeoffset("2020-05-10 20:15"))
-#'   format_ISO8601(as_datetimeoffset("2020-05-10 20:15:05-07"))
+#'   format_iso8601(as_datetimeoffset("2020-05"))
+#'   format_iso8601(as_datetimeoffset("2020-05-10 20:15"))
+#'   format_iso8601(as_datetimeoffset("2020-05-10 20:15:05-07"))
 #'
 #'   # pdfmark datetimes
 #'   format_pdfmark(as_datetimeoffset("2020-05"))
@@ -36,9 +36,10 @@
 #'   format_strftime(dt, format = "%c")
 #'
 #'   # CCTZ style formatting
-#'   dt <- as_datetimeoffset(Sys.time())
-#'   format_CCTZ(dt)
-#'   format_CCTZ(dt, format = "%F %H:%M:%E7S %Ez") # SQL Server datetimeoffset
+#'   if (require("nanotime")) {
+#'     dt <- as_datetimeoffset(Sys.time())
+#'     format_nanotime(dt, format = "%F %H:%M:%E7S %Ez") # SQL Server datetimeoffset
+#'   }
 NULL
 
 #' @rdname format
@@ -71,12 +72,9 @@ my_format_nanosecond <- function(ns) {
     s
 }
 
-setOldClass("datetimeoffset")
-
 #' @rdname format
-#' @importFrom lubridate format_ISO8601
 #' @export
-methods::setMethod("format_ISO8601", signature = "datetimeoffset", function(x, usetz = TRUE, precision = NULL, ...) {
+format_iso8601 <- function(x, usetz = TRUE, precision = NULL, ...) {
     precision <- precision %||% "ymdhmsn"
     stopifnot(precision %in% c("y", "ym", "ymd", "ymdh", "ymdhm", "ymdhms", "ymdhmsn"))
     if (precision == "y")
@@ -108,7 +106,7 @@ methods::setMethod("format_ISO8601", signature = "datetimeoffset", function(x, u
     paste0(year_str, month_str, day_str,
            hour_str, minute_str, second_str, nanosecond_str,
            offset_str)
-})
+}
 
 #' @rdname format
 #' @export
@@ -137,9 +135,10 @@ format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = get_zone(x), u
 
 #' @rdname format
 #' @export
-format_CCTZ <- function(x, format = "%Y-%m-%dT%H:%M:%E9S%Ez", tz = get_zone(x)) {
+format_nanotime <- function(x, format = "%Y-%m-%dT%H:%M:%E9S%Ez", tz = get_zone(x)) {
+    assert_suggested("nanotime")
     tz <- clean_tz(tz, na = Sys.timezone())
-    x <- as.nanotime(x)
+    x <- nanotime::as.nanotime(x)
     df <- data.frame(x = x, format = format, tz = tz, stringsAsFactors = FALSE)
     purrr::pmap_chr(df, base::format)
 }
@@ -211,7 +210,7 @@ my_format_tz <- function(x, sep = ":", no_zulu = FALSE, add_tz = FALSE) {
         df <- data.frame(x = as_ymd_hms_str(x[id_tz]), tz = tz_id,
                          stringsAsFactors = FALSE)
         offsets <- purrr::pmap_chr(df, function(x, tz) {
-                                       dt <- as.nanotime(x, tz = tz)
+                                       dt <- nanotime::as.nanotime(x, tz = tz)
                                        format(dt, format = "%z", tz = tz)
                                    })
         offsets <- paste0(substr(offsets, 1, 3), sep, substr(offsets, 4, 5))

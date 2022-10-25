@@ -27,9 +27,3 @@ reference:
     desc: 'Other utilities'
     contents:
       - calendar_precision.datetimeoffset
-  - title: "Add/subtract datetime durations and periods"
-    desc: 'Add/subtract "lubridate" and "nanotime" datetime durations and periods'
-    contents:
-      - duration
-      - period
-

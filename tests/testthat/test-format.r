@@ -5,48 +5,48 @@ test_that("format()", {
                  c("2020", "2020-05-15T08:23:16.0-07:00[America/Los_Angeles]"))
 })
 
-test_that("format_ISO8601()", {
+test_that("format_iso8601()", {
     # "2020-05-15T08:23:16-07:00"
-    expect_equal(format_ISO8601(as_datetimeoffset("2020")),
+    expect_equal(format_iso8601(as_datetimeoffset("2020")),
                  "2020")
-    expect_equal(format_ISO8601(as_datetimeoffset("2020-05")),
+    expect_equal(format_iso8601(as_datetimeoffset("2020-05")),
                  "2020-05")
-    expect_equal(format_ISO8601(as_datetimeoffset("2020-05-15")),
+    expect_equal(format_iso8601(as_datetimeoffset("2020-05-15")),
                  "2020-05-15")
-    expect_equal(format_ISO8601(as_datetimeoffset("2020-05-15T08")),
+    expect_equal(format_iso8601(as_datetimeoffset("2020-05-15T08")),
                  "2020-05-15T08")
-    expect_equal(format_ISO8601(as_datetimeoffset("2020-05-15T08:23")),
+    expect_equal(format_iso8601(as_datetimeoffset("2020-05-15T08:23")),
                  "2020-05-15T08:23")
-    expect_equal(format_ISO8601(as_datetimeoffset("2020-05-15T08:23:16")),
+    expect_equal(format_iso8601(as_datetimeoffset("2020-05-15T08:23:16")),
                  "2020-05-15T08:23:16")
-    expect_equal(format_ISO8601(as_datetimeoffset("2020-05-15T08:23:16Z")),
+    expect_equal(format_iso8601(as_datetimeoffset("2020-05-15T08:23:16Z")),
                  "2020-05-15T08:23:16Z")
-    expect_equal(format_ISO8601(as_datetimeoffset("2020-05-15T08:23:16-07")),
+    expect_equal(format_iso8601(as_datetimeoffset("2020-05-15T08:23:16-07")),
                  "2020-05-15T08:23:16-07")
-    expect_equal(format_ISO8601(as_datetimeoffset("2020-05-15T08:23:16-0700")),
+    expect_equal(format_iso8601(as_datetimeoffset("2020-05-15T08:23:16-0700")),
                  "2020-05-15T08:23:16-07:00")
 
     dt <- as_datetimeoffset("2020-05-15T08:23:16.0-07:00")
-    expect_equal(format_ISO8601(dt, precision = "y", usetz = FALSE),
+    expect_equal(format_iso8601(dt, precision = "y", usetz = FALSE),
                  "2020")
-    expect_equal(format_ISO8601(dt, precision = "ym", usetz = FALSE),
+    expect_equal(format_iso8601(dt, precision = "ym", usetz = FALSE),
                  "2020-05")
-    expect_equal(format_ISO8601(dt, precision = "ymd", usetz = FALSE),
+    expect_equal(format_iso8601(dt, precision = "ymd", usetz = FALSE),
                  "2020-05-15")
-    expect_equal(format_ISO8601(dt, precision = "ymdh"),
+    expect_equal(format_iso8601(dt, precision = "ymdh"),
                  "2020-05-15T08-07:00")
-    expect_equal(format_ISO8601(dt, precision = "ymdhm"),
+    expect_equal(format_iso8601(dt, precision = "ymdhm"),
                  "2020-05-15T08:23-07:00")
-    expect_equal(format_ISO8601(dt, precision = "ymdhms"),
+    expect_equal(format_iso8601(dt, precision = "ymdhms"),
                  "2020-05-15T08:23:16-07:00")
 
     dt <- as_datetimeoffset("D:20200515082316-0700")
     dt <- set_second(dt, NA_integer_)
-    expect_equal(format_ISO8601(dt), "2020-05-15T08:23-07:00")
+    expect_equal(format_iso8601(dt), "2020-05-15T08:23-07:00")
 
     skip_if_not("America/Los_Angeles" %in% OlsonNames())
     dt <- c("2020", "2020-05-15T08:23:16.0-07:00[America/Los_Angeles]")
-    expect_equal(format_ISO8601(as_datetimeoffset(dt)),
+    expect_equal(format_iso8601(as_datetimeoffset(dt)),
                  c("2020", "2020-05-15T08:23:16.0-07:00"))
 })
 
@@ -88,13 +88,13 @@ test_that("format_strftime()", {
     expect_equal(format_strftime(dt), "2020-04-04 10:10:10")
 })
 
-test_that("format_CCTZ()", {
+test_that("format_nanotime()", {
     dt <- as_datetimeoffset("2020-04-04T10:10:10Z")
-    expect_equal(format_CCTZ(dt, tz = "GMT"),
+    expect_equal(format_nanotime(dt, tz = "GMT"),
                  "2020-04-04T10:10:10.000000000+00:00")
-    expect_equal(format_CCTZ(dt, format = "%F %T %Ez", tz = "GMT"),
+    expect_equal(format_nanotime(dt, format = "%F %T %Ez", tz = "GMT"),
                  "2020-04-04 10:10:10 +00:00")
     skip_if_not("America/Los_Angeles" %in% OlsonNames())
-    expect_equal(format_CCTZ(dt, tz = "America/Los_Angeles"),
+    expect_equal(format_nanotime(dt, tz = "America/Los_Angeles"),
                  "2020-04-04T03:10:10.000000000-07:00")
 })

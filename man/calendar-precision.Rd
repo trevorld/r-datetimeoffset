@@ -25,7 +25,7 @@ calendar_widen(x, precision, ...)
   x,
   precision,
   ...,
-  year = 1L,
+  year = 0L,
   month = 1L,
   day = 1L,
   hour = 0L,

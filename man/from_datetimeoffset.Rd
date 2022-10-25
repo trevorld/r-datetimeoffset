@@ -4,34 +4,20 @@
 \alias{from_datetimeoffset}
 \alias{as.Date.datetimeoffset}
 \alias{as_date.datetimeoffset}
-\alias{as.nanotime,datetimeoffset-method}
 \alias{as.POSIXct.datetimeoffset}
 \alias{as_date_time.datetimeoffset}
 \alias{as.POSIXlt.datetimeoffset}
 \title{Convert to other datetime objects}
 \usage{
-\method{as.Date}{datetimeoffset}(x, ..., year = 1L, month = 1L, day = 1L)
+\method{as.Date}{datetimeoffset}(x, ..., year = 0L, month = 1L, day = 1L)
 
 \method{as_date}{datetimeoffset}(x)
-
-\S4method{as.nanotime}{datetimeoffset}(
-  from,
-  ...,
-  year = 1L,
-  month = 1L,
-  day = 1L,
-  hour = 0L,
-  minute = 0L,
-  second = 0L,
-  nanosecond = 0L,
-  tz = ""
-)
 
 \method{as.POSIXct}{datetimeoffset}(
   x,
   tz = mode_tz(x),
   ...,
-  year = 1L,
+  year = 0L,
   month = 1L,
   day = 1L,
   hour = 0L,
@@ -44,7 +30,7 @@
   x,
   zone = mode_tz(x),
   ...,
-  year = 1L,
+  year = 0L,
   month = 1L,
   day = 1L,
   hour = 0L,
@@ -57,7 +43,7 @@
   x,
   tz = mode_tz(x),
   ...,
-  year = 1L,
+  year = 0L,
   month = 1L,
   day = 1L,
   hour = 0L,
@@ -77,7 +63,7 @@
 
 \item{day}{If missing what day to assume}
 
-\item{from}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object}
+\item{tz, zone}{If missing and hour offset also missing what time zone to assume}
 
 \item{hour}{If missing what hour to assume}
 
@@ -86,8 +72,6 @@
 \item{second}{If missing what second to assume}
 
 \item{nanosecond}{If missing what nanosecond to assume}
-
-\item{tz, zone}{If missing and hour offset also missing what time zone to assume}
 }
 \description{
 We provide methods to convert \code{\link[=datetimeoffset]{datetimeoffset()}} objects to
@@ -114,6 +98,7 @@ We provide the following methods:
   clock::as_date(as_datetimeoffset(Sys.Date()))
   clock::as_date_time(as_datetimeoffset(Sys.time()))
 
-  # {nanotime}
-  nanotime::as.nanotime(as_datetimeoffset(Sys.time()))
+  if (require("nanotime")) {
+    nanotime::as.nanotime(as_datetimeoffset(Sys.time()))
+  }
 }

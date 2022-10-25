@@ -17,11 +17,11 @@ as_datetimeoffset(x, ...)
 
 \method{as_datetimeoffset}{Date}(x, tz = NA_character_, ...)
 
-\method{as_datetimeoffset}{default}(x, tz = lubridate::tz(as.POSIXct(x)), ...)
+\method{as_datetimeoffset}{default}(x, tz = get_zone(as.POSIXct(x)), ...)
 
-\method{as_datetimeoffset}{POSIXct}(x, tz = lubridate::tz(x), ...)
+\method{as_datetimeoffset}{POSIXct}(x, tz = get_zone(x), ...)
 
-\method{as_datetimeoffset}{POSIXlt}(x, tz = lubridate::tz(x), ...)
+\method{as_datetimeoffset}{POSIXlt}(x, tz = get_zone(x), ...)
 
 \method{as_datetimeoffset}{character}(x, tz = NA_character_, ...)
 
@@ -30,7 +30,7 @@ as_datetimeoffset(x, ...)
 \arguments{
 \item{x}{An R object that can reasonably be coerced to a \code{\link[=datetimeoffset]{datetimeoffset()}} object
 such as a string in pdfmark date or ISO 8601 datetime formats
-or something with an \code{\link[=as.nanotime]{as.nanotime()}} or \code{\link[=as.POSIXct]{as.POSIXct()}} method.}
+or something with an \code{\link[nanotime:nanotime]{nanotime::as.nanotime()}} or \code{\link[=as.POSIXct]{as.POSIXct()}} method.}
 
 \item{...}{Further arguments to certain methods.}
 

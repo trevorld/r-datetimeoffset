@@ -18,9 +18,10 @@ test_that("getters", {
     expect_equal(get_hour_offset(dt), 0L)
     expect_equal(get_minute_offset(dt), 0L)
 
-    expect_equal(get_zone(dts), "Europe/Paris")
     expect_equal(get_hour_offset(dts), 0L)
     expect_equal(get_minute_offset(dts), 0L)
+
+    expect_error(get_zone(dts))
 })
 
 test_that("setters", {

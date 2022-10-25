@@ -211,8 +211,15 @@ get_zone.datetimeoffset <- function(x) {
 
 #' @rdname clock-getters
 #' @export
+get_zone.POSIXt <- function(x) {
+    tzone <- attr(x, "tzone")
+    if (is.null(tzone)) Sys.timezone() else tzone[[1]]
+}
+
+#' @rdname clock-getters
+#' @export
 get_zone.default <- function(x) {
-    get_zone(as_datetimeoffset(x))
+    stop(paste("Method not defined for an object of class", class(x)))
 }
 
 #' @rdname clock-setters

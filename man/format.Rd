@@ -3,15 +3,15 @@
 \name{format}
 \alias{format}
 \alias{format.datetimeoffset}
-\alias{format_ISO8601,datetimeoffset-method}
+\alias{format_iso8601}
 \alias{format_pdfmark}
 \alias{format_strftime}
-\alias{format_CCTZ}
+\alias{format_nanotime}
 \title{Convert datetime objects to character}
 \usage{
 \method{format}{datetimeoffset}(x, ...)
 
-\S4method{format_ISO8601}{datetimeoffset}(x, usetz = TRUE, precision = NULL, ...)
+format_iso8601(x, usetz = TRUE, precision = NULL, ...)
 
 format_pdfmark(x)
 
@@ -22,7 +22,7 @@ format_strftime(
   usetz = FALSE
 )
 
-format_CCTZ(x, format = "\%Y-\%m-\%dT\%H:\%M:\%E9S\%Ez", tz = get_zone(x))
+format_nanotime(x, format = "\%Y-\%m-\%dT\%H:\%M:\%E9S\%Ez", tz = get_zone(x))
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object.}
@@ -38,7 +38,7 @@ time; date outputs never include time zone information).}
 When ‘NULL’, full precision for the object is shown.}
 
 \item{format}{For \code{format_strftime()} see \code{\link[base:strptime]{base::strftime()}}.
-For \code{format_CCTZ()} see \url{https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197}.}
+For \code{format_nanotime()} see \url{https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197}.}
 
 \item{tz}{A character string specifying the time zone to be used for the conversion.
 Can be a length greater than one.}
@@ -48,16 +48,16 @@ A character vector
 }
 \description{
 \code{format()} returns an ISO 8601 datetime string with as much \strong{known} information possible.
-\code{format_ISO8601()} returns an ISO 8601 datetime string.
+\code{format_iso8601()} returns an ISO 8601 datetime string.
 \code{format_pdfmark()} returns a pdfmark datetime string with as much \strong{known} information possible.
 \code{format_strftime()} allows \code{\link[base:strptime]{base::strftime()}} style formatting.
-\code{format_CCTZ()} allows CCTZ style formatting.
+\code{format_nanotime()} allows CCTZ style formatting.
 }
 \examples{
   # ISO 8601 datetimes
-  format_ISO8601(as_datetimeoffset("2020-05"))
-  format_ISO8601(as_datetimeoffset("2020-05-10 20:15"))
-  format_ISO8601(as_datetimeoffset("2020-05-10 20:15:05-07"))
+  format_iso8601(as_datetimeoffset("2020-05"))
+  format_iso8601(as_datetimeoffset("2020-05-10 20:15"))
+  format_iso8601(as_datetimeoffset("2020-05-10 20:15:05-07"))
 
   # pdfmark datetimes
   format_pdfmark(as_datetimeoffset("2020-05"))
@@ -70,7 +70,8 @@ A character vector
   format_strftime(dt, format = "\%c")
 
   # CCTZ style formatting
-  dt <- as_datetimeoffset(Sys.time())
-  format_CCTZ(dt)
-  format_CCTZ(dt, format = "\%F \%H:\%M:\%E7S \%Ez") # SQL Server datetimeoffset
+  if (require("nanotime")) {
+    dt <- as_datetimeoffset(Sys.time())
+    format_nanotime(dt, format = "\%F \%H:\%M:\%E7S \%Ez") # SQL Server datetimeoffset
+  }
 }

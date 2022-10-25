@@ -4,7 +4,7 @@
 #'
 #' @param x An R object that can reasonably be coerced to a [datetimeoffset()] object
 #'          such as a string in pdfmark date or ISO 8601 datetime formats
-#'          or something with an [as.nanotime()] or [as.POSIXct()] method.
+#'          or something with an [nanotime::as.nanotime()] or [as.POSIXct()] method.
 #' @param tz Time zone to use for the conversion.
 #'           Ignored by `as_datetimeoffset.Date()`.
 #'           Need not be a single value for `as_datetimeoffset.nanotime()`.
@@ -45,22 +45,24 @@ as_datetimeoffset.Date <- function(x, tz = NA_character_, ...) {
 }
 
 #' @rdname as_datetimeoffset
-#' @importFrom nanotime as.nanotime
 #' @export
-as_datetimeoffset.default <- function(x, tz = lubridate::tz(as.POSIXct(x)), ...) {
-    as_datetimeoffset(as.nanotime(as.POSIXct(x)), tz = tz)
+as_datetimeoffset.default <- function(x, tz = get_zone(as.POSIXct(x)), ...) {
+    assert_suggested("nanotime")
+    as_datetimeoffset(nanotime::as.nanotime(as.POSIXct(x)), tz = tz)
 }
 
 #' @rdname as_datetimeoffset
 #' @export
-as_datetimeoffset.POSIXct <- function(x, tz = lubridate::tz(x), ...) {
-    as_datetimeoffset(as.nanotime(x), tz = tz)
+as_datetimeoffset.POSIXct <- function(x, tz = get_zone(x), ...) {
+    assert_suggested("nanotime")
+    as_datetimeoffset(nanotime::as.nanotime(x), tz = tz)
 }
 
 #' @rdname as_datetimeoffset
 #' @export
-as_datetimeoffset.POSIXlt <- function(x, tz = lubridate::tz(x), ...) {
-    as_datetimeoffset(as.nanotime(x), tz = tz)
+as_datetimeoffset.POSIXlt <- function(x, tz = get_zone(x), ...) {
+    assert_suggested("nanotime")
+    as_datetimeoffset(nanotime::as.nanotime(x), tz = tz)
 }
 
 #' @rdname as_datetimeoffset

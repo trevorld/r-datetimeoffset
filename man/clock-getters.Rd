@@ -11,6 +11,7 @@
 \alias{get_nanosecond.datetimeoffset}
 \alias{get_zone}
 \alias{get_zone.datetimeoffset}
+\alias{get_zone.POSIXt}
 \alias{get_zone.default}
 \alias{get_hour_offset}
 \alias{get_hour_offset.datetimeoffset}
@@ -39,6 +40,8 @@
 get_zone(x)
 
 \method{get_zone}{datetimeoffset}(x)
+
+\method{get_zone}{POSIXt}(x)
 
 \method{get_zone}{default}(x)
 

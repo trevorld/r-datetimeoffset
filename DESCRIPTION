@@ -19,12 +19,12 @@ Depends:
     R (>= 3.4.0)
 Imports:
     clock,
-    lubridate,
-    nanotime,
+    methods,
     purrr (>= 0.9000.0.9000),
     vctrs,
 Remotes: tidyverse/purrr
 Suggests:
-    methods,
+    lubridate,
+    nanotime (>= 0.3.7),
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

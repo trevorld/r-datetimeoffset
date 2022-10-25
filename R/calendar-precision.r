@@ -86,7 +86,7 @@ calendar_widen <- function(x, precision, ...) {
 #' @param nanosecond   If missing what nanosecond to assume
 #' @export
 calendar_widen.datetimeoffset <- function(x, precision, ...,
-                                          year = 1L, month = 1L, day = 1L,
+                                          year = 0L, month = 1L, day = 1L,
                                           hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
     precision <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
     precision <- as.integer(precision)
