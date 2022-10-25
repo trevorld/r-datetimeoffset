@@ -18,11 +18,11 @@ format_pdfmark(x)
 format_strftime(
   x,
   format = "\%Y-\%m-\%d \%H:\%M:\%S",
-  tz = lubridate::tz(x),
+  tz = get_zone(x),
   usetz = FALSE
 )
 
-format_CCTZ(x, format = "\%Y-\%m-\%dT\%H:\%M:\%E9S\%Ez", tz = lubridate::tz(x))
+format_CCTZ(x, format = "\%Y-\%m-\%dT\%H:\%M:\%E9S\%Ez", tz = get_zone(x))
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object.}

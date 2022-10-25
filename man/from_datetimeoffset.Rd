@@ -10,14 +10,14 @@
 \alias{as.POSIXlt.datetimeoffset}
 \title{Convert to other datetime objects}
 \usage{
-\method{as.Date}{datetimeoffset}(x, ..., year = 1970L, month = 1L, day = 1L)
+\method{as.Date}{datetimeoffset}(x, ..., year = 1L, month = 1L, day = 1L)
 
 \method{as_date}{datetimeoffset}(x)
 
 \S4method{as.nanotime}{datetimeoffset}(
   from,
   ...,
-  year = 1970L,
+  year = 1L,
   month = 1L,
   day = 1L,
   hour = 0L,
@@ -31,7 +31,7 @@
   x,
   tz = mode_tz(x),
   ...,
-  year = 1970L,
+  year = 1L,
   month = 1L,
   day = 1L,
   hour = 0L,
@@ -44,7 +44,7 @@
   x,
   zone = mode_tz(x),
   ...,
-  year = 1970L,
+  year = 1L,
   month = 1L,
   day = 1L,
   hour = 0L,
@@ -57,7 +57,7 @@
   x,
   tz = mode_tz(x),
   ...,
-  year = 1970L,
+  year = 1L,
   month = 1L,
   day = 1L,
   hour = 0L,

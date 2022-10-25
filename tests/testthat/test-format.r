@@ -41,7 +41,7 @@ test_that("format_ISO8601()", {
                  "2020-05-15T08:23:16-07:00")
 
     dt <- as_datetimeoffset("D:20200515082316-0700")
-    second(dt) <- NA_integer_
+    dt <- set_second(dt, NA_integer_)
     expect_equal(format_ISO8601(dt), "2020-05-15T08:23-07:00")
 
     skip_if_not("America/Los_Angeles" %in% OlsonNames())
@@ -74,7 +74,7 @@ test_that("format_pdfmark()", {
                  "D:20200515082316-07'00'")
 
     dt <- as_datetimeoffset("D:20200515082316-07'00'")
-    second(dt) <- NA_integer_
+    dt <- set_second(dt, NA_integer_)
     expect_equal(format_pdfmark(dt), "D:202005150823")
 
     skip_if_not("America/Los_Angeles" %in% OlsonNames())

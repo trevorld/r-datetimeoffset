@@ -11,7 +11,7 @@ Initial features
     - Suitable for use as a column in data frames and tibbles
     - Separate `{vctrs}` accessible record "fields" for year, month, day, hour, 
       minute, second, nanosecond, hour\_offset, minute\_offset, and time zone all of which 
-      can be missing except year and can all be accessed by `{clock}` or `{lubridate}` (style) 
+      can be missing except year and can all be accessed by `{clock}` (style) 
       accessor functions.  
     - Non-missing time zones need not all be the same value 
 
@@ -53,33 +53,6 @@ Initial features
 * `datetimeoffset()` objects can add/subtract `{lubridate}` and `{nanotime}` duration and period objects
 
   - Can also add/subtract `difftime()` durations with `vctrs::vec_arith()`
-
-* Support for several `{lubridate}` accessor functions
-
-  + `date()` and `date()<-`
-
-    - To avoid an `R CMD check` WARNING we export another `date()` S3 generic
-
-  + `year()` and `year()<-`
-  + `month()` and `month()<-`
-  + `day()` and `day()<-`
-  + `hour()` and `hour()<-`
-  + `minute()` and `minute()<-`
-  + `second()` and `second()<-`
-  + `tz()` and `tz()<-`
-
-    - We export a `force_tz()` S3 generic which defaults to `lubridate::force_tz()`
-      but provides a special method for `datetimeoffset()` objects
-    - We export a `tz()<-` which uses the new generic `force_tz()`
-      instead of always using `lubridate::force_tz()`
-    - We export a `with_tz()` S3 generic which defaults to `lubridate::with_tz()`
-      but provides a special method for `datetimeoffset()` objects
-
-* Some additional `{lubridate}` "style" accessor functions
-
-  + `nanosecond()` and `nanosecond()<-`
-  + `hour_offset()` and `hour_offset()<-`
-  + `minute_offset()` and `minute_offset()<-`
 
 * Support for several `{clock}` accessor functions
 

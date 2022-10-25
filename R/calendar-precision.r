@@ -70,34 +70,49 @@ calendar_narrow.default <- function(x, precision) {
 }
 
 #' @rdname calendar-precision
+#' @param ... Used by certain methods
 #' @export
-calendar_widen <- function(x, precision) {
+calendar_widen <- function(x, precision, ...) {
     UseMethod("calendar_widen")
 }
 
 #' @rdname calendar-precision
+#' @param year If missing what year to assume
+#' @param month If missing what month to assume
+#' @param day   If missing what day to assume
+#' @param hour   If missing what hour to assume
+#' @param minute   If missing what minute to assume
+#' @param second   If missing what second to assume
+#' @param nanosecond   If missing what nanosecond to assume
 #' @export
-calendar_widen.datetimeoffset <- function(x, precision) {
+calendar_widen.datetimeoffset <- function(x, precision, ...,
+                                          year = 1L, month = 1L, day = 1L,
+                                          hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
     precision <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
     precision <- as.integer(precision)
-    field(x, "year") <- ifelse(is.na(field(x, "year")), 1L, field(x, "year"))
+    field(x, "year") <- update_missing(field(x, "year"), year)
     if (precision >= 2L)
-        field(x, "month") <- ifelse(is.na(field(x, "month")), 1L, field(x, "month"))
+        field(x, "month") <- update_missing(field(x, "month"), month)
     if (precision >= 3L)
-        field(x, "day") <- ifelse(is.na(field(x, "day")), 1L, field(x, "day"))
+        field(x, "day") <- update_missing(field(x, "day"), day)
     if (precision >= 4L)
-        field(x, "hour") <- ifelse(is.na(field(x, "hour")), 0L, field(x, "hour"))
+        field(x, "hour") <- update_missing(field(x, "hour"), hour)
     if (precision >= 5L)
-        field(x, "minute") <- ifelse(is.na(field(x, "minute")), 0L, field(x, "minute"))
+        field(x, "minute") <- update_missing(field(x, "minute"), minute)
     if (precision >= 6L)
-        field(x, "second") <- ifelse(is.na(field(x, "second")), 0L, field(x, "second"))
+        field(x, "second") <- update_missing(field(x, "second"), second)
     if (precision >= 7L)
-        field(x, "nanosecond") <- ifelse(is.na(field(x, "nanosecond")), 0L, field(x, "nanosecond"))
+        field(x, "nanosecond") <- update_missing(field(x, "nanosecond"), nanosecond)
     x
+}
+
+update_missing <- function(original, replacement) ifelse(is.na(original), replacement, original)
+update_missing_zone <- function(x, tz = "") {
+    set_zone(x, ifelse(is.na(get_zone(x)) & is.na(get_hour_offset(x)), clean_tz(tz), get_zone(x)))
 }
 
 #' @rdname calendar-precision
 #' @export
-calendar_widen.default <- function(x, precision) {
-    clock::calendar_widen(x, precision)
+calendar_widen.default <- function(x, precision, ...) {
+    clock::calendar_widen(x, precision, ...)
 }

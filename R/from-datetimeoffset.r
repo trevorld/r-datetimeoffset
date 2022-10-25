@@ -40,10 +40,8 @@ NULL
 
 #' @rdname from_datetimeoffset
 #' @export
-as.Date.datetimeoffset <- function(x, ..., year = 1970L, month = 1L, day = 1L) {
-    year(x) <- update_missing(year(x), year)
-    month(x) <- update_missing(month(x), month)
-    day(x) <- update_missing(day(x), day)
+as.Date.datetimeoffset <- function(x, ..., year = 1L, month = 1L, day = 1L) {
+    x <- calendar_widen(x, "day", year = year, month = month, day = day)
 
     year_str <- my_format(field(x, "year"), width = 4L)
     month_str <- my_format(field(x, "month"), prefix = "-")
@@ -64,31 +62,21 @@ setOldClass("datetimeoffset")
 #' @rdname from_datetimeoffset
 #' @export
 methods::setMethod("as.nanotime", methods::signature(from="datetimeoffset"),
-    function(from, ..., year = 1970L, month = 1L, day = 1L,
+    function(from, ..., year = 1L, month = 1L, day = 1L,
              hour = 0L, minute = 0L, second = 0L, nanosecond = 0L, tz = "") {
         x <- from
-        year(x) <- update_missing(year(x), year)
-        month(x) <- update_missing(month(x), month)
-        day(x) <- update_missing(day(x), day)
-        hour(x) <- update_missing(hour(x), hour)
-        minute(x) <- update_missing(minute(x), minute)
-        second(x) <- update_missing(second(x), second)
-        nanosecond(x) <- update_missing(nanosecond(x), nanosecond)
-
-        tz(x) <- ifelse(is.na(tz(x)) & is.na(hour_offset(x)), clean_tz(tz), tz(x))
+        x <- calendar_widen(x, "nanosecond",
+                            year = year, month = month, day = day,
+                            hour = hour, minute = minute, second = second, nanosecond = nanosecond)
+        x <- update_missing_zone(x, tz = tz)
         as.nanotime(format_ISO8601(x))
 })
 
-update_missing <- function(original, replacement) ifelse(is.na(original), replacement, original)
-update_missing_tz <- function(x, tzone) {
-
-
-}
 
 #' @rdname from_datetimeoffset
 #' @export
 as.POSIXct.datetimeoffset <- function(x, tz = mode_tz(x), ...,
-                                       year = 1970L, month = 1L, day = 1L,
+                                       year = 1L, month = 1L, day = 1L,
                                        hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
     as.POSIXct(as.nanotime(x, ...,
                            year = year, month = month, day = day,
@@ -101,7 +89,7 @@ as.POSIXct.datetimeoffset <- function(x, tz = mode_tz(x), ...,
 #' @importFrom clock as_date_time
 #' @export
 as_date_time.datetimeoffset <- function(x, zone = mode_tz(x), ...,
-                                       year = 1970L, month = 1L, day = 1L,
+                                       year = 1L, month = 1L, day = 1L,
                                        hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
     as.POSIXct.datetimeoffset(x, tz = zone, ...,
                               year = year, month = month, day = day,
@@ -111,9 +99,9 @@ as_date_time.datetimeoffset <- function(x, zone = mode_tz(x), ...,
 #' @rdname from_datetimeoffset
 #' @export
 as.POSIXlt.datetimeoffset <- function(x, tz = mode_tz(x), ...,
-                                       year = 1970L, month = 1L, day = 1L,
+                                       year = 1L, month = 1L, day = 1L,
                                        hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
-    as.POSIXct(as.nanotime(x, ...,
+    as.POSIXlt(as.nanotime(x, ...,
                            year = year, month = month, day = day,
                            hour = hour, minute = minute, second = second, nanosecond = nanosecond,
                            tz = tz),

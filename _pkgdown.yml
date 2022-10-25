@@ -14,20 +14,14 @@ reference:
       - as_datetimeoffset
       - format.datetimeoffset
       - as.Date.datetimeoffset
-  - title: 'Get "datetimeoffset" object components'
+  - title: 'Get/set "datetimeoffset" object components'
     desc: '"clock" style accessors for "datetimeoffset" object components'
     contents:
       - get_year.datetimeoffset
       - set_year.datetimeoffset
-  - title: 'Get/set "datetimeoffset" object components'
-    desc: '"lubridate" style accessors for "datetimeoffset" object components'
-    contents:
-      - year.datetimeoffset
-      - hour_offset.datetimeoffset
   - title: "Time zone utilities"
-    desc: "Change time zones and find most common time zone"
+    desc: "Find most common time zone"
     contents:
-      - with_tz
       - mode_tz
   - title: 'Other utilities'
     desc: 'Other utilities'

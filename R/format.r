@@ -80,21 +80,21 @@ methods::setMethod("format_ISO8601", signature = "datetimeoffset", function(x, u
     precision <- precision %||% "ymdhmsn"
     stopifnot(precision %in% c("y", "ym", "ymd", "ymdh", "ymdhm", "ymdhms", "ymdhmsn"))
     if (precision == "y")
-        month(x) <- NA_integer_
+        x <- set_month(x, NA_integer_)
     if (precision == "ym")
-        day(x) <- NA_integer_
+        x <- set_day(x, NA_integer_)
     if (precision == "ymd")
-        hour(x) <- NA_integer_
+        x <- set_hour(x, NA_integer_)
     if (precision == "ymdh")
-        minute(x) <- NA_integer_
+        x <- set_minute(x, NA_integer_)
     if (precision == "ymdhm")
-        second(x) <- NA_integer_
+        x <- set_second(x, NA_integer_)
     if (precision == "ymdhms")
-        nanosecond(x) <- NA_integer_
+        x <- set_nanosecond(x, NA_integer_)
     if (isFALSE(usetz)) {
-        hour_offset(x) <- NA_integer_
-        minute_offset(x) <- NA_integer_
-        tz(x) <- NA_character_
+        x <- set_hour_offset(x, NA_integer_)
+        x <- set_minute_offset(x, NA_integer_)
+        x <- set_zone(x, NA_character_)
     }
     x <- update_nas(x)
     year_str <- my_format(field(x, "year"), width = 4L)
@@ -128,7 +128,7 @@ format_pdfmark <- function(x) {
 
 #' @rdname format
 #' @export
-format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = lubridate::tz(x), usetz = FALSE) {
+format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = get_zone(x), usetz = FALSE) {
     tz <- clean_tz(tz, na = Sys.timezone())
     x <- as.POSIXct(x)
     df <- data.frame(x = x, format = format, tz = tz, usetz = usetz, stringsAsFactors = FALSE)
@@ -137,7 +137,7 @@ format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = lubridate::tz(
 
 #' @rdname format
 #' @export
-format_CCTZ <- function(x, format = "%Y-%m-%dT%H:%M:%E9S%Ez", tz = lubridate::tz(x)) {
+format_CCTZ <- function(x, format = "%Y-%m-%dT%H:%M:%E9S%Ez", tz = get_zone(x)) {
     tz <- clean_tz(tz, na = Sys.timezone())
     x <- as.nanotime(x)
     df <- data.frame(x = x, format = format, tz = tz, stringsAsFactors = FALSE)
@@ -146,30 +146,30 @@ format_CCTZ <- function(x, format = "%Y-%m-%dT%H:%M:%E9S%Ez", tz = lubridate::tz
 
 update_nas <- function(x, pdfmark = FALSE) {
     # No smaller time units if missing bigger time units
-    day(x) <- ifelse(is.na(month(x)), NA_integer_, day(x))
-    hour(x) <- ifelse(is.na(day(x)), NA_integer_, hour(x))
-    minute(x) <- ifelse(is.na(hour(x)), NA_integer_, minute(x))
-    second(x) <- ifelse(is.na(minute(x)), NA_integer_, second(x))
-    nanosecond(x) <- ifelse(is.na(second(x)), NA_integer_, nanosecond(x))
-    minute_offset(x) <- ifelse(is.na(hour_offset(x)), NA_integer_, minute_offset(x))
+    x <- set_day(x, ifelse(is.na(get_month(x)), NA_integer_, get_day(x)))
+    x <- set_hour(x, ifelse(is.na(get_day(x)), NA_integer_, get_hour(x)))
+    x <- set_minute(x, ifelse(is.na(get_hour(x)), NA_integer_, get_minute(x)))
+    x <- set_second(x, ifelse(is.na(get_minute(x)), NA_integer_, get_second(x)))
+    x <- set_nanosecond(x, ifelse(is.na(get_second(x)), NA_integer_, get_nanosecond(x)))
+    x <- set_minute_offset(x, ifelse(is.na(get_hour_offset(x)), NA_integer_, get_minute_offset(x)))
 
     # no time zones and offsets if no hours
-    hour_offset(x) <- ifelse(is.na(hour(x)), NA_integer_, hour_offset(x))
-    minute_offset(x) <- ifelse(is.na(hour(x)), NA_integer_, minute_offset(x))
-    tz(x) <- ifelse(is.na(hour(x)), NA_character_, tz(x))
+    x <- set_hour_offset(x, ifelse(is.na(get_hour(x)), NA_integer_, get_hour_offset(x)))
+    x <- set_minute_offset(x, ifelse(is.na(get_hour(x)), NA_integer_, get_minute_offset(x)))
+    x <- set_zone(x, ifelse(is.na(get_hour(x)), NA_character_, get_zone(x)))
 
     if (pdfmark) { # if missing seconds then pdfmark offsets are missing
-        tz(x) <- ifelse(is.na(second(x)), NA_character_, tz(x))
-        hour_offset(x) <- ifelse(is.na(second(x)), NA_integer_, hour_offset(x))
-        minute_offset(x) <- ifelse(is.na(second(x)), NA_integer_, minute_offset(x))
+        x <- set_hour_offset(x, ifelse(is.na(get_second(x)), NA_integer_, get_hour_offset(x)))
+        x <- set_minute_offset(x, ifelse(is.na(get_second(x)), NA_integer_, get_minute_offset(x)))
+        x <- set_zone(x, ifelse(is.na(get_second(x)), NA_character_, get_zone(x)))
     }
 
     x
 }
 
 as_ymd_hms_str <- function(x, ...) {
-    minute(x) <- update_missing(minute(x), 0)
-    second(x) <- update_missing(second(x), 0)
+    x <- set_minute(x, update_missing(get_minute(x), 0L))
+    x <- set_second(x, update_missing(get_second(x), 0L))
 
     year_str <- my_format(field(x, "year"), width = 4L)
     month_str <- my_format(field(x, "month"), prefix = "-")

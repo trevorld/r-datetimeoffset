@@ -29,7 +29,7 @@ methods::setOldClass("datetimeoffset")
 #' @rdname period
 #' @export
 setMethod("+", c("datetimeoffset", "nanoperiod"), function(e1, e2) {
-    tz <- clean_tz(tz(e1), na = Sys.timezone())
+    tz <- clean_tz(get_zone(e1), na = Sys.timezone())
     n <- length(tz)
     if (length(e2) < n)
         e2 <- rep(e2, length.out = n)
@@ -56,7 +56,7 @@ setMethod("+", c("nanoperiod", "datetimeoffset"), function(e1, e2) {
 #' @rdname period
 #' @export
 setMethod("+", c("datetimeoffset", "Period"), function(e1, e2) {
-    tz <- clean_tz(tz(e1), na = Sys.timezone())
+    tz <- clean_tz(get_zone(e1), na = Sys.timezone())
     n <- length(tz)
     if (length(e2) < n)
         e2 <- rep(e2, length.out = n)

@@ -19,16 +19,43 @@ calendar_narrow(x, precision)
 
 \method{calendar_narrow}{default}(x, precision)
 
-calendar_widen(x, precision)
+calendar_widen(x, precision, ...)
 
-\method{calendar_widen}{datetimeoffset}(x, precision)
+\method{calendar_widen}{datetimeoffset}(
+  x,
+  precision,
+  ...,
+  year = 1L,
+  month = 1L,
+  day = 1L,
+  hour = 0L,
+  minute = 0L,
+  second = 0L,
+  nanosecond = 0L
+)
 
-\method{calendar_widen}{default}(x, precision)
+\method{calendar_widen}{default}(x, precision, ...)
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} vector}
 
 \item{precision}{Precision to narrow/widen to.  Either "year", "month", "day", "hour", "minute", "second", or "nanosecond".}
+
+\item{...}{Used by certain methods}
+
+\item{year}{If missing what year to assume}
+
+\item{month}{If missing what month to assume}
+
+\item{day}{If missing what day to assume}
+
+\item{hour}{If missing what hour to assume}
+
+\item{minute}{If missing what minute to assume}
+
+\item{second}{If missing what second to assume}
+
+\item{nanosecond}{If missing what nanosecond to assume}
 }
 \value{
 \code{calendar_precision()} returns a character vector of precisions ("year", "month", "day", "hour", "minute", "second", or "nanosecond").

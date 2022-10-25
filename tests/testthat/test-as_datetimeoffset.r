@@ -163,7 +163,7 @@ test_that("as_datetimeoffset()", {
     expect_equal(format(as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16.03Z"))),
                  "2020-05-15T08:23:16.03Z")
     dt <- as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16Z"))
-    expect_equal(nanosecond(dt), 0L)
+    expect_equal(get_nanosecond(dt), 0L)
 
     skip_if_not("US/Eastern" %in% OlsonNames())
 

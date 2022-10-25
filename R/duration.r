@@ -71,9 +71,9 @@ vec_arith.datetimeoffset.datetimeoffset <- function(op, x, y, ...) {
 #' @export
 vec_arith.datetimeoffset.numeric <- function(op, x, y, ...) {
     if (op == "-") {
-        as_datetimeoffset(as.nanotime(x, tz = tz(x)) - y, tz = tz(x))
+        as_datetimeoffset(as.nanotime(x, tz = get_zone(x)) - y, tz = get_zone(x))
     } else if (op == "+") {
-        as_datetimeoffset(as.nanotime(x, tz = tz(x)) + y, tz = tz(x))
+        as_datetimeoffset(as.nanotime(x, tz = get_zone(x)) + y, tz = get_zone(x))
     } else {
         stop_incompatible_op(op, x, y)
     }
@@ -84,7 +84,7 @@ vec_arith.datetimeoffset.numeric <- function(op, x, y, ...) {
 #' @export
 vec_arith.numeric.datetimeoffset <- function(op, x, y, ...) {
     if (op == "+") {
-        as_datetimeoffset(as.nanotime(y, tz = tz(y)) + x, tz = tz(y))
+        as_datetimeoffset(as.nanotime(y, tz = get_zone(y)) + x, tz = get_zone(y))
     } else {
         stop_incompatible_op(op, x, y)
     }
@@ -117,7 +117,7 @@ vec_arith.difftime.datetimeoffset <- function(op, x, y, ...) {
 #' @rdname duration
 #' @export
 setMethod("+", c("datetimeoffset", "nanoduration"), function(e1, e2) {
-    as_datetimeoffset(as.nanotime(e1) + e2, tz = tz(e1))
+    as_datetimeoffset(as.nanotime(e1) + e2, tz = get_zone(e1))
 })
 
 #' @rdname duration
@@ -151,7 +151,7 @@ setMethod("as.nanoduration", "Duration", function(x) {
 #' @export
 setMethod("+", c("datetimeoffset", "Duration"), function(e1, e2) {
     nd <- as.nanoduration(e2)
-    as_datetimeoffset(as.nanotime(e1) + nd, tz = tz(e1))
+    as_datetimeoffset(as.nanotime(e1) + nd, tz = get_zone(e1))
 })
 
 #' @rdname duration
