@@ -210,7 +210,7 @@ my_format_tz <- function(x, sep = ":", no_zulu = FALSE, add_tz = FALSE) {
         df <- data.frame(x = as_ymd_hms_str(x[id_tz]), tz = tz_id,
                          stringsAsFactors = FALSE)
         offsets <- purrr::pmap_chr(df, function(x, tz) {
-                                       dt <- nanotime::as.nanotime(x, tz = tz)
+                                       dt <- nanotime::as.nanotime(x, tz = tz) #### #22
                                        format(dt, format = "%z", tz = tz)
                                    })
         offsets <- paste0(substr(offsets, 1, 3), sep, substr(offsets, 4, 5))

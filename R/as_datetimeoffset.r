@@ -4,10 +4,10 @@
 #'
 #' @param x An R object that can reasonably be coerced to a [datetimeoffset()] object
 #'          such as a string in pdfmark date or ISO 8601 datetime formats
-#'          or something with an [nanotime::as.nanotime()] or [as.POSIXct()] method.
+#'          or something with an [as.POSIXct()] method.
 #' @param tz Time zone to use for the conversion.
 #'           Ignored by `as_datetimeoffset.Date()`.
-#'           Need not be a single value for `as_datetimeoffset.nanotime()`.
+#'           Generally need not be a single value.
 #' @param ... Further arguments to certain methods.
 #' @examples
 #' # ISO 8601 examples
@@ -46,23 +46,20 @@ as_datetimeoffset.Date <- function(x, tz = NA_character_, ...) {
 
 #' @rdname as_datetimeoffset
 #' @export
-as_datetimeoffset.default <- function(x, tz = get_zone(as.POSIXct(x)), ...) {
-    assert_suggested("nanotime")
-    as_datetimeoffset(nanotime::as.nanotime(as.POSIXct(x)), tz = tz)
+as_datetimeoffset.default <- function(x, ...) {
+    as_datetimeoffset(clock::as_zoned_time(as.POSIXct(x)))
 }
 
 #' @rdname as_datetimeoffset
 #' @export
-as_datetimeoffset.POSIXct <- function(x, tz = get_zone(x), ...) {
-    assert_suggested("nanotime")
-    as_datetimeoffset(nanotime::as.nanotime(x), tz = tz)
+as_datetimeoffset.POSIXct <- function(x, ...) {
+    as_datetimeoffset(clock::as_zoned_time(x))
 }
 
 #' @rdname as_datetimeoffset
 #' @export
-as_datetimeoffset.POSIXlt <- function(x, tz = get_zone(x), ...) {
-    assert_suggested("nanotime")
-    as_datetimeoffset(nanotime::as.nanotime(x), tz = tz)
+as_datetimeoffset.POSIXlt <- function(x, ...) {
+    as_datetimeoffset(clock::as_zoned_time(x))
 }
 
 #' @rdname as_datetimeoffset
@@ -85,6 +82,7 @@ as_datetimeoffset.character <- function(x, tz = NA_character_, ...) {
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.nanotime <- function(x, tz = "GMT", ...) {
+    assert_suggested("nanotime")
     tz <- clean_tz(tz, na = "GMT")
     n <- length(tz)
     if (length(x) < n)
@@ -124,6 +122,24 @@ as_datetimeoffset.clock_year_quarter_day <- function(x, ...) {
 #' @export
 as_datetimeoffset.clock_year_day <- function(x, ...) {
     as_datetimeoffset(format(as_year_month_day(x)))
+}
+
+#' @rdname as_datetimeoffset
+#' @export
+as_datetimeoffset.clock_naive_time <- function(x, ...) {
+    as_datetimeoffset(format(x))
+}
+
+#' @rdname as_datetimeoffset
+#' @export
+as_datetimeoffset.clock_sys_time <- function(x, ...) {
+    set_zone(as_datetimeoffset(format(x)), "GMT")
+}
+
+#' @rdname as_datetimeoffset
+#' @export
+as_datetimeoffset.clock_zoned_time <- function(x, ...) {
+    as_datetimeoffset(format(x))
 }
 
 parse_nanoseconds <- function(x) {

@@ -176,10 +176,10 @@ test_that("as_datetimeoffset()", {
     # POSIXct
     dt <- as.POSIXct("2022-10-10 10:00:00", tz = "US/Eastern")
     expect_equal(format(as_datetimeoffset(dt)),
-                 "2022-10-10T10:00:00.0-04:00[US/Eastern]")
+                 "2022-10-10T10:00:00-04:00[US/Eastern]")
 
     # POSIXlt
     dt <- as.POSIXlt("2022-10-10 10:00:00", tz = "US/Eastern")
     expect_equal(format(as_datetimeoffset(dt)),
-                 "2022-10-10T10:00:00.0-04:00[US/Eastern]")
+                 "2022-10-10T10:00:00-04:00[US/Eastern]")
 })

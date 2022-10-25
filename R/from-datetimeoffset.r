@@ -75,6 +75,7 @@ as_date.datetimeoffset <- function(x) {
 as.POSIXct.datetimeoffset <- function(x, tz = mode_tz(x), ...,
                                        year = 0L, month = 1L, day = 1L,
                                        hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
+    #### #22
     assert_suggested("nanotime")
     as.POSIXct(nanotime::as.nanotime(x, ...,
                            year = year, month = month, day = day,
@@ -99,6 +100,7 @@ as_date_time.datetimeoffset <- function(x, zone = mode_tz(x), ...,
 as.POSIXlt.datetimeoffset <- function(x, tz = mode_tz(x), ...,
                                        year = 0L, month = 1L, day = 1L,
                                        hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
+    #### #22
     assert_suggested("nanotime")
     as.POSIXlt(nanotime::as.nanotime(x, ...,
                            year = year, month = month, day = day,
@@ -167,4 +169,12 @@ as_year_quarter_day.datetimeoffset <- function(x) {
 as_year_day.datetimeoffset <- function(x) {
     ymd <- as_year_month_day.datetimeoffset(x)
     clock::as_year_day(ymd)
+}
+
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_sys_time
+#' @export
+as_sys_time.datetimeoffset <- function(x) {
+    ymd <- as_year_month_day.datetimeoffset(x)
+    clock::as_sys_time(ymd)
 }

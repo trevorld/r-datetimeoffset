@@ -30,7 +30,7 @@ Initial features
   + `POSIXct()` objects
   + `POSIXlt()` objects
   + `nanotime()` objects
-  + `{clock}` calendars
+  + `{clock}` calendars and times
   + Any other datetime objects with an `as.POSIXct()` method
 
 * Support for formatting output strings:

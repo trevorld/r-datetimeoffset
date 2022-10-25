@@ -14,6 +14,9 @@
 \alias{as_datetimeoffset.clock_iso_year_week_day}
 \alias{as_datetimeoffset.clock_year_quarter_day}
 \alias{as_datetimeoffset.clock_year_day}
+\alias{as_datetimeoffset.clock_naive_time}
+\alias{as_datetimeoffset.clock_sys_time}
+\alias{as_datetimeoffset.clock_zoned_time}
 \title{Coerce to "datetimeoffset" objects}
 \usage{
 as_datetimeoffset(x, ...)
@@ -22,11 +25,11 @@ as_datetimeoffset(x, ...)
 
 \method{as_datetimeoffset}{Date}(x, tz = NA_character_, ...)
 
-\method{as_datetimeoffset}{default}(x, tz = get_zone(as.POSIXct(x)), ...)
+\method{as_datetimeoffset}{default}(x, ...)
 
-\method{as_datetimeoffset}{POSIXct}(x, tz = get_zone(x), ...)
+\method{as_datetimeoffset}{POSIXct}(x, ...)
 
-\method{as_datetimeoffset}{POSIXlt}(x, tz = get_zone(x), ...)
+\method{as_datetimeoffset}{POSIXlt}(x, ...)
 
 \method{as_datetimeoffset}{character}(x, tz = NA_character_, ...)
 
@@ -41,17 +44,23 @@ as_datetimeoffset(x, ...)
 \method{as_datetimeoffset}{clock_year_quarter_day}(x, ...)
 
 \method{as_datetimeoffset}{clock_year_day}(x, ...)
+
+\method{as_datetimeoffset}{clock_naive_time}(x, ...)
+
+\method{as_datetimeoffset}{clock_sys_time}(x, ...)
+
+\method{as_datetimeoffset}{clock_zoned_time}(x, ...)
 }
 \arguments{
 \item{x}{An R object that can reasonably be coerced to a \code{\link[=datetimeoffset]{datetimeoffset()}} object
 such as a string in pdfmark date or ISO 8601 datetime formats
-or something with an \code{\link[nanotime:nanotime]{nanotime::as.nanotime()}} or \code{\link[=as.POSIXct]{as.POSIXct()}} method.}
+or something with an \code{\link[=as.POSIXct]{as.POSIXct()}} method.}
 
 \item{...}{Further arguments to certain methods.}
 
 \item{tz}{Time zone to use for the conversion.
 Ignored by \code{as_datetimeoffset.Date()}.
-Need not be a single value for \code{as_datetimeoffset.nanotime()}.}
+Generally need not be a single value.}
 }
 \description{
 \code{as_datetimeoffset()} coerces to \code{\link[=datetimeoffset]{datetimeoffset()}} objects.

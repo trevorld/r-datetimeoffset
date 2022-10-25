@@ -12,6 +12,7 @@
 \alias{as_iso_year_week_day.datetimeoffset}
 \alias{as_year_quarter_day.datetimeoffset}
 \alias{as_year_day.datetimeoffset}
+\alias{as_sys_time.datetimeoffset}
 \title{Convert to other datetime objects}
 \usage{
 \method{as.Date}{datetimeoffset}(x, ..., year = 0L, month = 1L, day = 1L)
@@ -66,6 +67,8 @@
 \method{as_year_quarter_day}{datetimeoffset}(x)
 
 \method{as_year_day}{datetimeoffset}(x)
+
+\method{as_sys_time}{datetimeoffset}(x)
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object}

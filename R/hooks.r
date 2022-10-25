@@ -19,7 +19,7 @@
                                     year = year, month = month, day = day,
                                     hour = hour, minute = minute, second = second, nanosecond = nanosecond)
                 x <- update_missing_zone(x, tz = tz)
-                nanotime::as.nanotime(format_ISO8601(x))
+                nanotime::as.nanotime(format_iso8601(x))
         })
     }
 }
