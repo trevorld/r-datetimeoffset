@@ -30,6 +30,7 @@ Initial features
   + `POSIXct()` objects
   + `POSIXlt()` objects
   + `nanotime()` objects
+  + `{clock}` calendars
   + Any other datetime objects with an `as.POSIXct()` method
 
 * Support for formatting output strings:
@@ -49,6 +50,7 @@ Initial features
   + `as.POSIXct()` and `as_date_time()` converts the datetime to a `base::POSIXct()` object
   + `as.POSIXlt()` converts the datetime to a `base::POSIXlt()` object
   + `as.nanotime()` converts the datetime to a `nanotime::nanotime()` object
+  + `{clock}` calendars
 
 * Support for several `{clock}` accessor functions
 

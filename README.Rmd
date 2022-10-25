@@ -33,6 +33,13 @@
 2. Datetimes can be augmented with optional UTC offsets and/or (possibly heteregeneous) time zones.
 3. Can support up to nanosecond precision.
 
+The motivating use case for this package was the need for a datetime aware class that can losslessy import/export
+pdf metadata datetimes for [{xmpdf}](https://github.com/trevorld/r-xmpdf).  pdf metadata datetimes
+are local times with a wide range of legal precisions but with unknown time zones 
+but a possibly known UTC offset.  Generally pre-existing R datetime classes either assume
+knowledge of a (usually single) time zone or alternatively assumed it was acceptable to fully
+convert to UTC time.
+
 ## <a name="installation">Installation</a>
 
 ```{r install, eval = FALSE}
@@ -143,6 +150,7 @@ format(boundary)
   + `POSIXct()` objects
   + `POSIXlt()` objects
   + `nanotime()` objects
+  + `{clock}` calendars
   + Any other R datetime objects with an `as.POSIXct()` method
 
 * Support for formatting output datetime strings:
@@ -162,6 +170,7 @@ format(boundary)
   + `as.POSIXct()` and `as_date_time()` converts the datetime to a `base::POSIXct()` object
   + `as.POSIXlt()` converts the datetime to a `base::POSIXlt()` object
   + `as.nanotime()` converts the datetime to a `nanotime::nanotime()` object
+  + `{clock}` calendars
 
 * Support for several `{clock}` accessor functions
 

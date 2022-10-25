@@ -7,6 +7,11 @@
 \alias{as.POSIXct.datetimeoffset}
 \alias{as_date_time.datetimeoffset}
 \alias{as.POSIXlt.datetimeoffset}
+\alias{as_year_month_day.datetimeoffset}
+\alias{as_year_month_weekday.datetimeoffset}
+\alias{as_iso_year_week_day.datetimeoffset}
+\alias{as_year_quarter_day.datetimeoffset}
+\alias{as_year_day.datetimeoffset}
 \title{Convert to other datetime objects}
 \usage{
 \method{as.Date}{datetimeoffset}(x, ..., year = 0L, month = 1L, day = 1L)
@@ -51,6 +56,16 @@
   second = 0L,
   nanosecond = 0L
 )
+
+\method{as_year_month_day}{datetimeoffset}(x)
+
+\method{as_year_month_weekday}{datetimeoffset}(x)
+
+\method{as_iso_year_week_day}{datetimeoffset}(x)
+
+\method{as_year_quarter_day}{datetimeoffset}(x)
+
+\method{as_year_day}{datetimeoffset}(x)
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object}
@@ -84,21 +99,34 @@ We provide the following methods:
 \item \code{as.POSIXct()} and \code{as_date_time()} returns the "local" datetime as a \code{\link[base:DateTimeClasses]{base::POSIXct()}} object
 \item \code{as.POSIXlt()} returns the "local" datetime as a \code{\link[base:DateTimeClasses]{base::POSIXlt()}} object
 \item \code{as.nanotime()} returns the "global" datetime as a \code{\link[nanotime:nanotime]{nanotime::nanotime()}} object
+\item \code{as_year_month_day()} returns a \code{\link[clock:year_month_day]{clock::year_month_day()}} calendar
+\item \code{as_year_month_weekday()} returns a \code{\link[clock:year_month_weekday]{clock::year_month_weekday()}} calendar
+\item \code{as_iso_year_week_day()} returns a \code{\link[clock:iso_year_week_day]{clock::iso_year_week_day()}} calendar
+\item \code{as_year_quarter_day()} returns a \code{\link[clock:year_quarter_day]{clock::year_quarter_day()}} calendar
+\item \code{as_year_day()} returns a "clock" \code{\link[clock:year_day]{clock::year_day()}} calendar
 }
 }
 \examples{
   # {base}
+  today <- as_datetimeoffset(Sys.Date())
+  now <- as_datetimeoffset(Sys.time())
+
   as.Date(as_datetimeoffset("2020-03-05"))
   as.Date(as_datetimeoffset("2020"))
   as.Date(as_datetimeoffset("2020"), month = 6, day = 15)
-  as.POSIXct(as_datetimeoffset(Sys.time()))
-  as.POSIXlt(as_datetimeoffset(Sys.time()))
+  as.POSIXct(now)
+  as.POSIXlt(now)
 
   # {clock}
-  clock::as_date(as_datetimeoffset(Sys.Date()))
-  clock::as_date_time(as_datetimeoffset(Sys.time()))
+  clock::as_date(today)
+  clock::as_date_time(now)
+  clock::as_year_month_day(now)
+  clock::as_year_month_weekday(now)
+  clock::as_iso_year_week_day(now)
+  clock::as_year_quarter_day(now)
+  clock::as_year_day(now)
 
   if (require("nanotime")) {
-    nanotime::as.nanotime(as_datetimeoffset(Sys.time()))
+    nanotime::as.nanotime(now)
   }
 }

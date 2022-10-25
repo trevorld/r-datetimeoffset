@@ -9,6 +9,11 @@
 \alias{as_datetimeoffset.POSIXlt}
 \alias{as_datetimeoffset.character}
 \alias{as_datetimeoffset.nanotime}
+\alias{as_datetimeoffset.clock_year_month_day}
+\alias{as_datetimeoffset.clock_year_month_weekday}
+\alias{as_datetimeoffset.clock_iso_year_week_day}
+\alias{as_datetimeoffset.clock_year_quarter_day}
+\alias{as_datetimeoffset.clock_year_day}
 \title{Coerce to "datetimeoffset" objects}
 \usage{
 as_datetimeoffset(x, ...)
@@ -26,6 +31,16 @@ as_datetimeoffset(x, ...)
 \method{as_datetimeoffset}{character}(x, tz = NA_character_, ...)
 
 \method{as_datetimeoffset}{nanotime}(x, tz = "GMT", ...)
+
+\method{as_datetimeoffset}{clock_year_month_day}(x, ...)
+
+\method{as_datetimeoffset}{clock_year_month_weekday}(x, ...)
+
+\method{as_datetimeoffset}{clock_iso_year_week_day}(x, ...)
+
+\method{as_datetimeoffset}{clock_year_quarter_day}(x, ...)
+
+\method{as_datetimeoffset}{clock_year_day}(x, ...)
 }
 \arguments{
 \item{x}{An R object that can reasonably be coerced to a \code{\link[=datetimeoffset]{datetimeoffset()}} object

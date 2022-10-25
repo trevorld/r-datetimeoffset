@@ -9,6 +9,11 @@
 #' * `as.POSIXct()` and `as_date_time()` returns the "local" datetime as a [base::POSIXct()] object
 #' * `as.POSIXlt()` returns the "local" datetime as a [base::POSIXlt()] object
 #' * `as.nanotime()` returns the "global" datetime as a [nanotime::nanotime()] object
+#' * `as_year_month_day()` returns a [clock::year_month_day()] calendar
+#' * `as_year_month_weekday()` returns a [clock::year_month_weekday()] calendar
+#' * `as_iso_year_week_day()` returns a [clock::iso_year_week_day()] calendar
+#' * `as_year_quarter_day()` returns a [clock::year_quarter_day()] calendar
+#' * `as_year_day()` returns a "clock" [clock::year_day()] calendar
 #'
 #' @param x A [datetimeoffset()] object
 #' @param year If missing what year to assume
@@ -23,18 +28,26 @@
 #' @name from_datetimeoffset
 #' @examples
 #'   # {base}
+#'   today <- as_datetimeoffset(Sys.Date())
+#'   now <- as_datetimeoffset(Sys.time())
+#'
 #'   as.Date(as_datetimeoffset("2020-03-05"))
 #'   as.Date(as_datetimeoffset("2020"))
 #'   as.Date(as_datetimeoffset("2020"), month = 6, day = 15)
-#'   as.POSIXct(as_datetimeoffset(Sys.time()))
-#'   as.POSIXlt(as_datetimeoffset(Sys.time()))
+#'   as.POSIXct(now)
+#'   as.POSIXlt(now)
 #'
 #'   # {clock}
-#'   clock::as_date(as_datetimeoffset(Sys.Date()))
-#'   clock::as_date_time(as_datetimeoffset(Sys.time()))
+#'   clock::as_date(today)
+#'   clock::as_date_time(now)
+#'   clock::as_year_month_day(now)
+#'   clock::as_year_month_weekday(now)
+#'   clock::as_iso_year_week_day(now)
+#'   clock::as_year_quarter_day(now)
+#'   clock::as_year_day(now)
 #'
 #'   if (require("nanotime")) {
-#'     nanotime::as.nanotime(as_datetimeoffset(Sys.time()))
+#'     nanotime::as.nanotime(now)
 #'   }
 NULL
 
@@ -56,7 +69,6 @@ as.Date.datetimeoffset <- function(x, ..., year = 0L, month = 1L, day = 1L) {
 as_date.datetimeoffset <- function(x) {
     as.Date.datetimeoffset(x)
 }
-
 
 #' @rdname from_datetimeoffset
 #' @export
@@ -93,4 +105,66 @@ as.POSIXlt.datetimeoffset <- function(x, tz = mode_tz(x), ...,
                            hour = hour, minute = minute, second = second, nanosecond = nanosecond,
                            tz = tz),
                tz = tz)
+}
+
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_year_month_day
+#' @export
+as_year_month_day.datetimeoffset <- function(x) {
+    # coerce to at least "year" then use "minimum" precision
+    x <- calendar_widen(x, "year")
+    precision <- calendar_precision(x, range = TRUE)[1]
+    precision <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
+    precision <- as.integer(precision)
+    year <- field(x, "year")
+    month <- NULL
+    day <- NULL
+    hour <- NULL
+    minute <- NULL
+    second <- NULL
+    subsecond <- NULL
+    subsecond_precision <- NULL
+    if (precision >= 2L) month <- field(x, "month")
+    if (precision >= 3L) day <- field(x, "day")
+    if (precision >= 4L) hour <- field(x, "hour")
+    if (precision >= 5L) minute <- field(x, "minute")
+    if (precision >= 6L) second <- field(x, "second")
+    if (precision >= 7L) {
+        subsecond <- field(x, "nanosecond")
+        subsecond_precision <- "nanosecond"
+    }
+    clock::year_month_day(year, month, day, hour, minute, second, subsecond,
+                          subsecond_precision = subsecond_precision)
+}
+
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_year_month_weekday
+#' @export
+as_year_month_weekday.datetimeoffset <- function(x) {
+    ymd <- as_year_month_day.datetimeoffset(x)
+    clock::as_year_month_weekday(ymd)
+}
+
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_iso_year_week_day
+#' @export
+as_iso_year_week_day.datetimeoffset <- function(x) {
+    ymd <- as_year_month_day.datetimeoffset(x)
+    clock::as_iso_year_week_day(ymd)
+}
+
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_year_quarter_day
+#' @export
+as_year_quarter_day.datetimeoffset <- function(x) {
+    ymd <- as_year_month_day.datetimeoffset(x)
+    clock::as_year_quarter_day(ymd)
+}
+
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_year_day
+#' @export
+as_year_day.datetimeoffset <- function(x) {
+    ymd <- as_year_month_day.datetimeoffset(x)
+    clock::as_year_day(ymd)
 }

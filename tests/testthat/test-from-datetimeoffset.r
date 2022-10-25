@@ -28,6 +28,47 @@ test_that("as.POSIXlt()", {
                  format(as.POSIXlt(as_datetimeoffset("2020-03-23 04:04:04", tz=""))))
 })
 
+test_that("clock classes", {
+    dt <- as_datetimeoffset("2020-03-23T04:04:04Z")
+
+    ymd <- as_year_month_day(dt)
+    expect_equal(format(ymd), "2020-03-23T04:04:04")
+    expect_equal(format(as_datetimeoffset(ymd)),
+                 "2020-03-23T04:04:04")
+
+    ymw <- as_year_month_weekday(dt)
+    expect_equal(format(ymw), "2020-03-Mon[4]T04:04:04")
+    expect_equal(format(as_datetimeoffset(ymw)),
+                 "2020-03-23T04:04:04")
+
+    ywd <- as_iso_year_week_day(dt)
+    expect_equal(format(ywd), "2020-W13-1T04:04:04")
+    expect_equal(format(as_datetimeoffset(ywd)),
+                 "2020-03-23T04:04:04")
+
+    yqd <- as_year_quarter_day(dt)
+    expect_equal(format(yqd), "2020-Q1-83T04:04:04")
+    expect_equal(format(as_datetimeoffset(yqd)),
+                 "2020-03-23T04:04:04")
+
+    yd <- as_year_day(dt)
+    expect_equal(format(yd), "2020-083T04:04:04")
+    expect_equal(format(as_datetimeoffset(yd)),
+                 "2020-03-23T04:04:04")
+
+    dt <- as_datetimeoffset("2020-03-01")
+    expect_equal(format(as_year_month_day(dt)),
+                 "2020-03-01")
+    expect_equal(format(as_year_month_weekday(dt)),
+                 "2020-03-Sun[1]")
+    expect_equal(format(as_iso_year_week_day(dt)),
+                 "2020-W09-7")
+    expect_equal(format(as_year_quarter_day(dt)),
+                 "2020-Q1-61")
+    expect_equal(format(as_year_day(dt)),
+                 "2020-061")
+})
+
 test_that("mode_tz()", {
     expect_equal(mode_tz(as_datetimeoffset(Sys.time())),
                  Sys.timezone())

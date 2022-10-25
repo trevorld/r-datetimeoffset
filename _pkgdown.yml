@@ -26,4 +26,5 @@ reference:
   - title: 'Other utilities'
     desc: 'Other utilities'
     contents:
+      - calendar_narrow.datetimeoffset
       - calendar_precision.datetimeoffset

@@ -96,6 +96,36 @@ as_datetimeoffset.nanotime <- function(x, tz = "GMT", ...) {
                     .ptype = datetimeoffset())
 }
 
+#' @rdname as_datetimeoffset
+#' @export
+as_datetimeoffset.clock_year_month_day <- function(x, ...) {
+    as_datetimeoffset(format(x))
+}
+
+#' @rdname as_datetimeoffset
+#' @export
+as_datetimeoffset.clock_year_month_weekday <- function(x, ...) {
+    as_datetimeoffset(format(as_year_month_day(x)))
+}
+
+#' @rdname as_datetimeoffset
+#' @export
+as_datetimeoffset.clock_iso_year_week_day <- function(x, ...) {
+    as_datetimeoffset(format(as_year_month_day(x)))
+}
+
+#' @rdname as_datetimeoffset
+#' @export
+as_datetimeoffset.clock_year_quarter_day <- function(x, ...) {
+    as_datetimeoffset(format(as_year_month_day(x)))
+}
+
+#' @rdname as_datetimeoffset
+#' @export
+as_datetimeoffset.clock_year_day <- function(x, ...) {
+    as_datetimeoffset(format(as_year_month_day(x)))
+}
+
 parse_nanoseconds <- function(x) {
     x <- substr(x, 2L, nchar(x))
     stopifnot(nchar(x) <= 9L)
