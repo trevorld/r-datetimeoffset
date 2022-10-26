@@ -1,4 +1,4 @@
-# r-datetimeoffset
+# r-datetimeoffset <img src="man/figures/logo.png" align="right" width="200px" alt="datetimeoffset hex sticker">
 
 [![CRAN Status Badge](https://www.r-pkg.org/badges/version/datetimeoffset)](https://cran.r-project.org/package=datetimeoffset)
 [![R-CMD-check](https://github.com/trevorld/r-datetimeoffset/workflows/R-CMD-check/badge.svg)](https://github.com/trevorld/r-datetimeoffset/actions)
@@ -235,7 +235,7 @@ print(creation_date)
 ```
 
 ```
-## [1] "2022-10-26 12:55:08 PDT"
+## [1] "2022-10-26 13:29:50 PDT"
 ```
 
 ```r
@@ -254,13 +254,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-10-26T12:55:08
+## CreationDate: 2022-10-26T13:29:50
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-10-26T12:55:08
+## ModDate: 2022-10-26T13:29:50
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -280,13 +280,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-10-26T12:55:08-07:00
+## CreationDate: 2022-10-26T13:29:50-07:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-10-26T12:55:14-07:00
+## ModDate: 2022-10-26T13:29:55-07:00
 ```
 
 ## <a name="features">Features</a>

@@ -1,6 +1,7 @@
 README.html
 *.swp 
 tmp/
+pkgdown/
  
 # History files
 .Rhistory
