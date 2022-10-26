@@ -16,14 +16,7 @@
 #' * `as_year_day()` returns a "clock" [clock::year_day()] calendar
 #'
 #' @param x A [datetimeoffset()] object
-#' @param year If missing what year to assume
-#' @param month If missing what month to assume
-#' @param day   If missing what day to assume
-#' @param hour   If missing what hour to assume
-#' @param minute   If missing what minute to assume
-#' @param second   If missing what second to assume
-#' @param nanosecond   If missing what nanosecond to assume
-#' @param tz,zone   If missing and hour offset also missing what time zone to assume
+#' @param tz,zone   What time zone to assume
 #' @param ... Ignored
 #' @name from_datetimeoffset
 #' @examples
@@ -31,20 +24,24 @@
 #'   today <- as_datetimeoffset(Sys.Date())
 #'   now <- as_datetimeoffset(Sys.time())
 #'
-#'   as.Date(as_datetimeoffset("2020-03-05"))
-#'   as.Date(as_datetimeoffset("2020"))
-#'   as.Date(as_datetimeoffset("2020"), month = 6, day = 15)
+#'   as.Date(today)
+#'   as.Date(now)
 #'   as.POSIXct(now)
 #'   as.POSIXlt(now)
 #'
 #'   # {clock}
 #'   clock::as_date(today)
 #'   clock::as_date_time(now)
+#'
 #'   clock::as_year_month_day(now)
 #'   clock::as_year_month_weekday(now)
 #'   clock::as_iso_year_week_day(now)
 #'   clock::as_year_quarter_day(now)
 #'   clock::as_year_day(now)
+#'
+#'   clock::as_naive_time(now)
+#'   clock::as_sys_time(now)
+#'   clock::as_zoned_time(now)
 #'
 #'   if (require("nanotime")) {
 #'     nanotime::as.nanotime(now)
@@ -53,9 +50,8 @@ NULL
 
 #' @rdname from_datetimeoffset
 #' @export
-as.Date.datetimeoffset <- function(x, ..., year = 0L, month = 1L, day = 1L) {
-    x <- calendar_widen(x, "day", year = year, month = month, day = day)
-
+as.Date.datetimeoffset <- function(x, ...) {
+    x <- calendar_widen(x, "day")
     year_str <- my_format(field(x, "year"), width = 4L)
     month_str <- my_format(field(x, "month"), prefix = "-")
     day_str <- my_format(field(x, "day"), prefix = "-")
@@ -72,41 +68,21 @@ as_date.datetimeoffset <- function(x) {
 
 #' @rdname from_datetimeoffset
 #' @export
-as.POSIXct.datetimeoffset <- function(x, tz = mode_tz(x), ...,
-                                       year = 0L, month = 1L, day = 1L,
-                                       hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
-    #### #22
-    assert_suggested("nanotime")
-    as.POSIXct(nanotime::as.nanotime(x, ...,
-                           year = year, month = month, day = day,
-                           hour = hour, minute = minute, second = second, nanosecond = nanosecond,
-                           tz = tz),
-               tz = tz)
+as.POSIXct.datetimeoffset <- function(x, tz = mode_tz(x), ...) {
+    as.POSIXct(as_zoned_time.datetimeoffset(x, tz))
 }
 
 #' @rdname from_datetimeoffset
 #' @importFrom clock as_date_time
 #' @export
-as_date_time.datetimeoffset <- function(x, zone = mode_tz(x), ...,
-                                       year = 0L, month = 1L, day = 1L,
-                                       hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
-    as.POSIXct.datetimeoffset(x, tz = zone, ...,
-                              year = year, month = month, day = day,
-                              hour = hour, minute = minute, second = second, nanosecond = nanosecond)
+as_date_time.datetimeoffset <- function(x, zone = mode_tz(x), ...) {
+    as.POSIXct.datetimeoffset(x, tz = zone, ...)
 }
 
 #' @rdname from_datetimeoffset
 #' @export
-as.POSIXlt.datetimeoffset <- function(x, tz = mode_tz(x), ...,
-                                       year = 0L, month = 1L, day = 1L,
-                                       hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
-    #### #22
-    assert_suggested("nanotime")
-    as.POSIXlt(nanotime::as.nanotime(x, ...,
-                           year = year, month = month, day = day,
-                           hour = hour, minute = minute, second = second, nanosecond = nanosecond,
-                           tz = tz),
-               tz = tz)
+as.POSIXlt.datetimeoffset <- function(x, tz = mode_tz(x), ...) {
+    as.POSIXlt(as_zoned_time.datetimeoffset(x, tz))
 }
 
 #' @rdname from_datetimeoffset
@@ -172,9 +148,50 @@ as_year_day.datetimeoffset <- function(x) {
 }
 
 #' @rdname from_datetimeoffset
+#' @importFrom clock as_naive_time
+#' @export
+as_naive_time.datetimeoffset <- function(x) {
+    ymd <- as_year_month_day.datetimeoffset(x)
+    clock::as_naive_time(ymd)
+}
+
+#' @rdname from_datetimeoffset
 #' @importFrom clock as_sys_time
 #' @export
 as_sys_time.datetimeoffset <- function(x) {
-    ymd <- as_year_month_day.datetimeoffset(x)
-    clock::as_sys_time(ymd)
+    precision <- calendar_precision(x, range = TRUE)[1]
+    x <- calendar_narrow(x, precision)
+    purrr::map_vec(x, as_sys_time_helper)
+}
+
+as_sys_time_helper <- function(x) {
+    if (!is.na(get_hour_offset(x))) {
+        ft <- calendar_widen(x, "nanosecond")
+        if (is.na(get_minute_offset(x)))
+            ft <- set_minute_offset(ft, 0L)
+        st <- clock::sys_time_parse(format(ft),
+                                    format = "%Y-%m-%dT%H:%M:%S%Ez",
+                                    precision = "nanosecond")
+        clock::time_point_cast(st, calendar_precision(x))
+    } else if (!is.na(get_zone(x))) {
+        nt <- as_naive_time.datetimeoffset(x)
+        zt <- clock::as_zoned_time(nt, get_zone(x),
+                                   ambiguous = "error", nonexistent = "error")
+        st <- clock::as_sys_time(zt)
+        clock::time_point_cast(st, calendar_precision(x))
+    } else {
+        ymd <- as_year_month_day.datetimeoffset(x)
+        clock::as_sys_time(ymd)
+    }
+}
+
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_zoned_time
+#' @export
+as_zoned_time.datetimeoffset <- function(x, zone = mode_tz(x)) {
+    precision <- calendar_precision(x, range = TRUE)[1]
+    x <- calendar_narrow(x, precision)
+    x <- update_missing_zone(x, tz = zone)
+    st <- as_sys_time.datetimeoffset(x)
+    clock::as_zoned_time(st, zone)
 }

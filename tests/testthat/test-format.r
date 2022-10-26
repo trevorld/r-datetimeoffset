@@ -48,6 +48,25 @@ test_that("format_iso8601()", {
     dt <- c("2020", "2020-05-15T08:23:16.0-07:00[America/Los_Angeles]")
     expect_equal(format_iso8601(as_datetimeoffset(dt)),
                  c("2020", "2020-05-15T08:23:16.0-07:00"))
+
+    skip_if_not("America/New_York" %in% OlsonNames())
+    # ambiguous time so not possible to compute offset
+    dt <- "2020-11-01T01:30:00[America/New_York]"
+    expect_equal(format_iso8601(as_datetimeoffset(dt)),
+                 "2020-11-01T01:30:00")
+
+    # non-ambiguous times so possible to compute offset
+    dt <- "2020-03-08T03:30:00[America/New_York]"
+    expect_equal(format_iso8601(as_datetimeoffset(dt)),
+                 "2020-03-08T03:30:00-04:00")
+
+    dt <- "2020-03-08T01:30:00[America/New_York]"
+    expect_equal(format_iso8601(as_datetimeoffset(dt)),
+                 "2020-03-08T01:30:00-05:00")
+
+    skip_if_not_installed("lubridate")
+    expect_equal(lubridate::format_ISO8601(as_datetimeoffset(dt)),
+                 "2020-03-08T01:30:00-05:00")
 })
 
 test_that("format_pdfmark()", {
@@ -89,6 +108,7 @@ test_that("format_strftime()", {
 })
 
 test_that("format_nanotime()", {
+    skip_if_not_installed("nanotime")
     dt <- as_datetimeoffset("2020-04-04T10:10:10Z")
     expect_equal(format_nanotime(dt, tz = "GMT"),
                  "2020-04-04T10:10:10.000000000+00:00")

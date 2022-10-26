@@ -5,8 +5,7 @@
 \alias{as_datetimeoffset.datetimeoffset}
 \alias{as_datetimeoffset.Date}
 \alias{as_datetimeoffset.default}
-\alias{as_datetimeoffset.POSIXct}
-\alias{as_datetimeoffset.POSIXlt}
+\alias{as_datetimeoffset.POSIXt}
 \alias{as_datetimeoffset.character}
 \alias{as_datetimeoffset.nanotime}
 \alias{as_datetimeoffset.clock_year_month_day}
@@ -27,9 +26,7 @@ as_datetimeoffset(x, ...)
 
 \method{as_datetimeoffset}{default}(x, ...)
 
-\method{as_datetimeoffset}{POSIXct}(x, ...)
-
-\method{as_datetimeoffset}{POSIXlt}(x, ...)
+\method{as_datetimeoffset}{POSIXt}(x, ...)
 
 \method{as_datetimeoffset}{character}(x, tz = NA_character_, ...)
 

@@ -1,6 +1,10 @@
 test_that("as_datetimeoffset()", {
 
     expect_error(as_datetimeoffset("This is obviously not a date"))
+    expect_error(as_datetimeoffset(complex(20)))
+    expect_error((function() assert_suggested("this.package.does.not.exist"))())
+
+    expect_equal(as_datetimeoffset(""), NA_datetimeoffset_)
 
     # "2020-05-15T08:23:16-07:00"
     # Y
@@ -160,6 +164,7 @@ test_that("as_datetimeoffset()", {
                  "2020-05-15")
 
     # nanotime
+    skip_if_not_installed("nanotime")
     expect_equal(format(as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16.03Z"))),
                  "2020-05-15T08:23:16.03Z")
     dt <- as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16Z"))

@@ -35,7 +35,7 @@ Initial features
 
 * Support for formatting output strings:
 
-  + `format()` returns [neo4j Cypher temporal value](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/) strings
+  + `format()` returns [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/) strings
   + `format_ISO8601()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
   + `format_pdfmark()` returns [pdfmark datetimes](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
   + `format_nanotime()` allows [CCTZ style formatting](https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197)
@@ -50,7 +50,7 @@ Initial features
   + `as.POSIXct()` and `as_date_time()` converts the datetime to a `base::POSIXct()` object
   + `as.POSIXlt()` converts the datetime to a `base::POSIXlt()` object
   + `as.nanotime()` converts the datetime to a `nanotime::nanotime()` object
-  + `{clock}` calendars
+  + `{clock}` calendars and times
 
 * Support for several `{clock}` accessor functions
 

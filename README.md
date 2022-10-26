@@ -13,6 +13,7 @@
 
   + [Importing/exporting datetime string formats](#formats)
   + [Heteregeneous time zones](#heteregeneous)
+  + [Augmenting pdf datetime metadata](#pdf)
 
 * [Features](#features)
 * [Comparison with {clock}](#clock)
@@ -114,7 +115,7 @@ as_datetimeoffset("D:20200510201015+00'00'") |> format_pdfmark()
 ## [1] "D:20200510201015+00'00'"
 ```
 
-#### neo4j Cypher datetimes
+#### RFC 3339 with de facto time zone extension datetimes
 
 
 ```r
@@ -220,6 +221,74 @@ format(boundary)
 ## [4] "2009-03-08T01:59:59-05:00[America/New_York]"
 ```
 
+### <a name="pdf">Augmenting pdf datetime metadata</a>
+
+By default `grDevices::pdf()` stores the local datetime without any UTC offset information:
+
+
+```r
+library("grid")
+library("xmpdf") # remotes::install_github("trevorld/r-xmpdf")
+
+creation_date <- Sys.time()
+print(creation_date)
+```
+
+```
+## [1] "2022-10-26 12:55:08 PDT"
+```
+
+```r
+# Create a two page pdf using `pdf()`
+f <- tempfile(fileext = ".pdf")
+pdf(f, onefile = TRUE)
+grid.text("Page 1")
+grid.newpage()
+grid.text("Page 2")
+Sys.sleep(5L) # sleep to confirm time matches start of `pdf()` call
+invisible(dev.off())
+
+di <- xmpdf::get_docinfo(f)[[1]]
+print(di)
+```
+
+```
+## Author: NULL
+## CreationDate: 2022-10-26T12:55:08
+## Creator: R
+## Producer: R 4.2.1
+## Title: R Graphics Output
+## Subject: NULL
+## Keywords: NULL
+## ModDate: 2022-10-26T12:55:08
+```
+
+We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
+
+
+```r
+di$creation_date <- di$creation_date |>
+    set_hour_offset(get_hour_offset(creation_date)) |>
+    set_minute_offset(get_minute_offset(creation_date))
+di$mod_date <- Sys.time() # We've last modified pdf metadata now
+di$subject <- "Augmenting pdf metadata with UTC offsets"
+
+xmpdf::set_docinfo(di, f)
+di <- xmpdf::get_docinfo(f)[[1]]
+print(di)
+```
+
+```
+## Author: NULL
+## CreationDate: 2022-10-26T12:55:08-07:00
+## Creator: R
+## Producer: GPL Ghostscript 9.55.0
+## Title: R Graphics Output
+## Subject: Augmenting pdf metadata with UTC offsets
+## Keywords: NULL
+## ModDate: 2022-10-26T12:55:14-07:00
+```
+
 ## <a name="features">Features</a>
 
 * `datetimeoffset()` objects
@@ -241,7 +310,7 @@ format(boundary)
   + All [pdfmark datetime](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
   + Decent subset of [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) datetime strings
 
-    - Also supports the extension of [specifying a named time zone at the end surrounded in brackets.](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/#cypher-temporal-specify-time-zone)
+    - Also supports the de facto RFC 3339 extension of [specifying a named time zone at the end surrounded in brackets.](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/#cypher-temporal-specify-time-zone)
 
   + The datetime strings understood by the default `tryFormats` of `as.POSIXlt()`
   + `Date()` objects
@@ -253,7 +322,7 @@ format(boundary)
 
 * Support for formatting output datetime strings:
 
-  + `format()` returns [neo4j Cypher temporal value](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/) strings
+  + `format()` returns [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/) strings
   + `format_iso8601()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
   + `format_pdfmark()` returns [pdfmark datetime](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
   + `format_nanotime()` allows [CCTZ style formatting](https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197)
@@ -425,7 +494,7 @@ Please feel free to [open a pull request to add any missing relevant links](http
 
 * [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations)
 * [pdfmark datetimes](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo)
-* [neo4j Cypher temporal values](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/)
+* [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/)
 * [SQL Server / ODBC datetime literals](https://learn.microsoft.com/en-us/sql/relational-databases/native-client-odbc-date-time/data-type-support-for-odbc-date-and-time-improvements?source=recommendations&view=sql-server-ver16)
 
 ### <a name="similar">Related software</a>

@@ -13,6 +13,7 @@
 
   + [Importing/exporting datetime string formats](#formats)
   + [Heteregeneous time zones](#heteregeneous)
+  + [Augmenting pdf datetime metadata](#pdf)
 
 * [Features](#features)
 * [Comparison with {clock}](#clock)
@@ -74,7 +75,7 @@ as_datetimeoffset("D:202005") |> format_pdfmark()
 as_datetimeoffset("D:20200510201015+00'00'") |> format_pdfmark()
 ```
 
-#### neo4j Cypher datetimes
+#### RFC 3339 with de facto time zone extension datetimes
 
 ```{r examples-cypher}
 as_datetimeoffset("2020-05-10T20:10:15.003[America/Los_Angeles]") |>
@@ -122,6 +123,44 @@ boundary <- as_datetimeoffset("2009-03-08 01:59:59",
 format(boundary)
 ```
 
+### <a name="pdf">Augmenting pdf datetime metadata</a>
+
+By default `grDevices::pdf()` stores the local datetime without any UTC offset information:
+
+```{r pdf}
+library("grid")
+library("xmpdf") # remotes::install_github("trevorld/r-xmpdf")
+
+creation_date <- Sys.time()
+print(creation_date)
+
+# Create a two page pdf using `pdf()`
+f <- tempfile(fileext = ".pdf")
+pdf(f, onefile = TRUE)
+grid.text("Page 1")
+grid.newpage()
+grid.text("Page 2")
+Sys.sleep(5L) # sleep to confirm time matches start of `pdf()` call
+invisible(dev.off())
+
+di <- xmpdf::get_docinfo(f)[[1]]
+print(di)
+```
+
+We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
+
+```{r augment}
+di$creation_date <- di$creation_date |>
+    set_hour_offset(get_hour_offset(creation_date)) |>
+    set_minute_offset(get_minute_offset(creation_date))
+di$mod_date <- Sys.time() # We've last modified pdf metadata now
+di$subject <- "Augmenting pdf metadata with UTC offsets"
+
+xmpdf::set_docinfo(di, f)
+di <- xmpdf::get_docinfo(f)[[1]]
+print(di)
+```
+
 ## <a name="features">Features</a>
 
 * `datetimeoffset()` objects
@@ -143,7 +182,7 @@ format(boundary)
   + All [pdfmark datetime](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
   + Decent subset of [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) datetime strings
 
-    - Also supports the extension of [specifying a named time zone at the end surrounded in brackets.](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/#cypher-temporal-specify-time-zone)
+    - Also supports the de facto RFC 3339 extension of [specifying a named time zone at the end surrounded in brackets.](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/#cypher-temporal-specify-time-zone)
 
   + The datetime strings understood by the default `tryFormats` of `as.POSIXlt()`
   + `Date()` objects
@@ -155,7 +194,7 @@ format(boundary)
 
 * Support for formatting output datetime strings:
 
-  + `format()` returns [neo4j Cypher temporal value](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/) strings
+  + `format()` returns [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/) strings
   + `format_iso8601()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
   + `format_pdfmark()` returns [pdfmark datetime](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
   + `format_nanotime()` allows [CCTZ style formatting](https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197)
@@ -274,7 +313,7 @@ Please feel free to [open a pull request to add any missing relevant links](http
 
 * [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations)
 * [pdfmark datetimes](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo)
-* [neo4j Cypher temporal values](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/)
+* [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/)
 * [SQL Server / ODBC datetime literals](https://learn.microsoft.com/en-us/sql/relational-databases/native-client-odbc-date-time/data-type-support-for-odbc-date-and-time-improvements?source=recommendations&view=sql-server-ver16)
 
 ### <a name="similar">Related software</a>

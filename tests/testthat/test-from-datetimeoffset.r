@@ -1,8 +1,6 @@
 test_that("as.Date()", {
     expect_equal(as.Date(as_datetimeoffset("2020")),
                  as.Date("2020-01-01"))
-    expect_equal(as.Date(as_datetimeoffset(""), year = 2020, month = 6, day = 15),
-                 as.Date("2020-06-15"))
     expect_equal(as.Date(as_datetimeoffset("2020-03-23")),
                  as.Date("2020-03-23"))
     expect_equal(as_date(as_datetimeoffset("2020-03-23")),
@@ -10,6 +8,7 @@ test_that("as.Date()", {
 })
 
 test_that("as.nanotime()", {
+    skip_if_not_installed("nanotime")
     expect_equal(as.nanotime(as_datetimeoffset("2020-03-23T04:04:04Z")),
                  as.nanotime("2020-03-23T04:04:04Z"))
     expect_equal(as.nanotime(as_datetimeoffset("2020-03-23")),
@@ -56,6 +55,11 @@ test_that("clock classes", {
     expect_equal(format(as_datetimeoffset(yd)),
                  "2020-03-23T04:04:04")
 
+    nt <- as_naive_time(dt)
+    expect_equal(format(nt), "2020-03-23T04:04:04")
+    expect_equal(format(as_datetimeoffset(nt)),
+                 "2020-03-23T04:04:04")
+
     dt <- as_datetimeoffset("2020-03-01")
     expect_equal(format(as_year_month_day(dt)),
                  "2020-03-01")
@@ -67,18 +71,51 @@ test_that("clock classes", {
                  "2020-Q1-61")
     expect_equal(format(as_year_day(dt)),
                  "2020-061")
+
+    skip_if_not(all(c("America/Los_Angeles") %in% OlsonNames()))
+    dts <- as_datetimeoffset(c("2000-01-02",
+                               "2000-01-02T03",
+                               "2000-01-02T03[America/Los_Angeles]",
+                               "2000-01-02T03:04",
+                               "2000-01-02T03:04-02",
+                               "2000-01-02T03:04-02:00",
+                               "2000-01-02T03:04:05",
+                               "2000-01-02T03:04:05-02",
+                               "2000-01-02T03:04:05-02:00",
+                               "2000-01-02T03:04:05.006[America/Los_Angeles]",
+                               "2000-01-02T03:04:05.006-02",
+                               "2000-01-02T03:04:05.006-02:00"))
+    expect_equal(format(as_sys_time(dts[1])),  "2000-01-02")
+    expect_equal(format(as_sys_time(dts[2])),  "2000-01-02T03")
+    expect_equal(format(as_sys_time(dts[3])),  "2000-01-02T11")
+    expect_equal(format(as_sys_time(dts[4])),  "2000-01-02T03:04")
+    expect_equal(format(as_sys_time(dts[5])),  "2000-01-02T05:04")
+    expect_equal(format(as_sys_time(dts[6])),  "2000-01-02T05:04")
+    expect_equal(format(as_sys_time(dts[7])),  "2000-01-02T03:04:05")
+    expect_equal(format(as_sys_time(dts[8])),  "2000-01-02T05:04:05")
+    expect_equal(format(as_sys_time(dts[9])),  "2000-01-02T05:04:05")
+    expect_equal(format(as_sys_time(dts[10])), "2000-01-02T11:04:05.006000000")
+    expect_equal(format(as_sys_time(dts[11])), "2000-01-02T05:04:05.006000000")
+    expect_equal(format(as_sys_time(dts[12])), "2000-01-02T05:04:05.006000000")
+
+    st <- as_sys_time(dts[3])
+    expect_equal(format(as_datetimeoffset(st)), "2000-01-02T11Z")
+
+    expect_equal(format(as_zoned_time(dts[3])),
+                 "2000-01-02T03:00:00-08:00[America/Los_Angeles]")
+    expect_equal(format(as_zoned_time(dts[3], "GMT")),
+                 "2000-01-02T11:00:00+00:00[GMT]")
 })
 
 test_that("mode_tz()", {
     expect_equal(mode_tz(as_datetimeoffset(Sys.time())),
                  Sys.timezone())
-    if (all(c("US/Pacific", "US/Eastern") %in% OlsonNames())) {
-      dt <- as_datetimeoffset("2020-01-01",
-                               tz = c("US/Pacific", "US/Eastern"))
-      expect_equal(mode_tz(dt), "US/Pacific")
+    skip_if_not(all(c("US/Pacific", "US/Eastern") %in% OlsonNames()))
+    dt <- as_datetimeoffset("2020-01-01",
+                            tz = c("US/Pacific", "US/Eastern"))
+    expect_equal(mode_tz(dt), "US/Pacific")
 
-      dt <- as_datetimeoffset("2020-01-01",
-                               tz = c("US/Pacific", "US/Eastern", NA_character_, NA_character_))
-      expect_equal(mode_tz(dt), Sys.timezone())
-    }
+    dt <- as_datetimeoffset("2020-01-01",
+                            tz = c("US/Pacific", "US/Eastern", NA_character_, NA_character_))
+    expect_equal(mode_tz(dt), Sys.timezone())
 })

@@ -47,18 +47,12 @@ as_datetimeoffset.Date <- function(x, tz = NA_character_, ...) {
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.default <- function(x, ...) {
-    as_datetimeoffset(clock::as_zoned_time(as.POSIXct(x)))
+    as_datetimeoffset(as.POSIXct(x))
 }
 
 #' @rdname as_datetimeoffset
 #' @export
-as_datetimeoffset.POSIXct <- function(x, ...) {
-    as_datetimeoffset(clock::as_zoned_time(x))
-}
-
-#' @rdname as_datetimeoffset
-#' @export
-as_datetimeoffset.POSIXlt <- function(x, ...) {
+as_datetimeoffset.POSIXt <- function(x, ...) {
     as_datetimeoffset(clock::as_zoned_time(x))
 }
 

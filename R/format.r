@@ -1,6 +1,7 @@
 #' Convert datetime objects to character
 #'
-#' `format()` returns an ISO 8601 datetime string with as much **known** information possible.
+#' `format()` returns a datetime string
+#'  with as much **known** information possible (RFC 3339 with de facto standard time zone extension).
 #' `format_iso8601()` returns an ISO 8601 datetime string.
 #' `format_pdfmark()` returns a pdfmark datetime string with as much **known** information possible.
 #' `format_strftime()` allows [base::strftime()] style formatting.
@@ -210,14 +211,17 @@ my_format_tz <- function(x, sep = ":", no_zulu = FALSE, add_tz = FALSE) {
         df <- data.frame(x = as_ymd_hms_str(x[id_tz]), tz = tz_id,
                          stringsAsFactors = FALSE)
         offsets <- purrr::pmap_chr(df, function(x, tz) {
-                                       dt <- nanotime::as.nanotime(x, tz = tz) #### #22
-                                       format(dt, format = "%z", tz = tz)
+                                       dt <- clock::naive_time_parse(x)
+                                       dt <- clock::as_zoned_time(dt, tz,
+                                                                  ambiguous = "NA", nonexistent = "error")
+                                       format(dt, format = "%z")
                                    })
-        offsets <- paste0(substr(offsets, 1, 3), sep, substr(offsets, 4, 5))
+        s_offsets <- paste0(substr(offsets, 1, 3), sep, substr(offsets, 4, 5))
+        s_offsets <- ifelse(is.na(offsets), "", s_offsets)
         if (add_tz) {
-            offsets <- paste0(offsets, "[", tz_id, "]")
+            s_offsets <- paste0(s_offsets, "[", tz_id, "]")
         }
-        s[id_tz] <- offsets
+        s[id_tz] <- s_offsets
     }
     s
 }

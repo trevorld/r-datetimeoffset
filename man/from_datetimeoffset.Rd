@@ -12,51 +12,20 @@
 \alias{as_iso_year_week_day.datetimeoffset}
 \alias{as_year_quarter_day.datetimeoffset}
 \alias{as_year_day.datetimeoffset}
+\alias{as_naive_time.datetimeoffset}
 \alias{as_sys_time.datetimeoffset}
+\alias{as_zoned_time.datetimeoffset}
 \title{Convert to other datetime objects}
 \usage{
-\method{as.Date}{datetimeoffset}(x, ..., year = 0L, month = 1L, day = 1L)
+\method{as.Date}{datetimeoffset}(x, ...)
 
 \method{as_date}{datetimeoffset}(x)
 
-\method{as.POSIXct}{datetimeoffset}(
-  x,
-  tz = mode_tz(x),
-  ...,
-  year = 0L,
-  month = 1L,
-  day = 1L,
-  hour = 0L,
-  minute = 0L,
-  second = 0L,
-  nanosecond = 0L
-)
+\method{as.POSIXct}{datetimeoffset}(x, tz = mode_tz(x), ...)
 
-\method{as_date_time}{datetimeoffset}(
-  x,
-  zone = mode_tz(x),
-  ...,
-  year = 0L,
-  month = 1L,
-  day = 1L,
-  hour = 0L,
-  minute = 0L,
-  second = 0L,
-  nanosecond = 0L
-)
+\method{as_date_time}{datetimeoffset}(x, zone = mode_tz(x), ...)
 
-\method{as.POSIXlt}{datetimeoffset}(
-  x,
-  tz = mode_tz(x),
-  ...,
-  year = 0L,
-  month = 1L,
-  day = 1L,
-  hour = 0L,
-  minute = 0L,
-  second = 0L,
-  nanosecond = 0L
-)
+\method{as.POSIXlt}{datetimeoffset}(x, tz = mode_tz(x), ...)
 
 \method{as_year_month_day}{datetimeoffset}(x)
 
@@ -68,28 +37,18 @@
 
 \method{as_year_day}{datetimeoffset}(x)
 
+\method{as_naive_time}{datetimeoffset}(x)
+
 \method{as_sys_time}{datetimeoffset}(x)
+
+\method{as_zoned_time}{datetimeoffset}(x, zone = mode_tz(x))
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object}
 
 \item{...}{Ignored}
 
-\item{year}{If missing what year to assume}
-
-\item{month}{If missing what month to assume}
-
-\item{day}{If missing what day to assume}
-
-\item{tz, zone}{If missing and hour offset also missing what time zone to assume}
-
-\item{hour}{If missing what hour to assume}
-
-\item{minute}{If missing what minute to assume}
-
-\item{second}{If missing what second to assume}
-
-\item{nanosecond}{If missing what nanosecond to assume}
+\item{tz, zone}{What time zone to assume}
 }
 \description{
 We provide methods to convert \code{\link[=datetimeoffset]{datetimeoffset()}} objects to
@@ -114,20 +73,24 @@ We provide the following methods:
   today <- as_datetimeoffset(Sys.Date())
   now <- as_datetimeoffset(Sys.time())
 
-  as.Date(as_datetimeoffset("2020-03-05"))
-  as.Date(as_datetimeoffset("2020"))
-  as.Date(as_datetimeoffset("2020"), month = 6, day = 15)
+  as.Date(today)
+  as.Date(now)
   as.POSIXct(now)
   as.POSIXlt(now)
 
   # {clock}
   clock::as_date(today)
   clock::as_date_time(now)
+
   clock::as_year_month_day(now)
   clock::as_year_month_weekday(now)
   clock::as_iso_year_week_day(now)
   clock::as_year_quarter_day(now)
   clock::as_year_day(now)
+
+  clock::as_naive_time(now)
+  clock::as_sys_time(now)
+  clock::as_zoned_time(now)
 
   if (require("nanotime")) {
     nanotime::as.nanotime(now)

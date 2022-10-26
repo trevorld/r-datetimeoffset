@@ -47,7 +47,8 @@ Can be a length greater than one.}
 A character vector
 }
 \description{
-\code{format()} returns an ISO 8601 datetime string with as much \strong{known} information possible.
+\code{format()} returns a datetime string
+with as much \strong{known} information possible (RFC 3339 with de facto standard time zone extension).
 \code{format_iso8601()} returns an ISO 8601 datetime string.
 \code{format_pdfmark()} returns a pdfmark datetime string with as much \strong{known} information possible.
 \code{format_strftime()} allows \code{\link[base:strptime]{base::strftime()}} style formatting.
