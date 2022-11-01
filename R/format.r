@@ -93,7 +93,7 @@ format_iso8601 <- function(x, usetz = TRUE, precision = NULL, ...) {
     if (isFALSE(usetz)) {
         x <- set_hour_offset(x, NA_integer_)
         x <- set_minute_offset(x, NA_integer_)
-        x <- set_zone(x, NA_character_)
+        x <- set_tz(x, NA_character_)
     }
     x <- update_nas(x)
     year_str <- my_format(field(x, "year"), width = 4L)
@@ -127,7 +127,7 @@ format_pdfmark <- function(x) {
 
 #' @rdname format
 #' @export
-format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = get_zone(x), usetz = FALSE) {
+format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = get_tz(x), usetz = FALSE) {
     tz <- clean_tz(tz, na = Sys.timezone())
     x <- as.POSIXct(x)
     df <- data.frame(x = x, format = format, tz = tz, usetz = usetz, stringsAsFactors = FALSE)
@@ -136,7 +136,7 @@ format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = get_zone(x), u
 
 #' @rdname format
 #' @export
-format_nanotime <- function(x, format = "%Y-%m-%dT%H:%M:%E9S%Ez", tz = get_zone(x)) {
+format_nanotime <- function(x, format = "%Y-%m-%dT%H:%M:%E9S%Ez", tz = get_tz(x)) {
     assert_suggested("nanotime")
     tz <- clean_tz(tz, na = Sys.timezone())
     x <- nanotime::as.nanotime(x)
@@ -156,12 +156,12 @@ update_nas <- function(x, pdfmark = FALSE) {
     # no time zones and offsets if no hours
     x <- set_hour_offset(x, ifelse(is.na(get_hour(x)), NA_integer_, get_hour_offset(x)))
     x <- set_minute_offset(x, ifelse(is.na(get_hour(x)), NA_integer_, get_minute_offset(x)))
-    x <- set_zone(x, ifelse(is.na(get_hour(x)), NA_character_, get_zone(x)))
+    x <- set_tz(x, ifelse(is.na(get_hour(x)), NA_character_, get_tz(x)))
 
     if (pdfmark) { # if missing seconds then pdfmark offsets are missing
         x <- set_hour_offset(x, ifelse(is.na(get_second(x)), NA_integer_, get_hour_offset(x)))
         x <- set_minute_offset(x, ifelse(is.na(get_second(x)), NA_integer_, get_minute_offset(x)))
-        x <- set_zone(x, ifelse(is.na(get_second(x)), NA_character_, get_zone(x)))
+        x <- set_tz(x, ifelse(is.na(get_second(x)), NA_character_, get_tz(x)))
     }
 
     x

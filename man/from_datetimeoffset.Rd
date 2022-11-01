@@ -65,7 +65,10 @@ We provide the following methods:
 \item \code{as_year_month_weekday()} returns a \code{\link[clock:year_month_weekday]{clock::year_month_weekday()}} calendar
 \item \code{as_iso_year_week_day()} returns a \code{\link[clock:iso_year_week_day]{clock::iso_year_week_day()}} calendar
 \item \code{as_year_quarter_day()} returns a \code{\link[clock:year_quarter_day]{clock::year_quarter_day()}} calendar
-\item \code{as_year_day()} returns a "clock" \code{\link[clock:year_day]{clock::year_day()}} calendar
+\item \code{as_year_day()} returns a \code{\link[clock:year_day]{clock::year_day()}} calendar
+\item \code{as_naive_time()} returns a "clock" naive-time
+\item \code{as_sys_time()} returns a "clock" sys-time
+\item \code{as_zoned_time()} returns a "clock" zoned-time
 }
 }
 \examples{

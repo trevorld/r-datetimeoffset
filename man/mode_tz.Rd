@@ -12,7 +12,8 @@ mode_tz(time, tzone = "", ...)
 \arguments{
 \item{time}{A datetime object.}
 
-\item{tzone}{A timezone string to use for missing time zones.}
+\item{tzone}{A timezone string to use for missing time zones.
+"" will be treated as equivalent to \code{Sys.timezone()}.}
 
 \item{...}{Ignored}
 }
@@ -29,13 +30,14 @@ only supports one time zone
 \examples{
   dt <- as_datetimeoffset(Sys.time())
   print(mode_tz(dt))
-  if (all(c("US/Pacific", "US/Eastern") \%in\% OlsonNames())) {
+  if (all(c("America/Los_Angeles", "America/New_York") \%in\% OlsonNames())) {
     dt <- as_datetimeoffset("2020-01-01",
-                             tz = c("US/Pacific", "US/Eastern"))
+                             tz = c("America/Los_Angeles", "America/New_York"))
     print(mode_tz(dt))
 
+    print(Sys.timezone()) # timezone to be used for missing time zones
     dt <- as_datetimeoffset("2020-01-01",
-                             tz = c("US/Pacific", "US/Eastern", NA_character_, NA_character_))
+                             tz = c("America/New_York", NA_character_, NA_character_))
     print(mode_tz(dt))
   }
 }

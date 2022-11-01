@@ -7,18 +7,20 @@
 #' only supports one time zone
 #' @param time A datetime object.
 #' @param tzone A timezone string to use for missing time zones.
+#'              "" will be treated as equivalent to `Sys.timezone()`.
 #' @param ... Ignored
 #' @return Timezone string
 #' @examples
 #'   dt <- as_datetimeoffset(Sys.time())
 #'   print(mode_tz(dt))
-#'   if (all(c("US/Pacific", "US/Eastern") %in% OlsonNames())) {
+#'   if (all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames())) {
 #'     dt <- as_datetimeoffset("2020-01-01",
-#'                              tz = c("US/Pacific", "US/Eastern"))
+#'                              tz = c("America/Los_Angeles", "America/New_York"))
 #'     print(mode_tz(dt))
 #'
+#'     print(Sys.timezone()) # timezone to be used for missing time zones
 #'     dt <- as_datetimeoffset("2020-01-01",
-#'                              tz = c("US/Pacific", "US/Eastern", NA_character_, NA_character_))
+#'                              tz = c("America/New_York", NA_character_, NA_character_))
 #'     print(mode_tz(dt))
 #'   }
 #' @export
@@ -30,10 +32,10 @@ mode_tz <- function(time, tzone = "", ...) {
 #' @export
 mode_tz.datetimeoffset <- function(time, tzone = "", ...) {
     tzone <- clean_tz(tzone)
-    time <- set_zone(time, ifelse(is.na(get_zone(time)), tzone, get_zone(time)))
-    time <- set_zone(time, ifelse(get_zone(time) == "", Sys.timezone(), get_zone(time)))
+    time <- set_tz(time, ifelse(is.na(get_tz(time)), tzone, get_tz(time)))
+    time <- set_tz(time, ifelse(get_tz(time) == "", Sys.timezone(), get_tz(time)))
 
-    tzones <- get_zone(time)
+    tzones <- get_tz(time)
     keys <- unique(tzones)
     tbl <- tabulate(match(tzones, keys))
     keys[which.max(tbl)]

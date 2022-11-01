@@ -127,7 +127,7 @@ as_datetimeoffset.clock_naive_time <- function(x, ...) {
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.clock_sys_time <- function(x, ...) {
-    set_zone(as_datetimeoffset(format(x)), "GMT")
+    set_tz(as_datetimeoffset(format(x)), "GMT")
 }
 
 #' @rdname as_datetimeoffset

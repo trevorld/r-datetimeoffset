@@ -15,7 +15,7 @@ reference:
       - format.datetimeoffset
       - as.Date.datetimeoffset
   - title: 'Get/set "datetimeoffset" object components'
-    desc: '"clock" style accessors for "datetimeoffset" object components'
+    desc: 'Accessors for "datetimeoffset" object components'
     contents:
       - get_year.datetimeoffset
       - set_year.datetimeoffset
@@ -23,8 +23,8 @@ reference:
     desc: "Find most common time zone"
     contents:
       - mode_tz
-  - title: 'Other utilities'
-    desc: 'Other utilities'
+  - title: 'Get/set date time "precision"'
+    desc: 'Get/set date time "precision"'
     contents:
-      - calendar_narrow.datetimeoffset
-      - calendar_precision.datetimeoffset
+      - datetime_narrow.datetimeoffset
+      - datetime_precision.datetimeoffset

@@ -36,7 +36,7 @@ Initial features
 * Support for formatting output strings:
 
   + `format()` returns [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/) strings
-  + `format_ISO8601()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
+  + `format_iso8601()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
   + `format_pdfmark()` returns [pdfmark datetimes](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
   + `format_nanotime()` allows [CCTZ style formatting](https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197)
 
@@ -52,7 +52,7 @@ Initial features
   + `as.nanotime()` converts the datetime to a `nanotime::nanotime()` object
   + `{clock}` calendars and times
 
-* Support for several `{clock}` accessor functions
+* Support for several accessor S3 methods from `{clock}`
 
   + `get_year()` and `set_year()`
   + `get_month()` and `set_month()`
@@ -62,20 +62,30 @@ Initial features
   + `get_second()` and `set_second()`
   + `get_nanosecond()` and `set_nanosecond()`
 
-* Some additional `{clock}` "style" accessor functions
+* Support for several accessor methods from `{lubridate}`
 
-  + `get_zone()` and `set_zone()` (changes system time, not clock time)
+  + `year()` and `year()<-`
+  + `month()` and `month()<-`
+  + `day()` and `day()<-`
+  + `hour()` and `hour()<-`
+  + `minute()` and `minute()<-`
+  + `second()` and `second()<-`
+  + `date()` and `date()<-`
+  + `tz()` (but use `set_tz()` instead of non-generic `lubridate::force_tz()`)
+
+* New accessor S3 methods:
+
   + `get_hour_offset()` and `set_hour_offset()`
   + `get_minute_offset()` and `set_minute_offset()`
+  + `get_tz()` and `set_tz()` (changes system time, not clock time)
 
-* Additional supported `{clock}` methods
+* Get/set datetime "precision" S3 methods
 
-  + `calendar_narrow()`
-  + `calendar_precision()`
-  + `calendar_widen()`
+  + `datetime_narrow()`
+  + `datetime_precision()`
+  + `datetime_widen()`
 
 * Other utilities:
 
   + `is_datetimeoffset()` and `NA_datetimeoffset_`
-  + `mode_tz()` gets most common time zone for a time date object
-    that may support heteregeneous time zones.
+  + `mode_tz()` is an S3 method that gets most common time zone for a datetime object

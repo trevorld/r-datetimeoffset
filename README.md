@@ -58,7 +58,7 @@ pdfmark datetime strings and ISO 8601 datetime strings.
 
 
 ```r
-library("datetimeoffset", warn.conflicts = FALSE) # masks `date()`
+library("datetimeoffset")
 ```
 
 #### ISO 8601 datetimes
@@ -235,7 +235,7 @@ print(creation_date)
 ```
 
 ```
-## [1] "2022-10-26 13:29:50 PDT"
+## [1] "2022-11-01 14:24:34 PDT"
 ```
 
 ```r
@@ -254,13 +254,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-10-26T13:29:50
+## CreationDate: 2022-11-01T14:24:34
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-10-26T13:29:50
+## ModDate: 2022-11-01T14:24:34
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -280,13 +280,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-10-26T13:29:50-07:00
+## CreationDate: 2022-11-01T14:24:34-07:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-10-26T13:29:55-07:00
+## ModDate: 2022-11-01T14:24:39-07:00
 ```
 
 ## <a name="features">Features</a>
@@ -337,9 +337,9 @@ print(di)
   + `as.POSIXct()` and `as_date_time()` converts the datetime to a `base::POSIXct()` object
   + `as.POSIXlt()` converts the datetime to a `base::POSIXlt()` object
   + `as.nanotime()` converts the datetime to a `nanotime::nanotime()` object
-  + `{clock}` calendars
+  + `{clock}` calendars and times
 
-* Support for several `{clock}` accessor functions
+* Support for several accessor S3 methods from `{clock}`
 
   + `get_year()` and `set_year()`
   + `get_month()` and `set_month()`
@@ -349,23 +349,33 @@ print(di)
   + `get_second()` and `set_second()`
   + `get_nanosecond()` and `set_nanosecond()`
 
-* Some additional `{clock}` "style" accessor functions
+* Support for several accessor methods from `{lubridate}`
 
-  + `get_zone()` and `set_zone()` (changes system time, not clock time)
+  + `year()` and `year()<-`
+  + `month()` and `month()<-`
+  + `day()` and `day()<-`
+  + `hour()` and `hour()<-`
+  + `minute()` and `minute()<-`
+  + `second()` and `second()<-`
+  + `date()` and `date()<-`
+  + `tz()` (but use `set_tz()` instead of non-generic `lubridate::force_tz()`)
+
+* New accessor S3 methods:
+
   + `get_hour_offset()` and `set_hour_offset()`
   + `get_minute_offset()` and `set_minute_offset()`
+  + `get_tz()` and `set_tz()` (changes system time, not clock time)
 
-* Additional supported `{clock}` methods
+* Get/set datetime "precision" S3 methods
 
-  + `calendar_narrow()`
-  + `calendar_precision()`
-  + `calendar_widen()`
+  + `datetime_narrow()`
+  + `datetime_precision()`
+  + `datetime_widen()`
 
 * Other utilities:
 
   + `is_datetimeoffset()` and `NA_datetimeoffset_`
-  + `mode_tz()` gets most common time zone for a time date object
-    that may support heteregeneous time zones.
+  + `mode_tz()` is an S3 method that gets most common time zone for a datetime object
 
 ## <a name="clock">Comparison with {clock}</a>
 

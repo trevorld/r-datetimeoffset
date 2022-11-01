@@ -1,30 +1,32 @@
-#' Calendar precision
+#' Datetime precision
 #'
-#' `calendar_precision()` returns the "precision" of a [datetimeoffset()] vector's datetimes.
+#' `datetime_precision()` returns the "precision" of a datetime vector's datetimes.
 #'
-#' @param x A [datetimeoffset()] vector
+#' @param x A datetime vector.  Either [datetimeoffset()], a "clock" "calendar", or a "clock" "time".
 #' @param range If `TRUE` return just the minimum and maximum "precision".
 #' @param ... Reserved for other methods.
-#' @return `calendar_precision()` returns a character vector of precisions ("year", "month", "day", "hour", "minute", "second", or "nanosecond").
-#' @seealso [clock::calendar_precision()]
+#' @return A character vector of precisions ("year", "month", "day", "hour", "minute", "second", or "nanosecond").
 #' @examples
 #'   dts <- as_datetimeoffset(c("2020", "2020-04-10", "2020-04-10T10:10"))
-#'   library("clock", exclude = c("calendar_narrow", "calendar_precision", "calendar_widen"))
-#'   calendar_precision(dts)
-#'   calendar_precision(dts, range = TRUE)
-#' @name calendar_precision
+#'   datetime_precision(dts)
+#'   datetime_precision(dts, range = TRUE)
+#'
+#'   library("clock")
+#'   datetime_precision(year_month_day(1918, 11, 11))
+#'   datetime_precision(sys_time_now())
+#'   datetime_precision(zoned_time_now(Sys.timezone()))
+#' @name datetime_precision
 NULL
 
-#' @rdname calendar_precision
+#' @rdname datetime_precision
 #' @export
-calendar_precision <- function(x, ...) {
-    UseMethod("calendar_precision")
+datetime_precision <- function(x, ...) {
+    UseMethod("datetime_precision")
 }
 
-#' @importFrom clock calendar_precision
-#' @rdname calendar_precision
+#' @rdname datetime_precision
 #' @export
-calendar_precision.datetimeoffset <- function(x, range = FALSE, ...) {
+datetime_precision.datetimeoffset <- function(x, range = FALSE, ...) {
     precision <- "nanosecond"
     precision <- ifelse(is.na(field(x, "nanosecond")), "second", precision)
     precision <- ifelse(is.na(field(x, "second")), "minute", precision)
@@ -42,36 +44,62 @@ calendar_precision.datetimeoffset <- function(x, range = FALSE, ...) {
     }
 }
 
-#' Widen/narrow calendar precision
-#'
-#' `calendar_widen()` sets a floor on the minimum "precision" in the vector by setting any missing
-#' elements to their minimum possible value.
-#' `calendar_narrow()` sets a cap on the maximum "precision" by setting
-#' any more precise elements missing.
-#'
-#' @param x A [datetimeoffset()] vector
-#' @param precision Precision to narrow/widen to.  Either "year", "month", "day", "hour", "minute", "second", or "nanosecond".
-#' @param ... Reserved for other methods.
-#' @return A [datetimeoffset()] vector.
-#' @seealso [clock::calendar_narrow()] and [clock::calendar_widen()]
-#' @examples
-#'   dts <- as_datetimeoffset(c("2020", "2020-04-10", "2020-04-10T10:10"))
-#'   library("clock", exclude = c("calendar_narrow", "calendar_precision", "calendar_widen"))
-#'   calendar_precision(dts)
-#'   calendar_narrow(dts, "day")
-#'   calendar_widen(dts, "day")
-#' @name calendar_narrow
-NULL
-
-#' @rdname calendar_narrow
+#' @rdname datetime_precision
 #' @export
-calendar_narrow <- function(x, precision, ...) {
-    UseMethod("calendar_narrow")
+datetime_precision.clock_calendar <- function(x, ...) {
+    clock::calendar_precision(x)
 }
 
-#' @rdname calendar_narrow
+#' @rdname datetime_precision
 #' @export
-calendar_narrow.datetimeoffset <- function(x, precision, ...) {
+datetime_precision.clock_time_point <- function(x, ...) {
+    clock::time_point_precision(x)
+}
+
+#' @rdname datetime_precision
+#' @export
+datetime_precision.clock_zoned_time <- function(x, ...) {
+    clock::zoned_time_precision(x)
+}
+
+#' Widen/narrow datetime precision
+#'
+#' `datetime_widen()` sets a floor on the minimum "precision" in the datetime vector
+#'  by setting any missing elements to their minimum possible value.
+#' `datetime_narrow()` sets a cap on the maximum "precision" by setting
+#' any more precise elements missing.
+#'
+#' @param x A datetime vector.  Either [datetimeoffset()], a "clock" "calendar", or a "clock" "time point".
+#' @param precision Precision to narrow/widen to.  Either "year", "month", "day", "hour", "minute", "second", or "nanosecond".
+#' @param ... Reserved for other methods.
+#' @return A datetime vector.
+#' @examples
+#'   dts <- as_datetimeoffset(c("2020", "2020-04-10", "2020-04-10T10:10"))
+#'   datetime_precision(dts)
+#'   datetime_narrow(dts, "day")
+#'   datetime_widen(dts, "day")
+#'   datetime_widen(dts, "day", month = 6, day = 15)
+#'
+#'   library("clock")
+#'   ymd <- year_month_day(1918, 11, 11, 11)
+#'   datetime_narrow(ymd, "day")
+#'   datetime_widen(ymd, "second")
+#'
+#'   nt <- as_naive_time(ymd)
+#'   datetime_narrow(nt, "day")
+#'   datetime_widen(nt, "second")
+#' @name datetime_cast
+NULL
+
+#' @rdname datetime_cast
+#' @export
+datetime_narrow <- function(x, precision, ...) {
+    UseMethod("datetime_narrow")
+}
+
+#' @rdname datetime_cast
+#' @export
+datetime_narrow.datetimeoffset <- function(x, precision, ...) {
     precision <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
     precision <- as.integer(precision)
     nas <- rep_len(NA_integer_, length(x))
@@ -90,20 +118,26 @@ calendar_narrow.datetimeoffset <- function(x, precision, ...) {
     x
 }
 
-#' @rdname calendar_narrow
+#' @rdname datetime_cast
 #' @export
-calendar_narrow.default <- function(x, precision, ...) {
+datetime_narrow.clock_calendar <- function(x, precision, ...) {
     clock::calendar_narrow(x, precision)
 }
 
-#' @rdname calendar_narrow
-#' @param ... Used by certain methods
+#' @rdname datetime_cast
 #' @export
-calendar_widen <- function(x, precision, ...) {
-    UseMethod("calendar_widen")
+datetime_narrow.clock_time_point <- function(x, precision, ...) {
+    clock::time_point_floor(x, precision)
 }
 
-#' @rdname calendar_narrow
+#' @rdname datetime_cast
+#' @param ... Used by certain methods
+#' @export
+datetime_widen <- function(x, precision, ...) {
+    UseMethod("datetime_widen")
+}
+
+#' @rdname datetime_cast
 #' @param year If missing what year to assume
 #' @param month If missing what month to assume
 #' @param day   If missing what day to assume
@@ -112,7 +146,7 @@ calendar_widen <- function(x, precision, ...) {
 #' @param second   If missing what second to assume
 #' @param nanosecond   If missing what nanosecond to assume
 #' @export
-calendar_widen.datetimeoffset <- function(x, precision, ...,
+datetime_widen.datetimeoffset <- function(x, precision, ...,
                                           year = 0L, month = 1L, day = 1L,
                                           hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
     precision <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
@@ -135,11 +169,17 @@ calendar_widen.datetimeoffset <- function(x, precision, ...,
 
 update_missing <- function(original, replacement) ifelse(is.na(original), replacement, original)
 update_missing_zone <- function(x, tz = "") {
-    set_zone(x, ifelse(is.na(get_zone(x)) & is.na(get_hour_offset(x)), clean_tz(tz), get_zone(x)))
+    set_tz(x, ifelse(is.na(get_tz(x)) & is.na(get_hour_offset(x)), clean_tz(tz), get_tz(x)))
 }
 
-#' @rdname calendar_narrow
+#' @rdname datetime_cast
 #' @export
-calendar_widen.default <- function(x, precision, ...) {
+datetime_widen.clock_calendar <- function(x, precision, ...) {
     clock::calendar_widen(x, precision, ...)
+}
+
+#' @rdname datetime_cast
+#' @export
+datetime_widen.clock_time_point <- function(x, precision, ...) {
+    clock::time_point_cast(x, precision)
 }

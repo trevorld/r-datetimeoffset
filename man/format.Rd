@@ -18,11 +18,11 @@ format_pdfmark(x)
 format_strftime(
   x,
   format = "\%Y-\%m-\%d \%H:\%M:\%S",
-  tz = get_zone(x),
+  tz = get_tz(x),
   usetz = FALSE
 )
 
-format_nanotime(x, format = "\%Y-\%m-\%dT\%H:\%M:\%E9S\%Ez", tz = get_zone(x))
+format_nanotime(x, format = "\%Y-\%m-\%dT\%H:\%M:\%E9S\%Ez", tz = get_tz(x))
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object.}
