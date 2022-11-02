@@ -164,13 +164,13 @@ format_edtf_helper <- function(x, offsets, precision, usetz) {
         x <- set_tz(x, NA_character_)
     }
     precision <- dto_precision_integer(precision)
-    year_str <- my_format(field(x, "year"), width = 4L, edtf = TRUE, blank = precision < 1L)
-    month_str <- my_format(field(x, "month"), prefix = "-", edtf = TRUE, blank = precision < 2L)
-    day_str <- my_format(field(x, "day"), prefix = "-", edtf = TRUE, blank = precision < 3L)
-    hour_str <- my_format(field(x, "hour"), prefix = "T", edtf = TRUE, blank = precision < 4L)
-    minute_str <- my_format(field(x, "minute"), prefix = ":", edtf = TRUE, blank = precision < 5L)
-    second_str <- my_format(field(x, "second"), prefix = ":", edtf = TRUE, blank = precision < 6L)
-    nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"), edtf = TRUE, blank = precision < 7L)
+    year_str <- my_format(field(x, "year"), width = 4L, edtf = TRUE, blank = precision < PRECISION_YEAR)
+    month_str <- my_format(field(x, "month"), prefix = "-", edtf = TRUE, blank = precision < PRECISION_MONTH)
+    day_str <- my_format(field(x, "day"), prefix = "-", edtf = TRUE, blank = precision < PRECISION_DAY)
+    hour_str <- my_format(field(x, "hour"), prefix = "T", edtf = TRUE, blank = precision < PRECISION_HOUR)
+    minute_str <- my_format(field(x, "minute"), prefix = ":", edtf = TRUE, blank = precision < PRECISION_MINUTE)
+    second_str <- my_format(field(x, "second"), prefix = ":", edtf = TRUE, blank = precision < PRECISION_SECOND)
+    nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"), edtf = TRUE, blank = precision < PRECISION_NANOSECOND)
     offset_str <- my_format_tz(x, edtf = offsets, add_tz = usetz)
     paste0(year_str, month_str, day_str,
            hour_str, minute_str, second_str, nanosecond_str,

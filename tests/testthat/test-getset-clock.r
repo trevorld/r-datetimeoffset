@@ -39,6 +39,7 @@ test_that("setters", {
     dt <- NA_datetimeoffset_
     dt <- set_year(dt, 1918L)
     dt <- set_month(dt, 11L)
+    expect_equal(get_day(set_day(dt, "last")), 30L)
     dt <- set_day(dt, 11L)
     dt <- set_hour(dt, 11L)
     dt <- set_minute(dt, 11L)

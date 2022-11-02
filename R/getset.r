@@ -87,7 +87,7 @@ NULL
 #' * `date<-()`
 #'
 #' @param x A datetime object.
-#' @param value The replacement value.
+#' @param value The replacement value.  For `set_day()` this can also be "last".
 #' @param ... Currently ignored.
 #' @return A datetime object.
 #' @name setters
@@ -161,6 +161,13 @@ get_day.datetimeoffset <- function(x) {
 #' @rdname setters
 #' @export
 set_day.datetimeoffset <- function(x, value, ...) {
+    if (identical(value, "last")) {
+        precision <- dto_precision_integer(datetime_precision(x, range = TRUE)[1])
+        stopifnot(precision >= PRECISION_MONTH)
+        ym <- as_year_month_day(datetime_narrow(x, "month"))
+        ymd <- set_day(ym, "last")
+        value <- get_day(ymd)
+    }
     value <- as.integer(value)
     field(x, "day") <- value
     x

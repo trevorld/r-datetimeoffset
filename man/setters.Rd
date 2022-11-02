@@ -55,7 +55,7 @@ set_tz(x, value, ...)
 \arguments{
 \item{x}{A datetime object.}
 
-\item{value}{The replacement value.}
+\item{value}{The replacement value.  For \code{set_day()} this can also be "last".}
 
 \item{...}{Currently ignored.}
 }

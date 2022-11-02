@@ -124,17 +124,17 @@ datetime_narrow <- function(x, precision, ...) {
 datetime_narrow.datetimeoffset <- function(x, precision, ...) {
     precision <- dto_precision_integer(precision)
     nas <- rep_len(NA_integer_, length(x))
-    if (precision < 7L)
+    if (precision < PRECISION_NANOSECOND)
         field(x, "nanosecond") <- nas
-    if (precision < 6L)
+    if (precision < PRECISION_SECOND)
         field(x, "second") <- nas
-    if (precision < 5L)
+    if (precision < PRECISION_MINUTE)
         field(x, "minute") <- nas
-    if (precision < 4L)
+    if (precision < PRECISION_HOUR)
         field(x, "hour") <- nas
-    if (precision < 3L)
+    if (precision < PRECISION_DAY)
         field(x, "day") <- nas
-    if (precision < 2L)
+    if (precision < PRECISION_MONTH)
         field(x, "month") <- nas
     x
 }
@@ -182,17 +182,17 @@ datetime_widen.datetimeoffset <- function(x, precision, ...,
                                           hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
     precision <- dto_precision_integer(precision)
     field(x, "year") <- update_missing(field(x, "year"), year)
-    if (precision >= 2L)
+    if (precision >= PRECISION_MONTH)
         field(x, "month") <- update_missing(field(x, "month"), month)
-    if (precision >= 3L)
+    if (precision >= PRECISION_DAY)
         field(x, "day") <- update_missing(field(x, "day"), day)
-    if (precision >= 4L)
+    if (precision >= PRECISION_HOUR)
         field(x, "hour") <- update_missing(field(x, "hour"), hour)
-    if (precision >= 5L)
+    if (precision >= PRECISION_MINUTE)
         field(x, "minute") <- update_missing(field(x, "minute"), minute)
-    if (precision >= 6L)
+    if (precision >= PRECISION_SECOND)
         field(x, "second") <- update_missing(field(x, "second"), second)
-    if (precision >= 7L)
+    if (precision >= PRECISION_NANOSECOND)
         field(x, "nanosecond") <- update_missing(field(x, "nanosecond"), nanosecond)
     x
 }
@@ -201,6 +201,13 @@ dto_precision_integer <- function(precision) {
     f <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
     as.integer(f)
 }
+PRECISION_YEAR <- 1L
+PRECISION_MONTH <- 2L
+PRECISION_DAY <- 3L
+PRECISION_HOUR <- 4L
+PRECISION_MINUTE <- 5L
+PRECISION_SECOND <- 6L
+PRECISION_NANOSECOND <- 7L
 
 clock_precision_integer <- function(precision) {
     f <- factor(precision,
