@@ -79,9 +79,19 @@ any more precise elements missing.
   library("clock")
   ymd <- year_month_day(1918, 11, 11, 11)
   datetime_narrow(ymd, "day")
+  datetime_narrow(ymd, "second") # already narrower than "second"
   datetime_widen(ymd, "second")
+  datetime_widen(ymd, "day") # already wider than "day"
+
+  \dontrun{
+    # these equivalent {clock} calendar methods throw an error
+    clock::calendar_narrow(ymd, "second") # already narrower than "second"
+    clock::calendar_widen(ymd, "day") # already wider than "day"
+  }
 
   nt <- as_naive_time(ymd)
   datetime_narrow(nt, "day")
+  datetime_narrow(ymd, "second")
   datetime_widen(nt, "second")
+  datetime_widen(ymd, "day")
 }

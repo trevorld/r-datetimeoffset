@@ -83,11 +83,21 @@ datetime_precision.clock_zoned_time <- function(x, ...) {
 #'   library("clock")
 #'   ymd <- year_month_day(1918, 11, 11, 11)
 #'   datetime_narrow(ymd, "day")
+#'   datetime_narrow(ymd, "second") # already narrower than "second"
 #'   datetime_widen(ymd, "second")
+#'   datetime_widen(ymd, "day") # already wider than "day"
+#'
+#'   \dontrun{
+#'     # these equivalent {clock} calendar methods throw an error
+#'     clock::calendar_narrow(ymd, "second") # already narrower than "second"
+#'     clock::calendar_widen(ymd, "day") # already wider than "day"
+#'   }
 #'
 #'   nt <- as_naive_time(ymd)
 #'   datetime_narrow(nt, "day")
+#'   datetime_narrow(ymd, "second")
 #'   datetime_widen(nt, "second")
+#'   datetime_widen(ymd, "day")
 #' @name datetime_cast
 NULL
 
@@ -100,8 +110,7 @@ datetime_narrow <- function(x, precision, ...) {
 #' @rdname datetime_cast
 #' @export
 datetime_narrow.datetimeoffset <- function(x, precision, ...) {
-    precision <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
-    precision <- as.integer(precision)
+    precision <- dto_precision_integer(precision)
     nas <- rep_len(NA_integer_, length(x))
     if (precision < 7L)
         field(x, "nanosecond") <- nas
@@ -121,13 +130,23 @@ datetime_narrow.datetimeoffset <- function(x, precision, ...) {
 #' @rdname datetime_cast
 #' @export
 datetime_narrow.clock_calendar <- function(x, precision, ...) {
-    clock::calendar_narrow(x, precision)
+    old_precision <- clock_precision_integer(clock::calendar_precision(x))
+    new_precision <- clock_precision_integer(precision)
+    if (old_precision <= new_precision)
+        x
+    else
+        clock::calendar_narrow(x, precision)
 }
 
 #' @rdname datetime_cast
 #' @export
 datetime_narrow.clock_time_point <- function(x, precision, ...) {
-    clock::time_point_floor(x, precision)
+    old_precision <- clock_precision_integer(clock::time_point_precision(x))
+    new_precision <- clock_precision_integer(precision)
+    if (old_precision <= new_precision)
+        x
+    else
+        clock::time_point_floor(x, precision)
 }
 
 #' @rdname datetime_cast
@@ -149,8 +168,7 @@ datetime_widen <- function(x, precision, ...) {
 datetime_widen.datetimeoffset <- function(x, precision, ...,
                                           year = 0L, month = 1L, day = 1L,
                                           hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
-    precision <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
-    precision <- as.integer(precision)
+    precision <- dto_precision_integer(precision)
     field(x, "year") <- update_missing(field(x, "year"), year)
     if (precision >= 2L)
         field(x, "month") <- update_missing(field(x, "month"), month)
@@ -167,6 +185,17 @@ datetime_widen.datetimeoffset <- function(x, precision, ...,
     x
 }
 
+dto_precision_integer <- function(precision) {
+    f <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
+    as.integer(f)
+}
+
+clock_precision_integer <- function(precision) {
+    f <- factor(precision,
+                c("year", "quarter", "month", "week", "day", "hour", "minute", "second", "millisecond", "microsecond", "nanosecond"))
+    as.integer(f)
+}
+
 update_missing <- function(original, replacement) ifelse(is.na(original), replacement, original)
 update_missing_zone <- function(x, tz = "") {
     set_tz(x, ifelse(is.na(get_tz(x)) & is.na(get_hour_offset(x)), clean_tz(tz), get_tz(x)))
@@ -175,11 +204,21 @@ update_missing_zone <- function(x, tz = "") {
 #' @rdname datetime_cast
 #' @export
 datetime_widen.clock_calendar <- function(x, precision, ...) {
-    clock::calendar_widen(x, precision, ...)
+    old_precision <- clock_precision_integer(clock::calendar_precision(x))
+    new_precision <- clock_precision_integer(precision)
+    if (old_precision >= new_precision)
+        x
+    else
+        clock::calendar_widen(x, precision, ...)
 }
 
 #' @rdname datetime_cast
 #' @export
 datetime_widen.clock_time_point <- function(x, precision, ...) {
-    clock::time_point_cast(x, precision)
+    old_precision <- clock_precision_integer(clock::time_point_precision(x))
+    new_precision <- clock_precision_integer(precision)
+    if (old_precision >= new_precision)
+        x
+    else
+        clock::time_point_cast(x, precision)
 }

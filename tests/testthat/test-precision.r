@@ -27,9 +27,13 @@ test_that("precision", {
 
     ymd <- year_month_day(1918, 11, 11, 11)
     expect_equal(format(datetime_narrow(ymd, "month")), "1918-11")
+    expect_equal(format(datetime_narrow(ymd, "second")), "1918-11-11T11")
     expect_equal(format(datetime_widen(ymd, "second")), "1918-11-11T11:00:00")
+    expect_equal(format(datetime_widen(ymd, "month")), "1918-11-11T11")
 
     nt <- as_naive_time(ymd)
     expect_equal(format(datetime_narrow(nt, "day")), "1918-11-11")
+    expect_equal(format(datetime_narrow(nt, "second")), "1918-11-11T11")
     expect_equal(format(datetime_widen(nt, "second")), "1918-11-11T11:00:00")
+    expect_equal(format(datetime_widen(nt, "month")), "1918-11-11T11")
 })
