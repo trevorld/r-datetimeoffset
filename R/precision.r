@@ -4,12 +4,18 @@
 #'
 #' @param x A datetime vector.  Either [datetimeoffset()], a "clock" "calendar", or a "clock" "time".
 #' @param range If `TRUE` return just the minimum and maximum "precision".
+#' @param unspecified If `TRUE` use the smallest non-missing component's as the precision even
+#'                    if there is a missing value for a larger component.
 #' @param ... Reserved for other methods.
 #' @return A character vector of precisions ("year", "month", "day", "hour", "minute", "second", or "nanosecond").
 #' @examples
 #'   dts <- as_datetimeoffset(c("2020", "2020-04-10", "2020-04-10T10:10"))
 #'   datetime_precision(dts)
 #'   datetime_precision(dts, range = TRUE)
+#'
+#'   dt <- datetimeoffset(2020, NA_integer_, 10)
+#'   datetime_precision(dt)
+#'   datetime_precision(dt, unspecified = TRUE)
 #'
 #'   library("clock")
 #'   datetime_precision(year_month_day(1918, 11, 11))
@@ -26,15 +32,21 @@ datetime_precision <- function(x, ...) {
 
 #' @rdname datetime_precision
 #' @export
-datetime_precision.datetimeoffset <- function(x, range = FALSE, ...) {
-    precision <- "nanosecond"
-    precision <- ifelse(is.na(field(x, "nanosecond")), "second", precision)
-    precision <- ifelse(is.na(field(x, "second")), "minute", precision)
-    precision <- ifelse(is.na(field(x, "minute")), "hour", precision)
-    precision <- ifelse(is.na(field(x, "hour")), "day", precision)
-    precision <- ifelse(is.na(field(x, "day")), "month", precision)
-    precision <- ifelse(is.na(field(x, "month")), "year", precision)
-    precision <- ifelse(is.na(field(x, "year")), NA_character_, precision)
+datetime_precision.datetimeoffset <- function(x, range = FALSE, unspecified = FALSE,...) {
+    if (unspecified) {
+        precision <- rep_len(NA_character_, length(x))
+        for (component in c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
+            precision <- ifelse(!is.na(field(x, component)), component, precision)
+    } else {
+        precision <- rep_len("nanosecond", length(x))
+        precision <- ifelse(is.na(field(x, "nanosecond")), "second", precision)
+        precision <- ifelse(is.na(field(x, "second")), "minute", precision)
+        precision <- ifelse(is.na(field(x, "minute")), "hour", precision)
+        precision <- ifelse(is.na(field(x, "hour")), "day", precision)
+        precision <- ifelse(is.na(field(x, "day")), "month", precision)
+        precision <- ifelse(is.na(field(x, "month")), "year", precision)
+        precision <- ifelse(is.na(field(x, "year")), NA_character_, precision)
+    }
     if (range) {
         precision <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
         precision <- as.integer(precision)

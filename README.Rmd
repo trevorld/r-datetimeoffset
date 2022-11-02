@@ -21,6 +21,7 @@
   + [Things {clock} can do that {datetimeoffset} can't do](#clock-advantages)
   + [Things {datetimeoffset} can do that {clock} can't do](#datetimeoffset-advantages)
 
+* [Serializing](#serializing)
 * [External links](#links)
 
   + [Datetime standards with UTC offsets](#standards)
@@ -102,6 +103,19 @@ as_datetimeoffset("2020-05-10 20:10:15.1234567") |>
 # SQL Server DatetimeOFFSET / ODBC SQL_SS_TIMESTAMPOFFSET
 as_datetimeoffset("2020-05-10 20:10:15.1234567 -07:00") |>
     format_nanotime("%F %H:%M:%E7S %Ez")
+```
+
+#### Extended Date Time Format (EDTF)
+
+```{r examples-edtf}
+as_datetimeoffset("2020-10-05T10:10:10") |> format_edtf()
+as_datetimeoffset("2020-XX-05") |> format_edtf()
+# Lossy EDTF import situations
+as_datetimeoffset("20XX-10-10") |> format_edtf()
+as_datetimeoffset("2020-10-XX") == as_datetimeoffset("2020-10")
+# Extensions to EDTF format
+as_datetimeoffset("2020-XX-19T10:XX:10") |>
+    format_edtf(precision = "nanosecond", usetz = TRUE)
 ```
 
 #### Miscellaneous datetimes
@@ -195,7 +209,8 @@ print(di)
 * Support for formatting output datetime strings:
 
   + `format()` returns [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/) strings
-  + `format_iso8601()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
+  + `format_edtf()` returns [Extended Date Time Format (EDTF)](https://www.loc.gov/standards/datetime/) strings
+  + `format_iso8601()` and `lubridate::format_ISO8601()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
   + `format_pdfmark()` returns [pdfmark datetime](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
   + `format_nanotime()` allows [CCTZ style formatting](https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197)
 
@@ -289,6 +304,14 @@ print(di)
   clock::zoned_time_parse_complete(dts)
   ```
 
+* `{datetimeoffset}` vectors allow lower precision elements to be missing:
+
+  ```{r}
+  datetimeoffset(2020, NA_integer_, 10) |> format_edtf()
+
+  clock::year_month_day(2020, NA_integer_, 10)
+  ```
+
 * `{datetimeoffset}` vectors allow datetimes with varying precisions:
 
   ```{r precision}
@@ -315,6 +338,30 @@ print(di)
                       "1970-01-01T00:00:00[America/Los_Angeles]"))
   ```
 
+## <a name="serializing">Serializing</a>
+
+```{r}
+dts <- datetimeoffset(year = c(2020, 1980), month = c(NA, 10), day = c(15, NA))
+format_edtf(dts)
+
+# serialize via character vector
+ch <- format_edtf(dts, precision = "nanosecond", usetz = TRUE)
+print(ch)
+dts_ch <- as_datetimeoffset(ch)
+all.equal(dts, dts_ch)
+
+# serialize via data frame
+df <- vctrs::vec_data(dts)
+print(df)
+dts_df <- do.call(datetimeoffset, as.list(df))
+all.equal(dts, dts_df)
+
+# serialize via base::serialize() or base::saveRDS()
+x <- serialize(dts, NULL) # raw binary vector
+dts_x <- unserialize(x)
+all.equal(dts, dts_x)
+```
+
 ## <a name="links">External links</a>
 
 Please feel free to [open a pull request to add any missing relevant links](https://github.com/trevorld/r-datetimeoffset/edit/main/README.Rmd).
@@ -325,6 +372,7 @@ Please feel free to [open a pull request to add any missing relevant links](http
 * [pdfmark datetimes](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo)
 * [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/)
 * [SQL Server / ODBC datetime literals](https://learn.microsoft.com/en-us/sql/relational-databases/native-client-odbc-date-time/data-type-support-for-odbc-date-and-time-improvements?source=recommendations&view=sql-server-ver16)
+* [Extended Date Time Format (EDTF)](https://www.loc.gov/standards/datetime/)
 
 ### <a name="similar">Related software</a>
 

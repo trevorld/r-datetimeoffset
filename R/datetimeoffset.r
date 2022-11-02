@@ -127,3 +127,11 @@ vec_ptype_abbr.datetimeoffset <- function(x, ...) "dto"
 
 #' @export
 vec_ptype_full.datetimeoffset <- function(x, ...) "datetimeoffset"
+
+#' @export
+vec_proxy_equal.datetimeoffset <- function(x, ...) format_edtf(x, precision = "nanosecond", usetz = TRUE)
+
+#' @export
+is.na.datetimeoffset <- function(x) is.na(get_year(x)) & is.na(get_month(x)) & is.na(get_day(x)) &
+    is.na(get_hour(x)) & is.na(get_minute(x)) & is.na(get_second(x)) & is.na(get_nanosecond(x)) &
+    is.na(get_hour_offset(x)) & is.na(get_minute_offset(x)) & is.na(get_tz(x))

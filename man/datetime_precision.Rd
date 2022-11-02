@@ -10,7 +10,7 @@
 \usage{
 datetime_precision(x, ...)
 
-\method{datetime_precision}{datetimeoffset}(x, range = FALSE, ...)
+\method{datetime_precision}{datetimeoffset}(x, range = FALSE, unspecified = FALSE, ...)
 
 \method{datetime_precision}{clock_calendar}(x, ...)
 
@@ -24,6 +24,9 @@ datetime_precision(x, ...)
 \item{...}{Reserved for other methods.}
 
 \item{range}{If \code{TRUE} return just the minimum and maximum "precision".}
+
+\item{unspecified}{If \code{TRUE} use the smallest non-missing component's as the precision even
+if there is a missing value for a larger component.}
 }
 \value{
 A character vector of precisions ("year", "month", "day", "hour", "minute", "second", or "nanosecond").
@@ -35,6 +38,10 @@ A character vector of precisions ("year", "month", "day", "hour", "minute", "sec
   dts <- as_datetimeoffset(c("2020", "2020-04-10", "2020-04-10T10:10"))
   datetime_precision(dts)
   datetime_precision(dts, range = TRUE)
+
+  dt <- datetimeoffset(2020, NA_integer_, 10)
+  datetime_precision(dt)
+  datetime_precision(dt, unspecified = TRUE)
 
   library("clock")
   datetime_precision(year_month_day(1918, 11, 11))

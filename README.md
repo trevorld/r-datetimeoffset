@@ -21,6 +21,7 @@
   + [Things {clock} can do that {datetimeoffset} can't do](#clock-advantages)
   + [Things {datetimeoffset} can do that {clock} can't do](#datetimeoffset-advantages)
 
+* [Serializing](#serializing)
 * [External links](#links)
 
   + [Datetime standards with UTC offsets](#standards)
@@ -189,6 +190,52 @@ as_datetimeoffset("2020-05-10 20:10:15.1234567 -07:00") |>
 ## [1] "2020-05-10 20:10:15.1234567 -07:00"
 ```
 
+#### Extended Date Time Format (EDTF)
+
+
+```r
+as_datetimeoffset("2020-10-05T10:10:10") |> format_edtf()
+```
+
+```
+## [1] "2020-10-05T10:10:10"
+```
+
+```r
+as_datetimeoffset("2020-XX-05") |> format_edtf()
+```
+
+```
+## [1] "2020-XX-05"
+```
+
+```r
+# Lossy EDTF import situations
+as_datetimeoffset("20XX-10-10") |> format_edtf()
+```
+
+```
+## [1] "XXXX-10-10"
+```
+
+```r
+as_datetimeoffset("2020-10-XX") == as_datetimeoffset("2020-10")
+```
+
+```
+## [1] TRUE
+```
+
+```r
+# Extensions to EDTF format
+as_datetimeoffset("2020-XX-19T10:XX:10") |>
+    format_edtf(precision = "nanosecond", usetz = TRUE)
+```
+
+```
+## [1] "2020-XX-19T10:XX:10.XXXXXXXXX+XX:XX[X]"
+```
+
 #### Miscellaneous datetimes
 
 
@@ -235,7 +282,7 @@ print(creation_date)
 ```
 
 ```
-## [1] "2022-11-01 20:36:38 PDT"
+## [1] "2022-11-02 10:43:30 PDT"
 ```
 
 ```r
@@ -254,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-01T20:36:38
+## CreationDate: 2022-11-02T10:43:30
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-01T20:36:38
+## ModDate: 2022-11-02T10:43:30
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -280,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-01T20:36:38-07:00
+## CreationDate: 2022-11-02T10:43:30-07:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-01T20:36:43-07:00
+## ModDate: 2022-11-02T10:43:36-07:00
 ```
 
 ## <a name="features">Features</a>
@@ -323,7 +370,8 @@ print(di)
 * Support for formatting output datetime strings:
 
   + `format()` returns [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/) strings
-  + `format_iso8601()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
+  + `format_edtf()` returns [Extended Date Time Format (EDTF)](https://www.loc.gov/standards/datetime/) strings
+  + `format_iso8601()` and `lubridate::format_ISO8601()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
   + `format_pdfmark()` returns [pdfmark datetime](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
   + `format_nanotime()` allows [CCTZ style formatting](https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197)
 
@@ -432,6 +480,26 @@ print(di)
   ## ! All elements of `x` must have the same time zone name. Found different zone names of: 'America/Los_Angeles' and 'America/New_York'.
   ```
 
+* `{datetimeoffset}` vectors allow lower precision elements to be missing:
+
+  
+  ```r
+  datetimeoffset(2020, NA_integer_, 10) |> format_edtf()
+  ```
+  
+  ```
+  ## [1] "2020-XX-10"
+  ```
+  
+  ```r
+  clock::year_month_day(2020, NA_integer_, 10)
+  ```
+  
+  ```
+  ## <year_month_day<day>[1]>
+  ## [1] NA
+  ```
+
 * `{datetimeoffset}` vectors allow datetimes with varying precisions:
 
   
@@ -496,6 +564,70 @@ print(di)
   ## [5] 1970-01-01T00:00:00-08:00[America/Los_Angeles]
   ```
 
+## <a name="serializing">Serializing</a>
+
+
+```r
+dts <- datetimeoffset(year = c(2020, 1980), month = c(NA, 10), day = c(15, NA))
+format_edtf(dts)
+```
+
+```
+## [1] "2020-XX-15" "1980-10"
+```
+
+```r
+# serialize via character vector
+ch <- format_edtf(dts, precision = "nanosecond", usetz = TRUE)
+print(ch)
+```
+
+```
+## [1] "2020-XX-15TXX:XX:XX.XXXXXXXXX+XX:XX[X]"
+## [2] "1980-10-XXTXX:XX:XX.XXXXXXXXX+XX:XX[X]"
+```
+
+```r
+dts_ch <- as_datetimeoffset(ch)
+all.equal(dts, dts_ch)
+```
+
+```
+## [1] TRUE
+```
+
+```r
+# serialize via data frame
+df <- vctrs::vec_data(dts)
+print(df)
+```
+
+```
+##   year month day hour minute second nanosecond hour_offset minute_offset   tz
+## 1 2020    NA  15   NA     NA     NA         NA          NA            NA <NA>
+## 2 1980    10  NA   NA     NA     NA         NA          NA            NA <NA>
+```
+
+```r
+dts_df <- do.call(datetimeoffset, as.list(df))
+all.equal(dts, dts_df)
+```
+
+```
+## [1] TRUE
+```
+
+```r
+# serialize via base::serialize() or base::saveRDS()
+x <- serialize(dts, NULL) # raw binary vector
+dts_x <- unserialize(x)
+all.equal(dts, dts_x)
+```
+
+```
+## [1] TRUE
+```
+
 ## <a name="links">External links</a>
 
 Please feel free to [open a pull request to add any missing relevant links](https://github.com/trevorld/r-datetimeoffset/edit/main/README.Rmd).
@@ -506,6 +638,7 @@ Please feel free to [open a pull request to add any missing relevant links](http
 * [pdfmark datetimes](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo)
 * [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/)
 * [SQL Server / ODBC datetime literals](https://learn.microsoft.com/en-us/sql/relational-databases/native-client-odbc-date-time/data-type-support-for-odbc-date-and-time-improvements?source=recommendations&view=sql-server-ver16)
+* [Extended Date Time Format (EDTF)](https://www.loc.gov/standards/datetime/)
 
 ### <a name="similar">Related software</a>
 

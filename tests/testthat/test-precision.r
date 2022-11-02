@@ -20,6 +20,11 @@ test_that("precision", {
     dtw <- datetime_widen(dts, "day")
     expect_equal(format(dtw), c("2020-01-01", "2020-04-10", "2020-04-10T10:10"))
 
+    # EDTF precisions
+    dt <- as_datetimeoffset("2020-XX-04")
+    expect_equal(datetime_precision(dt), "year")
+    expect_equal(datetime_precision(dt, unspecified = TRUE), "day")
+
     # {clock} methods
     expect_equal(datetime_precision(clock::year_month_day(1918, 11, 11)), "day")
     expect_equal(datetime_precision(clock::sys_time_now()), "nanosecond")

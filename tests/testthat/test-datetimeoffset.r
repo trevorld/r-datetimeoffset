@@ -31,6 +31,13 @@ test_that("format.datetimeoffset()", {
     expect_false(is.na(dt))
 
     expect_true(is.na(NA_datetimeoffset_))
+    expect_equal(is.na(datetimeoffset(c(1980, NA, NA), c(NA, NA, 10))),
+                 c(FALSE, TRUE, FALSE))
+    expect_true(datetimeoffset(1980, 10, 10) == datetimeoffset(1980, 10, 10))
+    expect_true(datetimeoffset(1980) < datetimeoffset(1981))
+    expect_true(datetimeoffset(1980) < datetimeoffset(NA_integer_))
+    expect_true(datetimeoffset(1980, 10) < datetimeoffset(1981, 10))
+    expect_true(datetimeoffset(1980, 10) < datetimeoffset(1980, 11))
 
     skip_if_not(all(c("US/Pacific", "US/Eastern") %in% OlsonNames()))
     expect_equal(format(datetimeoffset(2020, 5, 15, 8, 23, 16, tz = "US/Pacific")),

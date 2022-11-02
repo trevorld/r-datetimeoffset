@@ -141,7 +141,7 @@ parse_nanoseconds <- function(x) {
     stopifnot(nchar(x) <= 9L)
     n <- nchar(x)
     x <- paste0(x, paste(rep_len("0", 9L - n), collapse = ""))
-    as.integer(x)
+    dto_as_integer(x)
 }
 
 as_dtos_character <- function(x) {
@@ -157,9 +157,9 @@ as_dtos_character_helper <- function(x) {
     } else {
         s <- x
     }
-    s <- sub("^([[:digit:]]{4})[-/]([[:digit:]]{2})", "\\1\\2", s)
-    s <- sub("^([[:digit:]]{6})[-/]([[:digit:]]{2})", "\\1\\2", s)
-    s <- gsub("([[:digit:]])[Tt ]([[:digit:]+-])", "\\1\\2", s)
+    s <- sub("^([[:digit:]X]{4})[-/]([[:digit:]X]{2})", "\\1\\2", s)
+    s <- sub("^([[:digit:]X]{6})[-/]([[:digit:]X]{2})", "\\1\\2", s)
+    s <- gsub("([[:digit:]X])[Tt ]([[:digit:]+-X])", "\\1\\2", s)
     s <- gsub(":", "", s)
     l <- list(year = NA_integer_, month = NA_integer_, day = NA_integer_,
               hour = NA_integer_, minute = NA_integer_, second = NA_integer_,
@@ -173,38 +173,44 @@ as_dtos_character_helper <- function(x) {
         l$hour_offset <- 0
         l$minute_offset <- 0
         l$tz <- "GMT"
-    } else if (grepl("^.+\\[.+\\]$", s)) { # ends in [US/Pacific] means "US/Pacific" time zone
+    } else if (grepl("^.+\\[.+\\]$", s)) { # ends in [America/Los_Angeles] means "America/Los_Angeles" time zone
         l <- as_dtos_character_helper(gsub("^(.*)(\\[.+\\])$", "\\1", s))
-        l$tz <- gsub("^.*\\[(.+)\\]$", "\\1", s)
-    } else if (grepl("^.+[+-][[:digit:]]{2}$", s)) { # ends in -07 or +07 means hour offset
+        tz <- gsub("^.*\\[(.+)\\]$", "\\1", s)
+        l$tz <- ifelse(tz == "X", NA_character_, tz)
+    } else if (grepl("^.+[+-][[:digit:]X]{2}$", s)) { # ends in -07 or +07 means hour offset
         l <- as_dtos_character_helper(substr(s, 1L, nchar(s) - 3L))
-        l$hour_offset <- as.integer(substr(s, nchar(s) - 2L, nchar(s)))
-    } else if (grepl("^.+[+-][[:digit:]]{4}$", s)) { # ends in -0700 or +0700 means hour/minute offset
+        l$hour_offset <- dto_as_integer(substr(s, nchar(s) - 2L, nchar(s)))
+    } else if (grepl("^.+[+-][[:digit:]X]{4}$", s)) { # ends in -0700 or +0700 means hour/minute offset
         l <- as_dtos_character_helper(substr(s, 1L, nchar(s) - 5L))
-        l$hour_offset <- as.integer(substr(s, nchar(s) - 4L, nchar(s) - 2L))
-        l$minute_offset <- as.integer(substr(s, nchar(s) - 1L, nchar(s)))
-    } else if (grepl("^[[:digit:]]{4}$", s)) { # "2020"
-        l$year <- as.integer(s)
-    } else if (grepl("^[[:digit:]]{6}$", s)) { # "202005"
+        l$hour_offset <- dto_as_integer(substr(s, nchar(s) - 4L, nchar(s) - 2L))
+        l$minute_offset <- dto_as_integer(substr(s, nchar(s) - 1L, nchar(s)))
+    } else if (grepl("^[[:digit:]X]{4}$", s)) { # "2020"
+        l$year <- dto_as_integer(s)
+    } else if (grepl("^[[:digit:]X]{6}$", s)) { # "202005"
         l <- as_dtos_character_helper(substr(s, 1L, 4L))
-        l$month <- as.integer(substr(s, 5L, 6L))
-    } else if (grepl("^[[:digit:]]{8}$", s)) { # "20200515"
+        l$month <- dto_as_integer(substr(s, 5L, 6L))
+    } else if (grepl("^[[:digit:]X]{8}$", s)) { # "20200515"
         l <- as_dtos_character_helper(substr(s, 1L, 6L))
-        l$day <- as.integer(substr(s, 7L, 8L))
-    } else if (grepl("^[[:digit:]]{10}$", s)) { # "2020051508"
+        l$day <- dto_as_integer(substr(s, 7L, 8L))
+    } else if (grepl("^[[:digit:]X]{10}$", s)) { # "2020051508"
         l <- as_dtos_character_helper(substr(s, 1L, 8L))
-        l$hour <- as.integer(substr(s, 9L, 10L))
-    } else if (grepl("^[[:digit:]]{12}$", s)) { # "202005150823"
+        l$hour <- dto_as_integer(substr(s, 9L, 10L))
+    } else if (grepl("^[[:digit:]X]{12}$", s)) { # "202005150823"
         l <- as_dtos_character_helper(substr(s, 1L, 10L))
-        l$minute <- as.integer(substr(s, 11L, 12L))
-    } else if (grepl("^[[:digit:]]{14}$", s)) { # "20200515082316"
+        l$minute <- dto_as_integer(substr(s, 11L, 12L))
+    } else if (grepl("^[[:digit:]X]{14}$", s)) { # "20200515082316"
         l <- as_dtos_character_helper(substr(s, 1L, 12L))
-        l$second <- as.integer(substr(s, 13L, 14L))
-    } else if (grepl("^[[:digit:]]{14}\\.[[:digit:]]{1,}$", s)) { # "20200515082316.003"
+        l$second <- dto_as_integer(substr(s, 13L, 14L))
+    } else if (grepl("^[[:digit:]X]{14}\\.[[:digit:]X]{1,}$", s)) { # "20200515082316.003"
         l <- as_dtos_character_helper(substr(s, 1L, 14L))
         l$nanosecond <-  parse_nanoseconds(substr(s, 15L, nchar(s)))
     } else {
         stop(paste("Can't parse datetime", x))
     }
     as.data.frame(l)
+}
+
+# XX should cast to NA_integer_ without warning
+dto_as_integer <- function(s) {
+    suppressWarnings(as.integer(s))
 }

@@ -7,11 +7,12 @@
 \alias{format_pdfmark}
 \alias{format_strftime}
 \alias{format_nanotime}
+\alias{format_edtf}
 \title{Convert datetime objects to character}
 \usage{
 \method{format}{datetimeoffset}(x, ...)
 
-format_iso8601(x, usetz = TRUE, precision = NULL, ...)
+format_iso8601(x, offsets = TRUE, precision = NULL, sep = ":", ...)
 
 format_pdfmark(x)
 
@@ -23,25 +24,28 @@ format_strftime(
 )
 
 format_nanotime(x, format = "\%Y-\%m-\%dT\%H:\%M:\%E9S\%Ez", tz = get_tz(x))
+
+format_edtf(x, offsets = TRUE, precision = NULL, usetz = FALSE, ...)
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object.}
 
 \item{...}{Ignored}
 
-\item{usetz}{Include the time zone in the formatting (of outputs including
-time; date outputs never include time zone information).}
+\item{offsets}{Include the UTC offsets in the formatting}
 
-\item{precision}{The amount of precision to represent with substrings of
-"ymdhmsn", as "y"ear, "m"onth, "d"ay, "h"our, "m"inute,
-"s"econd, and "n"anosecond. (e.g. "ymdhm" would show precision through minutes.
-When ‘NULL’, full precision for the object is shown.}
+\item{precision}{The amount of precision: either "year", "month", "day", "hour", "minute", "second", or "nanosecond".
+If \code{NULL} then full precision for the object is shown.}
+
+\item{sep}{UTC offset separator.  Either ":" or "".}
 
 \item{format}{For \code{format_strftime()} see \code{\link[base:strptime]{base::strftime()}}.
 For \code{format_nanotime()} see \url{https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197}.}
 
 \item{tz}{A character string specifying the time zone to be used for the conversion.
 Can be a length greater than one.}
+
+\item{usetz}{Include the time zone in the formatting}
 }
 \value{
 A character vector
@@ -53,12 +57,15 @@ with as much \strong{known} information possible (RFC 3339 with de facto standar
 \code{format_pdfmark()} returns a pdfmark datetime string with as much \strong{known} information possible.
 \code{format_strftime()} allows \code{\link[base:strptime]{base::strftime()}} style formatting.
 \code{format_nanotime()} allows CCTZ style formatting.
+\code{format_edtf()} returns an Extended Date Time Format (EDTF) string.
 }
 \examples{
   # ISO 8601 datetimes
   format_iso8601(as_datetimeoffset("2020-05"))
   format_iso8601(as_datetimeoffset("2020-05-10 20:15"))
   format_iso8601(as_datetimeoffset("2020-05-10 20:15:05-07"))
+  if (require("lubridate"))
+    lubridate::format_ISO8601(as_datetimeoffset("2020-05-10 20:15:05-07"))
 
   # pdfmark datetimes
   format_pdfmark(as_datetimeoffset("2020-05"))
@@ -75,4 +82,12 @@ with as much \strong{known} information possible (RFC 3339 with de facto standar
     dt <- as_datetimeoffset(Sys.time())
     format_nanotime(dt, format = "\%F \%H:\%M:\%E7S \%Ez") # SQL Server datetimeoffset
   }
+
+  # EDTF style formatting
+  format_edtf(as_datetimeoffset("2020-05"))
+  format_edtf(as_datetimeoffset("2020-05-10T20:15:05-07"))
+  dt <- datetimeoffset(2020, NA_integer_, 10)
+  format_edtf(dt)
+  # Not a valid EDTF string but useful serialization of `datetimeoffset()`
+  format_edtf(dt, precision = "nanosecond", usetz = TRUE)
 }

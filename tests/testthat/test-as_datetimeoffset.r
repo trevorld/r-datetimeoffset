@@ -159,6 +159,23 @@ test_that("as_datetimeoffset()", {
     expect_equal(format(as_datetimeoffset("20200515T082316-0330")),
                  "2020-05-15T08:23:16-03:30")
 
+    # EDTF
+    expect_equal(format_edtf(as_datetimeoffset("2020-XX-10")),
+                 "2020-XX-10")
+    expect_equal(format_edtf(as_datetimeoffset("20XX-XX-10")),
+                 "XXXX-XX-10")
+    dt <- as_datetimeoffset("2020-XX-10T10:10:10[X]")
+    expect_equal(get_tz(dt), NA_character_)
+    dt <- as_datetimeoffset("2020-XX-10T10:10:10+XX:10[X]")
+    expect_equal(get_hour_offset(dt), NA_integer_)
+    expect_equal(get_minute_offset(dt), 10L)
+    expect_equal(get_tz(dt), NA_character_)
+    dt <- as_datetimeoffset("2020-XX-10T10:10:10.003+XX:10[X]")
+    expect_equal(get_nanosecond(dt), 3e6)
+    expect_equal(get_hour_offset(dt), NA_integer_)
+    expect_equal(get_minute_offset(dt), 10L)
+    expect_equal(get_tz(dt), NA_character_)
+
     # Date
     expect_equal(format(as_datetimeoffset(as.Date("2020-05-15"))),
                  "2020-05-15")
@@ -170,21 +187,21 @@ test_that("as_datetimeoffset()", {
     dt <- as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16Z"))
     expect_equal(get_nanosecond(dt), 0L)
 
-    skip_if_not("US/Eastern" %in% OlsonNames())
+    skip_if_not("America/New_York" %in% OlsonNames())
 
     dt <- as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16Z"),
-                            tz = c("GMT", "US/Eastern"))
+                            tz = c("GMT", "America/New_York"))
     expect_equal(format(dt),
                  c("2020-05-15T08:23:16.0Z",
-                   "2020-05-15T04:23:16.0-04:00[US/Eastern]"))
+                   "2020-05-15T04:23:16.0-04:00[America/New_York]"))
 
     # POSIXct
-    dt <- as.POSIXct("2022-10-10 10:00:00", tz = "US/Eastern")
+    dt <- as.POSIXct("2022-10-10 10:00:00", tz = "America/New_York")
     expect_equal(format(as_datetimeoffset(dt)),
-                 "2022-10-10T10:00:00-04:00[US/Eastern]")
+                 "2022-10-10T10:00:00-04:00[America/New_York]")
 
     # POSIXlt
-    dt <- as.POSIXlt("2022-10-10 10:00:00", tz = "US/Eastern")
+    dt <- as.POSIXlt("2022-10-10 10:00:00", tz = "America/New_York")
     expect_equal(format(as_datetimeoffset(dt)),
-                 "2022-10-10T10:00:00-04:00[US/Eastern]")
+                 "2022-10-10T10:00:00-04:00[America/New_York]")
 })

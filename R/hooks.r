@@ -19,8 +19,13 @@
         methods::setGeneric("second<-", lubridate::"second<-")
         methods::setGeneric("date<-", lubridate::"date<-")
         methods::setMethod("format_ISO8601", signature = "datetimeoffset",
-                           function(x, usetz = TRUE, precision = NULL, ...) {
-                               format_iso8601(x, usetz = usetz, precision = precision)
+                           function(x, usetz = FALSE, precision = NULL, ...) {
+                               if (!is.null(precision))
+                                   precision <- switch(precision,
+                                                       y = "year", ym = "month", ymd = "day",
+                                                       ymdh = "hour", ymdhm = "minute", ymdhms = "second",
+                                                       stop(paste("Don't recognize precision", sQuote(precision))))
+                               format_iso8601(x, offsets = usetz, precision = precision, sep = "")
                            })
         methods::setMethod("year<-", "datetimeoffset",
                            function(x, value) set_year.datetimeoffset(x, value))
