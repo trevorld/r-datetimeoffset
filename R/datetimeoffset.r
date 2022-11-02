@@ -53,6 +53,11 @@ datetimeoffset <- function(year = NA_integer_, month = NA_integer_, day = NA_int
                             hour = NA_integer_, minute = NA_integer_, second = NA_integer_,
                             nanosecond = NA_integer_,
                             hour_offset = NA_integer_, minute_offset = NA_integer_, tz = NA_character_) {
+    if (nargs() == 0L) {
+        return(new_datetimeoffset(integer(0L), integer(0L), integer(0L),
+                                  integer(0L), integer(0L), integer(0L), integer(0L),
+                                  integer(0L), integer(0L), character(0L)))
+    }
     # cast
     year <- vec_cast(year, integer())
     month <- vec_cast(month, integer())
@@ -115,7 +120,7 @@ is_datetimeoffset <- function(x) inherits(x, "datetimeoffset")
 
 #' @rdname datetimeoffset_utilities
 #' @export
-NA_datetimeoffset_ <- datetimeoffset()
+NA_datetimeoffset_ <- datetimeoffset(NA_integer_)
 
 #' @export
 vec_ptype_abbr.datetimeoffset <- function(x, ...) "dto"

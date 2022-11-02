@@ -1,4 +1,7 @@
 test_that("format.datetimeoffset()", {
+    expect_length(NA_datetimeoffset_, 1L)
+    expect_length(datetimeoffset(2020), 1L)
+    expect_length(datetimeoffset(), 0L)
     expect_equal(format(datetimeoffset(2020)),
                  "2020")
     expect_equal(format(datetimeoffset(2020, 5)),
