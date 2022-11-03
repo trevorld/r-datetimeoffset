@@ -3,19 +3,22 @@
 \name{mode_tz}
 \alias{mode_tz}
 \alias{mode_tz.datetimeoffset}
+\alias{mode_tz.default}
 \title{Get most common time zone}
 \usage{
-mode_tz(time, tzone = "", ...)
+mode_tz(x, ...)
 
-\method{mode_tz}{datetimeoffset}(time, tzone = "", ...)
+\method{mode_tz}{datetimeoffset}(x, tz = "", ...)
+
+\method{mode_tz}{default}(x, ...)
 }
 \arguments{
-\item{time}{A datetime object.}
-
-\item{tzone}{A timezone string to use for missing time zones.
-"" will be treated as equivalent to \code{Sys.timezone()}.}
+\item{x}{A datetime object.}
 
 \item{...}{Ignored}
+
+\item{tz}{A timezone string to use for missing time zones.
+"" will be treated as equivalent to \code{Sys.timezone()}.}
 }
 \value{
 Timezone string

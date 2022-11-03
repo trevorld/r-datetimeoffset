@@ -5,9 +5,9 @@
 #' Intended for use when coercing from a datetime object that supports
 #' multiple heterogeneous time zones to a datetime object that
 #' only supports one time zone
-#' @param time A datetime object.
-#' @param tzone A timezone string to use for missing time zones.
-#'              "" will be treated as equivalent to `Sys.timezone()`.
+#' @param x A datetime object.
+#' @param tz A timezone string to use for missing time zones.
+#'           "" will be treated as equivalent to `Sys.timezone()`.
 #' @param ... Ignored
 #' @return Timezone string
 #' @examples
@@ -24,21 +24,28 @@
 #'     print(mode_tz(dt))
 #'   }
 #' @export
-mode_tz <- function(time, tzone = "", ...) {
+mode_tz <- function(x, ...) {
     UseMethod("mode_tz")
 }
 
 #' @rdname mode_tz
 #' @export
-mode_tz.datetimeoffset <- function(time, tzone = "", ...) {
-    tzone <- clean_tz(tzone)
-    time <- set_tz(time, ifelse(is.na(get_tz(time)), tzone, get_tz(time)))
-    time <- set_tz(time, ifelse(get_tz(time) == "", Sys.timezone(), get_tz(time)))
+mode_tz.datetimeoffset <- function(x, tz = "", ...) {
+    tz <- clean_tz(tz)
+    x <- set_tz(x, ifelse(is.na(get_tz(x)), tz, get_tz(x)))
+    x <- set_tz(x, ifelse(get_tz(x) == "", Sys.timezone(), get_tz(x)))
 
-    tzones <- get_tz(time)
+    tzones <- get_tz(x)
     keys <- unique(tzones)
     tbl <- tabulate(match(tzones, keys))
     keys[which.max(tbl)]
+}
+
+#' @rdname mode_tz
+#' @export
+mode_tz.default <- function(x, ...) {
+    tz <- get_tz(x)
+    ifelse(tz == "", Sys.timezone(), tz)
 }
 
 clean_tz <- function(tz, na = NA_character_) {
