@@ -54,12 +54,15 @@ NULL
 #' @rdname from_datetimeoffset
 #' @export
 as.Date.datetimeoffset <- function(x, ...) {
-    x <- datetime_widen(x, "day")
+    precision <- dto_precision_integer(datetime_precision.datetimeoffset(x))
     year_str <- my_format(field(x, "year"), width = 4L)
     month_str <- my_format(field(x, "month"), prefix = "-")
     day_str <- my_format(field(x, "day"), prefix = "-")
     s <- paste0(year_str, month_str, day_str)
-    as.Date(s)
+    format <- rep("%Y-%m-%d", length(x))
+    format <- ifelse(precision < PRECISION_DAY, "%Y-%m", format)
+    format <- ifelse(precision < PRECISION_MONTH, "%Y", format)
+    as.Date(s, format = format)
 }
 
 #' @rdname from_datetimeoffset
@@ -89,9 +92,15 @@ as.POSIXlt.datetimeoffset <- function(x, tz = mode_tz(x), ...) {
 }
 
 as.nanotime.datetimeoffset <- function(from, tz = "") {
-                x <- datetime_widen(from, "nanosecond")
-                x <- update_missing_zone(x, tz = tz)
-                nanotime::as.nanotime(format_iso8601(x))
+    n <- max(length(from), length(tz))
+    if (length(from) < n)
+        from <- rep(from, length.out = n)
+    if (length(tz) < n)
+        tz <- rep(tz, length.out = n)
+    x <- datetime_widen(from, "nanosecond")
+    x <- update_missing_zone(x, tz = tz)
+    s <- ifelse(is.na(from), NA_character_, format_iso8601(x))
+    nanotime::as.nanotime(s)
 }
 
 #' @rdname from_datetimeoffset
@@ -99,8 +108,7 @@ as.nanotime.datetimeoffset <- function(from, tz = "") {
 #' @export
 as_year_month_day.datetimeoffset <- function(x) {
     precision <- dto_precision_integer(datetime_precision(x, range = TRUE)[1])
-    stopifnot(precision >= PRECISION_YEAR)
-    year <- field(x, "year")
+    year <- ifelse(is.na(x), NA_integer_, field(x, "year"))
     month <- if (precision >= PRECISION_MONTH) field(x, "month") else NULL
     day <- if (precision >= PRECISION_DAY) field(x, "day") else NULL
     hour <- if (precision >= PRECISION_HOUR) field(x, "hour") else NULL
@@ -161,12 +169,19 @@ as_naive_time.datetimeoffset <- function(x) {
 #' @importFrom clock as_sys_time
 #' @export
 as_sys_time.datetimeoffset <- function(x) {
-    precision <- datetime_precision(x, range = TRUE)[1]
-    x <- datetime_narrow(x, precision)
+    # {clock} won't convert to time point if less precise than day so make missing
+    precisions <- dto_precision_integer(datetime_precision(x))
+    is.na(x) <- ifelse(precisions < dto_precision_integer("day"), TRUE, FALSE)
+    # {clock} doesn't allow mixed precision so standardize to narrowest precision
+    precision <- datetime_precision(na_omit(x), range = TRUE)[1]
+    if (!is.na(precision))
+        x <- datetime_narrow(x, precision)
     purrr::map_vec(x, as_sys_time_helper)
 }
 
 as_sys_time_helper <- function(x) {
+    if (is.na(x))
+        return(clock::sys_time_parse(NA_character_))
     if (!is.na(get_hour_offset(x))) {
         ft <- datetime_widen(x, "nanosecond")
         if (is.na(get_minute_offset(x)))
@@ -190,9 +205,10 @@ as_sys_time_helper <- function(x) {
 #' @importFrom clock as_zoned_time
 #' @export
 as_zoned_time.datetimeoffset <- function(x, zone = mode_tz(x)) {
-    precision <- datetime_precision(x, range = TRUE)[1]
-    x <- datetime_narrow(x, precision)
     x <- update_missing_zone(x, tz = zone)
+    # {clock} won't convert to time point if less precise than day so make missing
+    precisions <- dto_precision_integer(datetime_precision(x))
+    is.na(x) <- ifelse(precisions < dto_precision_integer("day"), TRUE, FALSE)
     st <- as_sys_time.datetimeoffset(x)
     clock::as_zoned_time(st, zone)
 }

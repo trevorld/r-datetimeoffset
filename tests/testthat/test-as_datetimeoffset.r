@@ -1,4 +1,4 @@
-test_that("as_datetimeoffset()", {
+test_that("as_datetimeoffset.character()", {
 
     expect_error(as_datetimeoffset("This is obviously not a date"))
     expect_error(as_datetimeoffset(complex(20)))
@@ -97,11 +97,6 @@ test_that("as_datetimeoffset()", {
     expect_equal(format(as_datetimeoffset("20200515T082316.003")),
                  "2020-05-15T08:23:16.003")
 
-    # YMDhmsz
-    if ("America/Los_Angeles" %in% OlsonNames())
-        expect_equal(format(as_datetimeoffset("2020-05-15T08:23:16[America/Los_Angeles]")),
-                     "2020-05-15T08:23:16-07:00[America/Los_Angeles]")
-
     # YMDhmso
     expect_equal(format(as_datetimeoffset("D:20200515082316+03")),
                  "2020-05-15T08:23:16+03")
@@ -178,6 +173,14 @@ test_that("as_datetimeoffset()", {
     expect_equal(get_minute_offset(dt), 10L)
     expect_equal(get_tz(dt), NA_character_)
 
+    # YMDhmsz
+    skip_if_not("America/Los_Angeles" %in% OlsonNames())
+    expect_equal(format(as_datetimeoffset("2020-05-15T08:23:16[America/Los_Angeles]")),
+                 "2020-05-15T08:23:16-07:00[America/Los_Angeles]")
+
+})
+
+test_that("base R classes", {
     # Date
     expect_equal(format(as_datetimeoffset(as.Date(c("2020-05-15", NA_character_)))),
                  c("2020-05-15", ""))
@@ -191,8 +194,9 @@ test_that("as_datetimeoffset()", {
     dt <- as.POSIXlt(c("2022-10-10 10:00:00", NA_character_), tz = "America/New_York")
     expect_equal(format(as_datetimeoffset(dt)),
                  c("2022-10-10T10:00:00-04:00[America/New_York]", ""))
+})
 
-    # {clock}
+test_that("{clock} classes", {
     ymd <- clock::year_month_day(2020, c(NA, 10), 10)
     dto <- as_datetimeoffset(ymd)
     expect_equal(format(dto), c("", "2020-10-10"))
@@ -218,8 +222,9 @@ test_that("as_datetimeoffset()", {
     dto <- as_datetimeoffset(clock::as_zoned_time(clock::as_sys_time(ymd), Sys.timezone()))
     expect_equal(format(dto)[1], c(""))
     expect_equal(is.na(dto), c(TRUE, FALSE))
+})
 
-    # nanotime
+test_that("as_datetimeoffset.nanotime()", {
     skip_if_not_installed("nanotime")
     dt <- as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16.03Z"))
     expect_equal(format(dt), "2020-05-15T08:23:16.03Z")

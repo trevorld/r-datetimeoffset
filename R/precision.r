@@ -33,6 +33,12 @@ datetime_precision <- function(x, ...) {
 #' @rdname datetime_precision
 #' @export
 datetime_precision.datetimeoffset <- function(x, range = FALSE, unspecified = FALSE,...) {
+    if (length(x) == 0L) {
+        if (range)
+            return(c(NA_character_, NA_character_))
+        else
+            return(character())
+    }
     if (unspecified) {
         precision <- rep_len("missing", length(x))
         for (component in c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
@@ -198,14 +204,14 @@ dto_precision_integer <- function(precision) {
     f <- factor(precision, c("missing", "year", "month", "day", "hour", "minute", "second", "nanosecond"))
     as.integer(f)
 }
-PRECISION_MISSING <- 1L
-PRECISION_YEAR <- 2L
-PRECISION_MONTH <- 3L
-PRECISION_DAY <- 4L
-PRECISION_HOUR <- 5L
-PRECISION_MINUTE <- 6L
-PRECISION_SECOND <- 7L
-PRECISION_NANOSECOND <- 8L
+PRECISION_MISSING <- dto_precision_integer("missing")
+PRECISION_YEAR <- dto_precision_integer("year")
+PRECISION_MONTH <- dto_precision_integer("month")
+PRECISION_DAY <- dto_precision_integer("day")
+PRECISION_HOUR <- dto_precision_integer("hour")
+PRECISION_MINUTE <- dto_precision_integer("minute")
+PRECISION_SECOND <- dto_precision_integer("second")
+PRECISION_NANOSECOND <- dto_precision_integer("nanosecond")
 
 clock_precision_integer <- function(precision) {
     f <- factor(precision,
