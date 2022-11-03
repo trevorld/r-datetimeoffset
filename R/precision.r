@@ -1,13 +1,17 @@
 #' Datetime precision
 #'
 #' `datetime_precision()` returns the "precision" of a datetime vector's datetimes.
+#' `precision_to_int()` converts the precision to an integer.
 #'
 #' @param x A datetime vector.  Either [datetimeoffset()], a "clock" "calendar", or a "clock" "time".
 #' @param range If `TRUE` return just the minimum and maximum "precision".
 #' @param unspecified If `TRUE` use the smallest non-missing component's as the precision even
 #'                    if there is a missing value for a larger component.
 #' @param ... Reserved for other methods.
-#' @return A character vector of precisions ("year", "month", "day", "hour", "minute", "second", or "nanosecond").
+#' @return `datetime_precision()` returns a character vector of precisions.
+#'         Depending on the object either "missing", "year", "quarter", "month", "week",
+#'         "day", "hour", "minute", "second", "millisecond", "microsecond", or "nanosecond".
+#'         `precision_to_int()` returns an integer vector.
 #' @examples
 #'   dts <- as_datetimeoffset(c("2020", "2020-04-10", "2020-04-10T10:10"))
 #'   datetime_precision(dts)
@@ -16,6 +20,8 @@
 #'   dt <- datetimeoffset(2020, NA_integer_, 10)
 #'   datetime_precision(dt)
 #'   datetime_precision(dt, unspecified = TRUE)
+#'
+#'   precision_to_int("year") < precision_to_int("day")
 #'
 #'   library("clock")
 #'   datetime_precision(year_month_day(1918, 11, 11))
@@ -54,8 +60,8 @@ datetime_precision.datetimeoffset <- function(x, range = FALSE, unspecified = FA
         precision <- ifelse(is.na(field(x, "year")), "missing", precision)
     }
     if (range) {
-        precision <- dto_precision_integer(precision)
-        c("missing", "year", "month", "day", "hour", "minute", "second", "nanosecond")[range(precision)]
+        precision <- precision_to_int(precision)
+        datetime_precisions[range(precision)]
     } else {
         precision
     }
@@ -77,6 +83,12 @@ datetime_precision.clock_time_point <- function(x, ...) {
 #' @export
 datetime_precision.clock_zoned_time <- function(x, ...) {
     clock::zoned_time_precision(x)
+}
+
+#' @rdname datetime_precision
+#' @export
+datetime_precision.nanotime <- function(x, ...) {
+    "nanosecond"
 }
 
 #' Widen/narrow datetime precision
@@ -132,7 +144,7 @@ datetime_narrow <- function(x, precision, ...) {
 #' @rdname datetime_cast
 #' @export
 datetime_narrow.datetimeoffset <- function(x, precision, ...) {
-    precision <- dto_precision_integer(precision)
+    precision <- precision_to_int(precision)
     n <- max(length(x), length(precision))
     if (length(x) < n)
         x <- rep(x, length.out = n)
@@ -140,7 +152,7 @@ datetime_narrow.datetimeoffset <- function(x, precision, ...) {
         precision <- rep(precision, length.out = n)
     nas <- rep_len(NA_integer_, n)
     for (component in c("nanosecond", "second", "minute", "hour", "day", "month", "year"))
-        field(x, component) <- ifelse(precision < dto_precision_integer(component),
+        field(x, component) <- ifelse(precision < precision_to_int(component),
                                       nas,
                                       field(x, component))
     x
@@ -149,8 +161,8 @@ datetime_narrow.datetimeoffset <- function(x, precision, ...) {
 #' @rdname datetime_cast
 #' @export
 datetime_narrow.clock_calendar <- function(x, precision, ...) {
-    old_precision <- clock_precision_integer(clock::calendar_precision(x))
-    new_precision <- clock_precision_integer(precision)
+    old_precision <- precision_to_int(clock::calendar_precision(x))
+    new_precision <- precision_to_int(precision)
     if (old_precision <= new_precision)
         x
     else
@@ -160,8 +172,8 @@ datetime_narrow.clock_calendar <- function(x, precision, ...) {
 #' @rdname datetime_cast
 #' @export
 datetime_narrow.clock_time_point <- function(x, precision, ...) {
-    old_precision <- clock_precision_integer(clock::time_point_precision(x))
-    new_precision <- clock_precision_integer(precision)
+    old_precision <- precision_to_int(clock::time_point_precision(x))
+    new_precision <- precision_to_int(precision)
     if (old_precision <= new_precision)
         x
     else
@@ -175,6 +187,11 @@ datetime_widen <- function(x, precision, ...) {
     UseMethod("datetime_widen")
 }
 
+# precisions used by {datetimeoffset} and/or {clock}
+datetime_precisions <- c("missing",
+                         "year", "quarter", "month", "week", "day",
+                         "hour", "minute", "second", "millisecond", "microsecond", "nanosecond")
+
 #' @rdname datetime_cast
 #' @param year If missing what year to assume
 #' @param month If missing what month to assume
@@ -187,37 +204,34 @@ datetime_widen <- function(x, precision, ...) {
 datetime_widen.datetimeoffset <- function(x, precision, ...,
                                           year = 0L, month = 1L, day = 1L,
                                           hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
-    precision <- dto_precision_integer(precision)
+    precision <- precision_to_int(precision)
     n <- max(length(x), length(precision))
     if (length(x) < n)
         x <- rep(x, length.out = n)
     if (length(precision) < n)
         precision <- rep(precision, length.out = n)
     for (component in c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
-        field(x, component) <- ifelse(precision >= dto_precision_integer(component),
+        field(x, component) <- ifelse(precision >= precision_to_int(component),
                                       update_missing(field(x, component), get(component)),
                                       field(x, component))
     x
 }
 
-dto_precision_integer <- function(precision) {
-    f <- factor(precision, c("missing", "year", "month", "day", "hour", "minute", "second", "nanosecond"))
+#' @param precision A datetime precision (as returned by `datetime_precision()`).
+#' @rdname datetime_precision
+#' @export
+precision_to_int <- function(precision) {
+    f <- factor(precision, datetime_precisions)
     as.integer(f)
 }
-PRECISION_MISSING <- dto_precision_integer("missing")
-PRECISION_YEAR <- dto_precision_integer("year")
-PRECISION_MONTH <- dto_precision_integer("month")
-PRECISION_DAY <- dto_precision_integer("day")
-PRECISION_HOUR <- dto_precision_integer("hour")
-PRECISION_MINUTE <- dto_precision_integer("minute")
-PRECISION_SECOND <- dto_precision_integer("second")
-PRECISION_NANOSECOND <- dto_precision_integer("nanosecond")
-
-clock_precision_integer <- function(precision) {
-    f <- factor(precision,
-                c("year", "quarter", "month", "week", "day", "hour", "minute", "second", "millisecond", "microsecond", "nanosecond"))
-    as.integer(f)
-}
+PRECISION_MISSING <- precision_to_int("missing")
+PRECISION_YEAR <- precision_to_int("year")
+PRECISION_MONTH <- precision_to_int("month")
+PRECISION_DAY <- precision_to_int("day")
+PRECISION_HOUR <- precision_to_int("hour")
+PRECISION_MINUTE <- precision_to_int("minute")
+PRECISION_SECOND <- precision_to_int("second")
+PRECISION_NANOSECOND <- precision_to_int("nanosecond")
 
 update_missing <- function(original, replacement) ifelse(is.na(original), replacement, original)
 update_missing_zone <- function(x, tz = "") {
@@ -227,8 +241,8 @@ update_missing_zone <- function(x, tz = "") {
 #' @rdname datetime_cast
 #' @export
 datetime_widen.clock_calendar <- function(x, precision, ...) {
-    old_precision <- clock_precision_integer(clock::calendar_precision(x))
-    new_precision <- clock_precision_integer(precision)
+    old_precision <- precision_to_int(clock::calendar_precision(x))
+    new_precision <- precision_to_int(precision)
     if (old_precision >= new_precision)
         x
     else
@@ -238,8 +252,8 @@ datetime_widen.clock_calendar <- function(x, precision, ...) {
 #' @rdname datetime_cast
 #' @export
 datetime_widen.clock_time_point <- function(x, precision, ...) {
-    old_precision <- clock_precision_integer(clock::time_point_precision(x))
-    new_precision <- clock_precision_integer(precision)
+    old_precision <- precision_to_int(clock::time_point_precision(x))
+    new_precision <- precision_to_int(precision)
     if (old_precision >= new_precision)
         x
     else

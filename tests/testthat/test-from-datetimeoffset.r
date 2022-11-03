@@ -7,7 +7,8 @@ test_that("as.nanotime()", {
     skip_if_not_installed("nanotime")
     expect_equal(as.nanotime(as_datetimeoffset("2020-03-23")),
                  as.nanotime("2020-03-23T00:00:00Z"))
-    skip("`as.nanotime(NA_character_)` currently throws ERROR instead of NA")
+    skip_if_not_installed("RcppCCTZ")
+    skip_if_not(packageVersion("RcppCCTZ") > '0.2.11')
     expect_equal(as.nanotime(as_datetimeoffset(c("2020-03-23T04:04:04Z", NA_character_))),
                  c(as.nanotime("2020-03-23T04:04:04Z"), as.nanotime(NA_integer_)))
 })

@@ -51,4 +51,7 @@ test_that("precision", {
     expect_equal(format(datetime_narrow(nt, "second")), "1918-11-11T11")
     expect_equal(format(datetime_widen(nt, "second")), "1918-11-11T11:00:00")
     expect_equal(format(datetime_widen(nt, "month")), "1918-11-11T11")
+
+    skip_if_not_installed("nanotime")
+    expect_equal(datetime_precision(as.nanotime(Sys.time())), "nanosecond")
 })

@@ -282,7 +282,7 @@ print(creation_date)
 ```
 
 ```
-## [1] "2022-11-03 13:45:19 PDT"
+## [1] "2022-11-03 16:07:05 PDT"
 ```
 
 ```r
@@ -301,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-03T13:45:19
+## CreationDate: 2022-11-03T16:07:05
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-03T13:45:19
+## ModDate: 2022-11-03T16:07:05
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-03T13:45:19-07:00
+## CreationDate: 2022-11-03T16:07:05-07:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-03T13:45:25-07:00
+## ModDate: 2022-11-03T16:07:11-07:00
 ```
 
 ## <a name="features">Features</a>
@@ -428,6 +428,7 @@ print(di)
 
   + `is_datetimeoffset()` and `NA_datetimeoffset_`
   + `mode_tz()` is an S3 method that gets most common time zone for a datetime object
+  + `precision_to_int()` converts datetime precisions to an integer
 
 ## <a name="clock">Comparison with {clock}</a>
 

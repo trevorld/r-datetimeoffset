@@ -54,7 +54,7 @@ NULL
 #' @rdname from_datetimeoffset
 #' @export
 as.Date.datetimeoffset <- function(x, ...) {
-    precision <- dto_precision_integer(datetime_precision.datetimeoffset(x))
+    precision <- precision_to_int(datetime_precision.datetimeoffset(x))
     year_str <- my_format(field(x, "year"), width = 4L)
     month_str <- my_format(field(x, "month"), prefix = "-")
     day_str <- my_format(field(x, "day"), prefix = "-")
@@ -107,7 +107,7 @@ as.nanotime.datetimeoffset <- function(from, tz = "") {
 #' @importFrom clock as_year_month_day
 #' @export
 as_year_month_day.datetimeoffset <- function(x) {
-    precision <- dto_precision_integer(datetime_precision(x, range = TRUE)[1])
+    precision <- precision_to_int(datetime_precision(x, range = TRUE)[1])
     year <- ifelse(is.na(x), NA_integer_, field(x, "year"))
     month <- if (precision >= PRECISION_MONTH) field(x, "month") else NULL
     day <- if (precision >= PRECISION_DAY) field(x, "day") else NULL
@@ -170,8 +170,8 @@ as_naive_time.datetimeoffset <- function(x) {
 #' @export
 as_sys_time.datetimeoffset <- function(x) {
     # {clock} won't convert to time point if less precise than day so make missing
-    precisions <- dto_precision_integer(datetime_precision(x))
-    is.na(x) <- ifelse(precisions < dto_precision_integer("day"), TRUE, FALSE)
+    precisions <- precision_to_int(datetime_precision(x))
+    is.na(x) <- ifelse(precisions < precision_to_int("day"), TRUE, FALSE)
     # {clock} doesn't allow mixed precision so standardize to narrowest precision
     precision <- datetime_precision(na_omit(x), range = TRUE)[1]
     if (!is.na(precision))
@@ -207,8 +207,8 @@ as_sys_time_helper <- function(x) {
 as_zoned_time.datetimeoffset <- function(x, zone = mode_tz(x)) {
     x <- update_missing_zone(x, tz = zone)
     # {clock} won't convert to time point if less precise than day so make missing
-    precisions <- dto_precision_integer(datetime_precision(x))
-    is.na(x) <- ifelse(precisions < dto_precision_integer("day"), TRUE, FALSE)
+    precisions <- precision_to_int(datetime_precision(x))
+    is.na(x) <- ifelse(precisions < precision_to_int("day"), TRUE, FALSE)
     st <- as_sys_time.datetimeoffset(x)
     clock::as_zoned_time(st, zone)
 }

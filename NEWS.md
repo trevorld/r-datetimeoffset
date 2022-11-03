@@ -94,3 +94,4 @@ Initial features
 
   + `is_datetimeoffset()` and `NA_datetimeoffset_`
   + `mode_tz()` is an S3 method that gets most common time zone for a datetime object
+  + `precision_to_int()` converts datetime precisions to an integer

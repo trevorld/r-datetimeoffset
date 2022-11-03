@@ -169,7 +169,7 @@ format_edtf_helper <- function(x, offsets, precision, usetz) {
         x <- set_minute_offset(x, NA_integer_)
         x <- set_tz(x, NA_character_)
     }
-    precision <- dto_precision_integer(precision)
+    precision <- precision_to_int(precision)
     year_str <- my_format(field(x, "year"), width = 4L, edtf = TRUE, blank = precision < PRECISION_YEAR)
     month_str <- my_format(field(x, "month"), prefix = "-", edtf = TRUE, blank = precision < PRECISION_MONTH)
     day_str <- my_format(field(x, "day"), prefix = "-", edtf = TRUE, blank = precision < PRECISION_DAY)

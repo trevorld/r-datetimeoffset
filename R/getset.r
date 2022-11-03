@@ -162,7 +162,7 @@ get_day.datetimeoffset <- function(x) {
 #' @export
 set_day.datetimeoffset <- function(x, value, ...) {
     if (identical(value, "last")) {
-        precision <- dto_precision_integer(datetime_precision(x, range = TRUE)[1])
+        precision <- precision_to_int(datetime_precision(x, range = TRUE)[1])
         stopifnot(precision >= PRECISION_MONTH)
         ym <- clock::year_month_day(field(x, "year"), field(x, "month"))
         value <- get_day(set_day(ym, "last"))

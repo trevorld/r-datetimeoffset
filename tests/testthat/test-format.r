@@ -126,7 +126,8 @@ test_that("format_nanotime()", {
     skip_if_not("America/Los_Angeles" %in% OlsonNames())
     expect_equal(format_nanotime(dt, tz = "America/Los_Angeles"),
                  "2020-04-04T03:10:10.000000000-07:00")
-    skip("`as.nanotime(NA_character_)` currently throws ERROR instead of NA")
+    skip_if_not_installed("RcppCCTZ")
+    skip_if_not(packageVersion("RcppCCTZ") > '0.2.11')
     expect_equal(format_nanotime(NA_datetimeoffset_), NA_character_)
 })
 

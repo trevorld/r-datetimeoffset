@@ -6,6 +6,8 @@
 \alias{datetime_precision.clock_calendar}
 \alias{datetime_precision.clock_time_point}
 \alias{datetime_precision.clock_zoned_time}
+\alias{datetime_precision.nanotime}
+\alias{precision_to_int}
 \title{Datetime precision}
 \usage{
 datetime_precision(x, ...)
@@ -17,6 +19,10 @@ datetime_precision(x, ...)
 \method{datetime_precision}{clock_time_point}(x, ...)
 
 \method{datetime_precision}{clock_zoned_time}(x, ...)
+
+\method{datetime_precision}{nanotime}(x, ...)
+
+precision_to_int(precision)
 }
 \arguments{
 \item{x}{A datetime vector.  Either \code{\link[=datetimeoffset]{datetimeoffset()}}, a "clock" "calendar", or a "clock" "time".}
@@ -27,12 +33,18 @@ datetime_precision(x, ...)
 
 \item{unspecified}{If \code{TRUE} use the smallest non-missing component's as the precision even
 if there is a missing value for a larger component.}
+
+\item{precision}{A datetime precision (as returned by \code{datetime_precision()}).}
 }
 \value{
-A character vector of precisions ("year", "month", "day", "hour", "minute", "second", or "nanosecond").
+\code{datetime_precision()} returns a character vector of precisions.
+Depending on the object either "missing", "year", "quarter", "month", "week",
+"day", "hour", "minute", "second", "millisecond", "microsecond", or "nanosecond".
+\code{precision_to_int()} returns an integer vector.
 }
 \description{
 \code{datetime_precision()} returns the "precision" of a datetime vector's datetimes.
+\code{precision_to_int()} converts the precision to an integer.
 }
 \examples{
   dts <- as_datetimeoffset(c("2020", "2020-04-10", "2020-04-10T10:10"))
@@ -42,6 +54,8 @@ A character vector of precisions ("year", "month", "day", "hour", "minute", "sec
   dt <- datetimeoffset(2020, NA_integer_, 10)
   datetime_precision(dt)
   datetime_precision(dt, unspecified = TRUE)
+
+  precision_to_int("year") < precision_to_int("day")
 
   library("clock")
   datetime_precision(year_month_day(1918, 11, 11))
