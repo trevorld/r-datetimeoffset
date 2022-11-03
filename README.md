@@ -282,7 +282,7 @@ print(creation_date)
 ```
 
 ```
-## [1] "2022-11-02 10:43:30 PDT"
+## [1] "2022-11-03 13:45:19 PDT"
 ```
 
 ```r
@@ -301,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-02T10:43:30
+## CreationDate: 2022-11-03T13:45:19
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-02T10:43:30
+## ModDate: 2022-11-03T13:45:19
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-02T10:43:30-07:00
+## CreationDate: 2022-11-03T13:45:19-07:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-02T10:43:36-07:00
+## ModDate: 2022-11-03T13:45:25-07:00
 ```
 
 ## <a name="features">Features</a>
@@ -371,6 +371,10 @@ print(di)
 
   + `format()` returns [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/) strings
   + `format_edtf()` returns [Extended Date Time Format (EDTF)](https://www.loc.gov/standards/datetime/) strings
+
+    - Supports unofficial extensions of "Unspecified Digit" feature to time components and time zones
+    - `format_edtf(x, precision = "nanosecond", usetz = TRUE)` prints out all information
+
   + `format_iso8601()` and `lubridate::format_ISO8601()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
   + `format_pdfmark()` returns [pdfmark datetime](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
   + `format_nanotime()` allows [CCTZ style formatting](https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197)

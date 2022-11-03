@@ -63,6 +63,8 @@ test_that("format_iso8601()", {
     dt <- as_datetimeoffset("2020-03-08T01:30:00[America/New_York]")
     expect_equal(format_iso8601(dt), "2020-03-08T01:30:00-05:00")
 
+    expect_equal(format_iso8601(NA_datetimeoffset_), NA_character_)
+
     skip_if_not_installed("lubridate")
     expect_equal(lubridate::format_ISO8601(dt),
                  "2020-03-08T01:30:00")
@@ -70,10 +72,13 @@ test_that("format_iso8601()", {
                  "2020-03-08T01:30:00-0500")
     expect_equal(lubridate::format_ISO8601(dt, precision = "ymd"),
                  "2020-03-08")
+    expect_equal(lubridate::format_ISO8601(NA_datetimeoffset_),
+                 NA_character_)
 })
 
 test_that("format_pdfmark()", {
     # "2020-05-15T08:23:16-07:00"
+    expect_equal(format_pdfmark(NA_datetimeoffset_), NA_character_)
     expect_equal(format_pdfmark(as.Date("2020-05-15")),
                  "D:20200515")
     expect_equal(format_pdfmark(as_datetimeoffset("D:2020")),
@@ -108,6 +113,7 @@ test_that("format_pdfmark()", {
 test_that("format_strftime()", {
     dt <- as_datetimeoffset("2020-04-04T10:10:10")
     expect_equal(format_strftime(dt), "2020-04-04 10:10:10")
+    expect_equal(format_strftime(NA_datetimeoffset_), NA_character_)
 })
 
 test_that("format_nanotime()", {
@@ -120,10 +126,13 @@ test_that("format_nanotime()", {
     skip_if_not("America/Los_Angeles" %in% OlsonNames())
     expect_equal(format_nanotime(dt, tz = "America/Los_Angeles"),
                  "2020-04-04T03:10:10.000000000-07:00")
+    skip("`as.nanotime(NA_character_)` currently throws ERROR instead of NA")
+    expect_equal(format_nanotime(NA_datetimeoffset_), NA_character_)
 })
 
 test_that("format_edtf()", {
     # "2020-05-15T08:23:16-07:00"
+    expect_equal(format_edtf(NA_datetimeoffset_), "")
     expect_equal(format_edtf(as_datetimeoffset("2020")),
                  "2020")
     expect_equal(format_edtf(as_datetimeoffset("2020-05")),

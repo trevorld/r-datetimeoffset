@@ -64,9 +64,11 @@ format.datetimeoffset <- function(x, ...) {
     second_str <- my_format(field(x, "second"), prefix = ":")
     nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"))
     offset_str <- my_format_tz(x, add_tz = TRUE)
-    paste0(year_str, month_str, day_str,
-           hour_str, minute_str, second_str, nanosecond_str,
-           offset_str)
+    s <- paste0(year_str, month_str, day_str,
+                hour_str, minute_str, second_str, nanosecond_str,
+                offset_str)
+    is.na(s) <- is.na(field(x, "year"))
+    s
 }
 
 my_format_nanosecond <- function(ns, edtf = FALSE, blank = FALSE) {
@@ -108,9 +110,11 @@ format_iso8601 <- function(x, offsets = TRUE, precision = NULL, sep = ":", ...) 
     second_str <- my_format(field(x, "second"), prefix = ":")
     nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"))
     offset_str <- my_format_tz(x, sep = sep)
-    paste0(year_str, month_str, day_str,
-           hour_str, minute_str, second_str, nanosecond_str,
-           offset_str)
+    s <- paste0(year_str, month_str, day_str,
+                hour_str, minute_str, second_str, nanosecond_str,
+                offset_str)
+    is.na(s) <- is.na(field(x, "year"))
+    s
 }
 
 #' @rdname format
@@ -126,7 +130,9 @@ format_pdfmark <- function(x) {
     second_str <- my_format(field(x, "second"), prefix = "")
     offset_str <- my_format_tz(x, sep = "'", no_zulu = TRUE)
     offset_str <- ifelse(offset_str == "", "", paste0(offset_str, "'"))
-    paste0("D:", year_str, month_str, day_str, hour_str, minute_str, second_str, offset_str)
+    s <- paste0("D:", year_str, month_str, day_str, hour_str, minute_str, second_str, offset_str)
+    is.na(s) <- is.na(field(x, "year"))
+    s
 }
 
 #' @rdname format
@@ -156,7 +162,7 @@ format_edtf <- function(x, offsets = TRUE, precision = NULL, usetz = FALSE, ...)
 
 format_edtf_helper <- function(x, offsets, precision, usetz) {
     precision <- precision %||% datetime_precision(x, unspecified = TRUE)
-    stopifnot(precision %in% c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
+    stopifnot(precision %in% c("missing", "year", "month", "day", "hour", "minute", "second", "nanosecond"))
     x <- datetime_narrow(x, precision)
     if (isFALSE(offsets)) {
         x <- set_hour_offset(x, NA_integer_)
@@ -196,7 +202,6 @@ update_nas <- function(x, pdfmark = FALSE) {
         x <- set_minute_offset(x, ifelse(is.na(get_second(x)), NA_integer_, get_minute_offset(x)))
         x <- set_tz(x, ifelse(is.na(get_second(x)), NA_character_, get_tz(x)))
     }
-
     x
 }
 

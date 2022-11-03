@@ -182,45 +182,45 @@ test_that("as_datetimeoffset.character()", {
 
 test_that("base R classes", {
     # Date
-    expect_equal(format(as_datetimeoffset(as.Date(c("2020-05-15", NA_character_)))),
-                 c("2020-05-15", ""))
+    s <- c("2020-05-15", NA_character_)
+    expect_equal(format(as_datetimeoffset(as.Date(s))), s)
 
     # POSIXct
     dt <- as.POSIXct(c("2022-10-10 10:00:00", NA_character_), tz = "America/New_York")
     expect_equal(format(as_datetimeoffset(dt)),
-                 c("2022-10-10T10:00:00-04:00[America/New_York]", ""))
+                 c("2022-10-10T10:00:00-04:00[America/New_York]", NA_character_))
 
     # POSIXlt
     dt <- as.POSIXlt(c("2022-10-10 10:00:00", NA_character_), tz = "America/New_York")
     expect_equal(format(as_datetimeoffset(dt)),
-                 c("2022-10-10T10:00:00-04:00[America/New_York]", ""))
+                 c("2022-10-10T10:00:00-04:00[America/New_York]", NA_character_))
 })
 
 test_that("{clock} classes", {
     ymd <- clock::year_month_day(2020, c(NA, 10), 10)
     dto <- as_datetimeoffset(ymd)
-    expect_equal(format(dto), c("", "2020-10-10"))
+    expect_equal(format(dto), c(NA_character_, "2020-10-10"))
     expect_equal(is.na(dto), c(TRUE, FALSE))
     dto <- as_datetimeoffset(clock::as_year_month_weekday(ymd))
-    expect_equal(format(dto), c("", "2020-10-10"))
+    expect_equal(format(dto), c(NA_character_, "2020-10-10"))
     expect_equal(is.na(dto), c(TRUE, FALSE))
     dto <- as_datetimeoffset(clock::as_iso_year_week_day(ymd))
-    expect_equal(format(dto), c("", "2020-10-10"))
+    expect_equal(format(dto), c(NA_character_, "2020-10-10"))
     expect_equal(is.na(dto), c(TRUE, FALSE))
     dto <- as_datetimeoffset(clock::as_year_quarter_day(ymd))
-    expect_equal(format(dto), c("", "2020-10-10"))
+    expect_equal(format(dto), c(NA_character_, "2020-10-10"))
     expect_equal(is.na(dto), c(TRUE, FALSE))
     dto <- as_datetimeoffset(clock::as_year_day(ymd))
-    expect_equal(format(dto), c("", "2020-10-10"))
+    expect_equal(format(dto), c(NA_character_, "2020-10-10"))
     expect_equal(is.na(dto), c(TRUE, FALSE))
     dto <- as_datetimeoffset(clock::as_naive_time(ymd))
-    expect_equal(format(dto), c("", "2020-10-10"))
+    expect_equal(format(dto), c(NA_character_, "2020-10-10"))
     expect_equal(is.na(dto), c(TRUE, FALSE))
     dto <- as_datetimeoffset(clock::as_sys_time(ymd))
-    expect_equal(format(dto), c("", "2020-10-10"))
+    expect_equal(format(dto), c(NA_character_, "2020-10-10"))
     expect_equal(is.na(dto), c(TRUE, FALSE))
     dto <- as_datetimeoffset(clock::as_zoned_time(clock::as_sys_time(ymd), Sys.timezone()))
-    expect_equal(format(dto)[1], c(""))
+    expect_equal(format(dto)[1], c(NA_character_))
     expect_equal(is.na(dto), c(TRUE, FALSE))
 })
 
@@ -231,7 +231,7 @@ test_that("as_datetimeoffset.nanotime()", {
     dt <- as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16Z"))
     expect_equal(get_nanosecond(dt), 0L)
     dt <- as_datetimeoffset(nanotime::as.nanotime(c(NA_integer_, 2000L)))
-    expect_equal(format(dt), c("", "1970-01-01T00:00:00.000002Z"))
+    expect_equal(format(dt), c(NA_character_, "1970-01-01T00:00:00.000002Z"))
     expect_equal(is.na(dt), c(TRUE, FALSE))
 
     skip_if_not("America/New_York" %in% OlsonNames())

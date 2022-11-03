@@ -39,7 +39,7 @@ test_that("clock classes", {
                  "2020-03-23T04:04:04")
     ymd <- clock::year_month_day(c(1984L, NA_integer_))
     expect_equal(is.na(as_datetimeoffset(ymd)), c(FALSE, TRUE))
-    expect_equal(format(as_datetimeoffset(ymd)), c("1984", ""))
+    expect_equal(format(as_datetimeoffset(ymd)), c("1984", NA_character_))
 
     ymw <- as_year_month_weekday(dt)
     expect_equal(format(ymw), "2020-03-Mon[4]T04:04:04")
@@ -68,7 +68,7 @@ test_that("clock classes", {
     ymd <- clock::year_month_day(c(1984L, NA_integer_), 10L, 10L)
     nt <- as_naive_time(ymd)
     expect_equal(is.na(as_datetimeoffset(nt)), c(FALSE, TRUE))
-    expect_equal(format(as_datetimeoffset(nt)), c("1984-10-10", ""))
+    expect_equal(format(as_datetimeoffset(nt)), c("1984-10-10", NA_character_))
 
     dt <- as_datetimeoffset("2020-03-01")
     expect_equal(format(as_year_month_day(dt)),
