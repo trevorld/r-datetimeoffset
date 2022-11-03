@@ -130,7 +130,7 @@ get_year.datetimeoffset <- function(x) {
 #' @export
 set_year.datetimeoffset <- function(x, value, ...) {
     value <- as.integer(value)
-    field(x, "year") <- value
+    field(x, "year") <- rep_len(value, length(x))
     x
 }
 
@@ -146,7 +146,7 @@ get_month.datetimeoffset <- function(x) {
 #' @export
 set_month.datetimeoffset <- function(x, value, ...) {
     value <- as.integer(value)
-    field(x, "month") <- value
+    field(x, "month") <- rep_len(value, length(x))
     x
 }
 
@@ -168,7 +168,7 @@ set_day.datetimeoffset <- function(x, value, ...) {
         value <- get_day(set_day(ym, "last"))
     }
     value <- as.integer(value)
-    field(x, "day") <- value
+    field(x, "day") <- rep_len(value, length(x))
     x
 }
 
@@ -184,7 +184,7 @@ get_hour.datetimeoffset <- function(x) {
 #' @export
 set_hour.datetimeoffset <- function(x, value, ...) {
     value <- as.integer(value)
-    field(x, "hour") <- value
+    field(x, "hour") <- rep_len(value, length(x))
     x
 }
 
@@ -200,7 +200,7 @@ get_minute.datetimeoffset <- function(x) {
 #' @export
 set_minute.datetimeoffset <- function(x, value, ...) {
     value <- as.integer(value)
-    field(x, "minute") <- value
+    field(x, "minute") <- rep_len(value, length(x))
     x
 }
 
@@ -216,7 +216,7 @@ get_second.datetimeoffset <- function(x) {
 #' @export
 set_second.datetimeoffset <- function(x, value, ...) {
     value <- as.integer(value)
-    field(x, "second") <- value
+    field(x, "second") <- rep_len(value, length(x))
     x
 }
 
@@ -234,7 +234,7 @@ set_nanosecond.datetimeoffset <- function(x, value, ...) {
     value <- as.integer(value)
     s <- formatC(value, format = "d", flag = "0", width = 9L)
     stopifnot(isFALSE(any(nchar(s) > 9L)))
-    field(x, "nanosecond") <- value
+    field(x, "nanosecond") <- rep_len(value, length(x))
     x
 }
 
@@ -272,7 +272,7 @@ set_hour_offset <- function(x, value, ...) {
 #' @export
 set_hour_offset.datetimeoffset <- function(x, value, ...) {
     value <- as.integer(value)
-    field(x, "hour_offset") <- value
+    field(x, "hour_offset") <- rep_len(value, length(x))
     x
 }
 
@@ -310,7 +310,7 @@ set_minute_offset <- function(x, value, ...) {
 #' @export
 set_minute_offset.datetimeoffset <- function(x, value, ...) {
     value <- as.integer(value)
-    field(x, "minute_offset") <- value
+    field(x, "minute_offset") <- rep_len(value, length(x))
     x
 }
 
@@ -355,7 +355,7 @@ set_tz <- function(x, value, ...) {
 #' @export
 set_tz.datetimeoffset <- function(x, value, ...) {
     tzone <- clean_tz(value)
-    field(x, "tz") <- tzone
+    field(x, "tz") <- rep_len(tzone, length(x))
     x
 }
 

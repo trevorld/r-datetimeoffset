@@ -78,12 +78,15 @@ as_datetimeoffset.character <- function(x, tz = NA_character_, ...) {
 as_datetimeoffset.nanotime <- function(x, tz = "GMT", ...) {
     assert_suggested("nanotime")
     tz <- clean_tz(tz, na = "GMT")
-    n <- length(tz)
+    n <- max(length(x), length(tz))
     if (length(x) < n)
         x <- rep(x, length.out = n)
+    if (length(tz) < n)
+        tz <- rep(tz, length.out = n)
     df <- data.frame(dt = x, tz = tz, stringsAsFactors = FALSE)
     purrr::pmap_vec(df, function(dt, tz) {
-                       as_datetimeoffset(format(dt, tz = tz, format = "%Y-%m-%dT%H:%M:%E9S%Ez"), tz = tz)
+                       as_datetimeoffset(format(dt, tz = tz, format = "%Y-%m-%dT%H:%M:%E9S%Ez"),
+                                         tz = ifelse(is.na(dt), NA_character_, tz))
                     },
                     .ptype = datetimeoffset())
 }
@@ -127,7 +130,8 @@ as_datetimeoffset.clock_naive_time <- function(x, ...) {
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.clock_sys_time <- function(x, ...) {
-    set_tz(as_datetimeoffset(format(x)), "GMT")
+    set_tz(as_datetimeoffset(format(x)),
+           ifelse(is.na(x), NA_character_, "GMT"))
 }
 
 #' @rdname as_datetimeoffset
@@ -166,7 +170,7 @@ as_dtos_character_helper <- function(x) {
               nanosecond = NA_integer_,
               hour_offset = NA_integer_, minute_offset = NA_integer_, tz = NA_character_)
     # "2020-05-15T08:23:16-07:00"
-    if (s == "") {
+    if (is.na(s) || s == "") {
         invisible(NULL)
     } else if (grepl("^.+[Zz]$", s)) { # ends in Z or z means "GMT" time
         l <- as_dtos_character_helper(substr(s, 1L, nchar(s) - 1L))
