@@ -98,27 +98,20 @@ as.nanotime.datetimeoffset <- function(from, tz = "") {
 #' @importFrom clock as_year_month_day
 #' @export
 as_year_month_day.datetimeoffset <- function(x) {
-    # coerce to at least "year" then use "minimum" precision
-    x <- datetime_widen(x, "year")
-    precision <- datetime_precision(x, range = TRUE)[1]
-    precision <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
-    precision <- as.integer(precision)
+    precision <- dto_precision_integer(datetime_precision(x, range = TRUE)[1])
+    stopifnot(precision >= PRECISION_YEAR)
     year <- field(x, "year")
-    month <- NULL
-    day <- NULL
-    hour <- NULL
-    minute <- NULL
-    second <- NULL
-    subsecond <- NULL
-    subsecond_precision <- NULL
-    if (precision >= 2L) month <- field(x, "month")
-    if (precision >= 3L) day <- field(x, "day")
-    if (precision >= 4L) hour <- field(x, "hour")
-    if (precision >= 5L) minute <- field(x, "minute")
-    if (precision >= 6L) second <- field(x, "second")
-    if (precision >= 7L) {
+    month <- if (precision >= PRECISION_MONTH) field(x, "month") else NULL
+    day <- if (precision >= PRECISION_DAY) field(x, "day") else NULL
+    hour <- if (precision >= PRECISION_HOUR) field(x, "hour") else NULL
+    minute <- if (precision >= PRECISION_MINUTE) field(x, "minute") else NULL
+    second <- if (precision >= PRECISION_SECOND) field(x, "second") else NULL
+    if (precision >= PRECISION_NANOSECOND) {
         subsecond <- field(x, "nanosecond")
         subsecond_precision <- "nanosecond"
+    } else {
+        subsecond <- NULL
+        subsecond_precision <- NULL
     }
     clock::year_month_day(year, month, day, hour, minute, second, subsecond,
                           subsecond_precision = subsecond_precision)
@@ -181,17 +174,16 @@ as_sys_time_helper <- function(x) {
         st <- clock::sys_time_parse(format(ft),
                                     format = "%Y-%m-%dT%H:%M:%S%Ez",
                                     precision = "nanosecond")
-        clock::time_point_floor(st, datetime_precision(x))
     } else if (!is.na(get_tz(x))) {
         nt <- as_naive_time.datetimeoffset(x)
         zt <- clock::as_zoned_time(nt, get_tz(x),
                                    ambiguous = "error", nonexistent = "error")
         st <- clock::as_sys_time(zt)
-        clock::time_point_floor(st, datetime_precision(x))
     } else {
         ymd <- as_year_month_day.datetimeoffset(x)
-        clock::as_sys_time(ymd)
+        st <- clock::as_sys_time(ymd)
     }
+    clock::time_point_floor(st, datetime_precision(x))
 }
 
 #' @rdname from_datetimeoffset

@@ -11,10 +11,8 @@
 \alias{set_nanosecond.datetimeoffset}
 \alias{set_hour_offset}
 \alias{set_hour_offset.datetimeoffset}
-\alias{set_hour_offset.default}
 \alias{set_minute_offset}
 \alias{set_minute_offset.datetimeoffset}
-\alias{set_minute_offset.default}
 \alias{set_tz}
 \alias{set_tz.datetimeoffset}
 \alias{set_tz.default}
@@ -38,13 +36,9 @@ set_hour_offset(x, value, ...)
 
 \method{set_hour_offset}{datetimeoffset}(x, value, ...)
 
-\method{set_hour_offset}{default}(x, value, ...)
-
 set_minute_offset(x, value, ...)
 
 \method{set_minute_offset}{datetimeoffset}(x, value, ...)
-
-\method{set_minute_offset}{default}(x, value, ...)
 
 set_tz(x, value, ...)
 

@@ -42,7 +42,7 @@ datetime_widen(x, precision, ...)
 \arguments{
 \item{x}{A datetime vector.  Either \code{\link[=datetimeoffset]{datetimeoffset()}}, a "clock" "calendar", or a "clock" "time point".}
 
-\item{precision}{Precision to narrow/widen to.  Either "year", "month", "day", "hour", "minute", "second", or "nanosecond".}
+\item{precision}{Precision to narrow/widen to.  Either "missing", "year", "month", "day", "hour", "minute", "second", or "nanosecond".}
 
 \item{...}{Used by certain methods}
 
@@ -75,6 +75,11 @@ any more precise elements missing.
   datetime_narrow(dts, "day")
   datetime_widen(dts, "day")
   datetime_widen(dts, "day", month = 6, day = 15)
+
+  # vectorized "precision" is allowed
+  datetime_narrow(as_datetimeoffset(Sys.time()),
+                  c("year", "month", "day"))
+  datetime_widen(NA_datetimeoffset_, c("year", "month", "day"))
 
   library("clock")
   ymd <- year_month_day(1918, 11, 11, 11)

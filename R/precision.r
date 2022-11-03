@@ -34,7 +34,7 @@ datetime_precision <- function(x, ...) {
 #' @export
 datetime_precision.datetimeoffset <- function(x, range = FALSE, unspecified = FALSE,...) {
     if (unspecified) {
-        precision <- rep_len(NA_character_, length(x))
+        precision <- rep_len("missing", length(x))
         for (component in c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
             precision <- ifelse(!is.na(field(x, component)), component, precision)
     } else {
@@ -45,12 +45,11 @@ datetime_precision.datetimeoffset <- function(x, range = FALSE, unspecified = FA
         precision <- ifelse(is.na(field(x, "hour")), "day", precision)
         precision <- ifelse(is.na(field(x, "day")), "month", precision)
         precision <- ifelse(is.na(field(x, "month")), "year", precision)
-        precision <- ifelse(is.na(field(x, "year")), NA_character_, precision)
+        precision <- ifelse(is.na(field(x, "year")), "missing", precision)
     }
     if (range) {
-        precision <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
-        precision <- as.integer(precision)
-        c("year", "month", "day", "hour", "minute", "second", "nanosecond")[range(precision)]
+        precision <- dto_precision_integer(precision)
+        c("missing", "year", "month", "day", "hour", "minute", "second", "nanosecond")[range(precision)]
     } else {
         precision
     }
@@ -82,7 +81,7 @@ datetime_precision.clock_zoned_time <- function(x, ...) {
 #' any more precise elements missing.
 #'
 #' @param x A datetime vector.  Either [datetimeoffset()], a "clock" "calendar", or a "clock" "time point".
-#' @param precision Precision to narrow/widen to.  Either "year", "month", "day", "hour", "minute", "second", or "nanosecond".
+#' @param precision Precision to narrow/widen to.  Either "missing", "year", "month", "day", "hour", "minute", "second", or "nanosecond".
 #' @param ... Reserved for other methods.
 #' @return A datetime vector.
 #' @examples
@@ -91,6 +90,11 @@ datetime_precision.clock_zoned_time <- function(x, ...) {
 #'   datetime_narrow(dts, "day")
 #'   datetime_widen(dts, "day")
 #'   datetime_widen(dts, "day", month = 6, day = 15)
+#'
+#'   # vectorized "precision" is allowed
+#'   datetime_narrow(as_datetimeoffset(Sys.time()),
+#'                   c("year", "month", "day"))
+#'   datetime_widen(NA_datetimeoffset_, c("year", "month", "day"))
 #'
 #'   library("clock")
 #'   ymd <- year_month_day(1918, 11, 11, 11)
@@ -123,19 +127,16 @@ datetime_narrow <- function(x, precision, ...) {
 #' @export
 datetime_narrow.datetimeoffset <- function(x, precision, ...) {
     precision <- dto_precision_integer(precision)
-    nas <- rep_len(NA_integer_, length(x))
-    if (precision < PRECISION_NANOSECOND)
-        field(x, "nanosecond") <- nas
-    if (precision < PRECISION_SECOND)
-        field(x, "second") <- nas
-    if (precision < PRECISION_MINUTE)
-        field(x, "minute") <- nas
-    if (precision < PRECISION_HOUR)
-        field(x, "hour") <- nas
-    if (precision < PRECISION_DAY)
-        field(x, "day") <- nas
-    if (precision < PRECISION_MONTH)
-        field(x, "month") <- nas
+    n <- max(length(x), length(precision))
+    if (length(x) < n)
+        x <- rep(x, length.out = n)
+    if (length(precision) < n)
+        precision <- rep(precision, length.out = n)
+    nas <- rep_len(NA_integer_, n)
+    for (component in c("nanosecond", "second", "minute", "hour", "day", "month", "year"))
+        field(x, component) <- ifelse(precision < dto_precision_integer(component),
+                                      nas,
+                                      field(x, component))
     x
 }
 
@@ -181,33 +182,30 @@ datetime_widen.datetimeoffset <- function(x, precision, ...,
                                           year = 0L, month = 1L, day = 1L,
                                           hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
     precision <- dto_precision_integer(precision)
-    field(x, "year") <- update_missing(field(x, "year"), year)
-    if (precision >= PRECISION_MONTH)
-        field(x, "month") <- update_missing(field(x, "month"), month)
-    if (precision >= PRECISION_DAY)
-        field(x, "day") <- update_missing(field(x, "day"), day)
-    if (precision >= PRECISION_HOUR)
-        field(x, "hour") <- update_missing(field(x, "hour"), hour)
-    if (precision >= PRECISION_MINUTE)
-        field(x, "minute") <- update_missing(field(x, "minute"), minute)
-    if (precision >= PRECISION_SECOND)
-        field(x, "second") <- update_missing(field(x, "second"), second)
-    if (precision >= PRECISION_NANOSECOND)
-        field(x, "nanosecond") <- update_missing(field(x, "nanosecond"), nanosecond)
+    n <- max(length(x), length(precision))
+    if (length(x) < n)
+        x <- rep(x, length.out = n)
+    if (length(precision) < n)
+        precision <- rep(precision, length.out = n)
+    for (component in c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
+        field(x, component) <- ifelse(precision >= dto_precision_integer(component),
+                                      update_missing(field(x, component), get(component)),
+                                      field(x, component))
     x
 }
 
 dto_precision_integer <- function(precision) {
-    f <- factor(precision, c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
+    f <- factor(precision, c("missing", "year", "month", "day", "hour", "minute", "second", "nanosecond"))
     as.integer(f)
 }
-PRECISION_YEAR <- 1L
-PRECISION_MONTH <- 2L
-PRECISION_DAY <- 3L
-PRECISION_HOUR <- 4L
-PRECISION_MINUTE <- 5L
-PRECISION_SECOND <- 6L
-PRECISION_NANOSECOND <- 7L
+PRECISION_MISSING <- 1L
+PRECISION_YEAR <- 2L
+PRECISION_MONTH <- 3L
+PRECISION_DAY <- 4L
+PRECISION_HOUR <- 5L
+PRECISION_MINUTE <- 6L
+PRECISION_SECOND <- 7L
+PRECISION_NANOSECOND <- 8L
 
 clock_precision_integer <- function(precision) {
     f <- factor(precision,

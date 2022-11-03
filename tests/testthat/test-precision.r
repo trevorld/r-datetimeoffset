@@ -1,29 +1,39 @@
 library("clock")
 
 test_that("precision", {
-    dts <- as_datetimeoffset(c("2020", "2020-04-10", "2020-04-10T10:10"))
+    dts <- as_datetimeoffset(c("", "2020", "2020-04-10", "2020-04-10T10:10"))
     expect_equal(datetime_precision(dts),
-                 c("year", "day", "minute"))
+                 c("missing", "year", "day", "minute"))
     expect_equal(datetime_precision(dts, range = TRUE),
-                 c("year", "minute"))
+                 c("missing", "minute"))
 
     dtn <- datetime_narrow(dts, "day")
-    expect_equal(format(dtn), c("2020", "2020-04-10", "2020-04-10"))
+    expect_equal(format(dtn), c("", "2020", "2020-04-10", "2020-04-10"))
 
     dtn <- datetime_narrow(dts, "year")
-    expect_equal(format(dtn), c("2020", "2020", "2020"))
+    expect_equal(format(dtn), c("", "2020", "2020", "2020"))
 
     ymd <- as_year_month_day(as_datetimeoffset("2020-04-10"))
     expect_equal(format(datetime_narrow(ymd, "year")), "2020")
     expect_equal(format(datetime_widen(ymd, "hour")), "2020-04-10T00")
 
     dtw <- datetime_widen(dts, "day")
-    expect_equal(format(dtw), c("2020-01-01", "2020-04-10", "2020-04-10T10:10"))
+    expect_equal(format(dtw), c("0000-01-01", "2020-01-01", "2020-04-10", "2020-04-10T10:10"))
+
+    # vectorize precision
+    dt <- as_datetimeoffset("2020-04-10T10:10:10.123456789")
+    expect_equal(format(datetime_narrow(dt, c("missing", "year", "month", "day"))),
+                 c("", "2020", "2020-04", "2020-04-10"))
+
+    dt <- NA_datetimeoffset_
+    expect_equal(format(datetime_widen(dt, c("missing", "year", "month", "day"))),
+                 c("", "0000", "0000-01", "0000-01-01"))
 
     # EDTF precisions
     dt <- as_datetimeoffset("2020-XX-04")
     expect_equal(datetime_precision(dt), "year")
     expect_equal(datetime_precision(dt, unspecified = TRUE), "day")
+    expect_equal(format(datetime_narrow(dt, "missing")), "")
 
     # {clock} methods
     expect_equal(datetime_precision(clock::year_month_day(1918, 11, 11)), "day")

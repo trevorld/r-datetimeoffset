@@ -164,9 +164,8 @@ set_day.datetimeoffset <- function(x, value, ...) {
     if (identical(value, "last")) {
         precision <- dto_precision_integer(datetime_precision(x, range = TRUE)[1])
         stopifnot(precision >= PRECISION_MONTH)
-        ym <- as_year_month_day(datetime_narrow(x, "month"))
-        ymd <- set_day(ym, "last")
-        value <- get_day(ymd)
+        ym <- clock::year_month_day(field(x, "year"), field(x, "month"))
+        value <- get_day(set_day(ym, "last"))
     }
     value <- as.integer(value)
     field(x, "day") <- value
@@ -277,12 +276,6 @@ set_hour_offset.datetimeoffset <- function(x, value, ...) {
     x
 }
 
-#' @rdname setters
-#' @export
-set_hour_offset.default <- function(x, value, ...) {
-    stop(paste("Method not defined for an object of class", class(x)))
-}
-
 #' @rdname getters
 #' @export
 get_minute_offset <- function(x) {
@@ -319,12 +312,6 @@ set_minute_offset.datetimeoffset <- function(x, value, ...) {
     value <- as.integer(value)
     field(x, "minute_offset") <- value
     x
-}
-
-#' @rdname setters
-#' @export
-set_minute_offset.default <- function(x, value, ...) {
-    stop(paste("Method not defined for an object of class", class(x)))
 }
 
 #' @rdname getters
