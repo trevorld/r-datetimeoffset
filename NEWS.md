@@ -76,7 +76,7 @@ Initial features
   + `minute()` and `minute()<-`
   + `second()` and `second()<-`
   + `date()` and `date()<-`
-  + `tz()` (but use `set_tz()` instead of non-generic `lubridate::force_tz()`)
+  + `tz()`, `tz()<-`, and `force_tz()`
 
 * New accessor S3 methods:
 

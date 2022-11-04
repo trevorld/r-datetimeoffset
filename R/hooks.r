@@ -7,6 +7,8 @@
     vctrs::s3_register("lubridate::second", "datetimeoffset", get_second.datetimeoffset)
     vctrs::s3_register("lubridate::tz", "datetimeoffset", get_tz.datetimeoffset)
     vctrs::s3_register("lubridate::date", "datetimeoffset", as.Date.datetimeoffset)
+    vctrs::s3_register("lubridate::force_tz", "datetimeoffset",
+                       function(time, tzone = "", ...) set_tz.datetimeoffset(time, tzone))
 
     if (requireNamespace("lubridate", quietly = TRUE)) {
         methods::setOldClass("datetimeoffset")

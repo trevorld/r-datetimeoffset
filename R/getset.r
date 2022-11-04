@@ -114,6 +114,10 @@ NULL
 #'   hour(dt) <- 11
 #'   minute(dt) <- 11
 #'   second(dt) <- 11
+#'   if (packageVersion("lubridate") > '1.8.0' &&
+#'       "Europe/Paris" %in% OlsonNames()) {
+#'     tz(dt) <- "Europe/Paris"
+#'   }
 #'   format(dt)
 #' }
 NULL

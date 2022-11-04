@@ -69,10 +69,13 @@ test_that("setters", {
     lubridate::minute(dt) <- 11L
     lubridate::second(dt) <- 11L
     lubridate::date(dt) <- as.Date("1918-11-11")
-
     dt <- set_nanosecond(dt, NA_integer_)
     dt <- set_tz(dt, "Europe/Paris")
     dt <- set_hour_offset(dt, 0L)
     dt <- set_minute_offset(dt, 0L)
+    expect_equal(format(dt), "1918-11-11T11:11:11+00:00[Europe/Paris]")
+
+    skip_if_not_installed("lubridate", "1.8.0.9000") # generic `force_tz()`
+    lubridate::tz(dt) <- "Europe/Paris"
     expect_equal(format(dt), "1918-11-11T11:11:11+00:00[Europe/Paris]")
 })
