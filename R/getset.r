@@ -364,6 +364,18 @@ set_tz.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
 }
 
 #' @rdname setters
+#' @param nonexistent What to do when the "clock time" in the new time zone doesn't exist.
+#'                    See [clock::as_zoned_time.clock_naive_time()].
+#' @param ambiguous What to do when the "clock time" in the new time zone is ambiguous.
+#'                  See [clock::as_zoned_time.clock_naive_time()].
+#' @export
+set_tz.clock_zoned_time <- function(x, value, ...,
+                                    nonexistent = "error", ambiguous = "error") {
+    nt <- clock::as_naive_time(x)
+    clock::as_zoned_time(nt, value, nonexistent = nonexistent, ambiguous = ambiguous)
+}
+
+#' @rdname setters
 #' @export
 set_tz.default <- function(x, value, ...) {
     assert_suggested("lubridate")

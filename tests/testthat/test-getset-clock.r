@@ -56,7 +56,18 @@ test_that("setters", {
 
     expect_error(set_hour_offset("Boo", 0L))
     expect_error(set_minute_offset("Boo", 0L))
+})
 
+test_that("setters for {clock}", {
+    skip_if_not(all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames()))
+    ymd <- clock::year_month_day(2020, 10, 10, 10, 10, 10)
+    nt <- clock::as_naive_time(ymd)
+    zt <- clock::as_zoned_time(nt, "America/Los_Angeles")
+    zt2 <- set_tz(zt, "America/New_York")
+    expect_equal(format(zt2), "2020-10-10T10:10:10-04:00[America/New_York]")
+})
+
+test_that("setters for {lubridate}", {
     skip_if_not_installed("lubridate")
     dt <- set_tz(Sys.time(), "GMT")
     expect_equal(get_tz(dt), "GMT")

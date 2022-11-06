@@ -15,6 +15,7 @@
 \alias{set_minute_offset.datetimeoffset}
 \alias{set_tz}
 \alias{set_tz.datetimeoffset}
+\alias{set_tz.clock_zoned_time}
 \alias{set_tz.default}
 \title{Set datetime components}
 \usage{
@@ -44,6 +45,8 @@ set_tz(x, value, ...)
 
 \method{set_tz}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
+\method{set_tz}{clock_zoned_time}(x, value, ..., nonexistent = "error", ambiguous = "error")
+
 \method{set_tz}{default}(x, value, ...)
 }
 \arguments{
@@ -54,6 +57,12 @@ set_tz(x, value, ...)
 \item{...}{Currently ignored.}
 
 \item{na_set}{If \code{TRUE} set component for \code{NA} datetimes (making them no longer \code{NA})}
+
+\item{nonexistent}{What to do when the "clock time" in the new time zone doesn't exist.
+See \code{\link[clock:as-zoned-time-naive-time]{clock::as_zoned_time.clock_naive_time()}}.}
+
+\item{ambiguous}{What to do when the "clock time" in the new time zone is ambiguous.
+See \code{\link[clock:as-zoned-time-naive-time]{clock::as_zoned_time.clock_naive_time()}}.}
 }
 \value{
 A datetime object.
