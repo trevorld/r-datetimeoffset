@@ -103,7 +103,7 @@ datetime_precision.nanotime <- function(x, ...) {
 #' @param ... Reserved for other methods.
 #' @return A datetime vector.
 #' @examples
-#'   dts <- as_datetimeoffset(c("2020", "2020-04-10", "2020-04-10T10:10"))
+#'   dts <- as_datetimeoffset(c(NA_character_, "2020", "2020-04-10", "2020-04-10T10:10"))
 #'   datetime_precision(dts)
 #'   datetime_narrow(dts, "day")
 #'   datetime_widen(dts, "day")
@@ -112,7 +112,7 @@ datetime_precision.nanotime <- function(x, ...) {
 #'   # vectorized "precision" is allowed
 #'   datetime_narrow(as_datetimeoffset(Sys.time()),
 #'                   c("year", "month", "day"))
-#'   datetime_widen(NA_datetimeoffset_, c("year", "month", "day"))
+#'   datetime_widen(NA_datetimeoffset_, c("year", "month", "day"), na_set = TRUE)
 #'
 #'   library("clock")
 #'   ymd <- year_month_day(1918, 11, 11, 11)
@@ -200,10 +200,12 @@ datetime_precisions <- c("missing",
 #' @param minute   If missing what minute to assume
 #' @param second   If missing what second to assume
 #' @param nanosecond   If missing what nanosecond to assume
+#' @param na_set If `TRUE` widen the "missing" datetimes as well.
 #' @export
 datetime_widen.datetimeoffset <- function(x, precision, ...,
                                           year = 0L, month = 1L, day = 1L,
-                                          hour = 0L, minute = 0L, second = 0L, nanosecond = 0L) {
+                                          hour = 0L, minute = 0L, second = 0L, nanosecond = 0L,
+                                          na_set = FALSE) {
     precision <- precision_to_int(precision)
     n <- max(length(x), length(precision))
     if (length(x) < n)
@@ -211,7 +213,7 @@ datetime_widen.datetimeoffset <- function(x, precision, ...,
     if (length(precision) < n)
         precision <- rep(precision, length.out = n)
     for (component in c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
-        field(x, component) <- ifelse(precision >= precision_to_int(component),
+        field(x, component) <- ifelse((na_set | !is.na(x)) & precision >= precision_to_int(component),
                                       update_missing(field(x, component), get(component)),
                                       field(x, component))
     x

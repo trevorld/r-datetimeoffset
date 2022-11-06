@@ -18,31 +18,31 @@
 \alias{set_tz.default}
 \title{Set datetime components}
 \usage{
-\method{set_year}{datetimeoffset}(x, value, ...)
+\method{set_year}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
-\method{set_month}{datetimeoffset}(x, value, ...)
+\method{set_month}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
-\method{set_day}{datetimeoffset}(x, value, ...)
+\method{set_day}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
-\method{set_hour}{datetimeoffset}(x, value, ...)
+\method{set_hour}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
-\method{set_minute}{datetimeoffset}(x, value, ...)
+\method{set_minute}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
-\method{set_second}{datetimeoffset}(x, value, ...)
+\method{set_second}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
-\method{set_nanosecond}{datetimeoffset}(x, value, ...)
+\method{set_nanosecond}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
 set_hour_offset(x, value, ...)
 
-\method{set_hour_offset}{datetimeoffset}(x, value, ...)
+\method{set_hour_offset}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
 set_minute_offset(x, value, ...)
 
-\method{set_minute_offset}{datetimeoffset}(x, value, ...)
+\method{set_minute_offset}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
 set_tz(x, value, ...)
 
-\method{set_tz}{datetimeoffset}(x, value, ...)
+\method{set_tz}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
 \method{set_tz}{default}(x, value, ...)
 }
@@ -52,6 +52,8 @@ set_tz(x, value, ...)
 \item{value}{The replacement value.  For \code{set_day()} this can also be "last".}
 
 \item{...}{Currently ignored.}
+
+\item{na_set}{If \code{TRUE} set component for \code{NA} datetimes (making them no longer \code{NA})}
 }
 \value{
 A datetime object.
@@ -92,7 +94,7 @@ We also implement \code{\link[=datetimeoffset]{datetimeoffset()}} support for th
 \examples{
 library("clock")
 dt <- NA_datetimeoffset_
-dt <- set_year(dt, 1918L)
+dt <- set_year(dt, 1918L, na_set = TRUE)
 dt <- set_month(dt, 11L)
 dt <- set_day(dt, 11L)
 dt <- set_hour(dt, 11L)
@@ -105,13 +107,13 @@ dt <- set_tz(dt, "Europe/Paris")
 format(dt)
 
 if (require("lubridate")) {
-  dt <- NA_datetimeoffset_
-  year(dt) <- 1918
-  month(dt) <- 11
-  day(dt) <- 11
-  hour(dt) <- 11
-  minute(dt) <- 11
-  second(dt) <- 11
+  dt <- datetimeoffset(0L)
+  year(dt) <- 1918L
+  month(dt) <- 11L
+  day(dt) <- 11L
+  hour(dt) <- 11L
+  minute(dt) <- 11L
+  second(dt) <- 11L
   if (packageVersion("lubridate") > '1.8.0' &&
       "Europe/Paris" \%in\% OlsonNames()) {
     tz(dt) <- "Europe/Paris"

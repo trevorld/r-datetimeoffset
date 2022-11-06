@@ -37,9 +37,11 @@ test_that("getters", {
 
 test_that("setters", {
     dt <- NA_datetimeoffset_
-    dt <- set_year(dt, 1918L)
+    dt <- set_year(dt, 1918L, na_set = TRUE)
     dt <- set_month(dt, 11L)
     expect_equal(get_day(set_day(dt, "last")), 30L)
+    expect_equal(get_day(set_day(datetimeoffset(2001, NA_integer_), "last")),
+                 NA_integer_)
     dt <- set_day(dt, 11L)
     dt <- set_hour(dt, 11L)
     dt <- set_minute(dt, 11L)
@@ -61,7 +63,7 @@ test_that("setters", {
     expect_equal(get_hour_offset(dt), 0L)
     expect_equal(get_minute_offset(dt), 0L)
 
-    dt <- NA_datetimeoffset_
+    dt <- datetimeoffset(2000L)
     lubridate::year(dt) <- 1918L
     lubridate::month(dt) <- 11L
     lubridate::day(dt) <- 11L

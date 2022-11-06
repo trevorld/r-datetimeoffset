@@ -94,7 +94,7 @@ NULL
 #' @examples
 #' library("clock")
 #' dt <- NA_datetimeoffset_
-#' dt <- set_year(dt, 1918L)
+#' dt <- set_year(dt, 1918L, na_set = TRUE)
 #' dt <- set_month(dt, 11L)
 #' dt <- set_day(dt, 11L)
 #' dt <- set_hour(dt, 11L)
@@ -107,13 +107,13 @@ NULL
 #' format(dt)
 #'
 #' if (require("lubridate")) {
-#'   dt <- NA_datetimeoffset_
-#'   year(dt) <- 1918
-#'   month(dt) <- 11
-#'   day(dt) <- 11
-#'   hour(dt) <- 11
-#'   minute(dt) <- 11
-#'   second(dt) <- 11
+#'   dt <- datetimeoffset(0L)
+#'   year(dt) <- 1918L
+#'   month(dt) <- 11L
+#'   day(dt) <- 11L
+#'   hour(dt) <- 11L
+#'   minute(dt) <- 11L
+#'   second(dt) <- 11L
 #'   if (packageVersion("lubridate") > '1.8.0' &&
 #'       "Europe/Paris" %in% OlsonNames()) {
 #'     tz(dt) <- "Europe/Paris"
@@ -130,11 +130,12 @@ get_year.datetimeoffset <- function(x) {
 }
 
 #' @importFrom clock set_year
+#' @param na_set If `TRUE` set component for `NA` datetimes (making them no longer `NA`)
 #' @rdname setters
 #' @export
-set_year.datetimeoffset <- function(x, value, ...) {
+set_year.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
-    field(x, "year") <- rep_len(value, length(x))
+    field(x, "year") <- set_helper(x, value, na_set)
     x
 }
 
@@ -148,9 +149,9 @@ get_month.datetimeoffset <- function(x) {
 #' @importFrom clock set_month
 #' @rdname setters
 #' @export
-set_month.datetimeoffset <- function(x, value, ...) {
+set_month.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
-    field(x, "month") <- rep_len(value, length(x))
+    field(x, "month") <- set_helper(x, value, na_set)
     x
 }
 
@@ -164,15 +165,14 @@ get_day.datetimeoffset <- function(x) {
 #' @importFrom clock set_day
 #' @rdname setters
 #' @export
-set_day.datetimeoffset <- function(x, value, ...) {
+set_day.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     if (identical(value, "last")) {
         precision <- precision_to_int(datetime_precision(x, range = TRUE)[1])
-        stopifnot(precision >= PRECISION_MONTH)
         ym <- clock::year_month_day(field(x, "year"), field(x, "month"))
         value <- get_day(set_day(ym, "last"))
     }
     value <- as.integer(value)
-    field(x, "day") <- rep_len(value, length(x))
+    field(x, "day") <- set_helper(x, value, na_set)
     x
 }
 
@@ -186,9 +186,9 @@ get_hour.datetimeoffset <- function(x) {
 #' @importFrom clock set_hour
 #' @rdname setters
 #' @export
-set_hour.datetimeoffset <- function(x, value, ...) {
+set_hour.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
-    field(x, "hour") <- rep_len(value, length(x))
+    field(x, "hour") <- set_helper(x, value, na_set)
     x
 }
 
@@ -202,9 +202,9 @@ get_minute.datetimeoffset <- function(x) {
 #' @importFrom clock set_minute
 #' @rdname setters
 #' @export
-set_minute.datetimeoffset <- function(x, value, ...) {
+set_minute.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
-    field(x, "minute") <- rep_len(value, length(x))
+    field(x, "minute") <- set_helper(x, value, na_set)
     x
 }
 
@@ -218,9 +218,9 @@ get_second.datetimeoffset <- function(x) {
 #' @importFrom clock set_second
 #' @rdname setters
 #' @export
-set_second.datetimeoffset <- function(x, value, ...) {
+set_second.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
-    field(x, "second") <- rep_len(value, length(x))
+    field(x, "second") <- set_helper(x, value, na_set)
     x
 }
 
@@ -234,11 +234,11 @@ get_nanosecond.datetimeoffset <- function(x) {
 #' @importFrom clock set_nanosecond
 #' @rdname setters
 #' @export
-set_nanosecond.datetimeoffset <- function(x, value, ...) {
+set_nanosecond.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
     s <- formatC(value, format = "d", flag = "0", width = 9L)
     stopifnot(isFALSE(any(nchar(s) > 9L)))
-    field(x, "nanosecond") <- rep_len(value, length(x))
+    field(x, "nanosecond") <- set_helper(x, value, na_set)
     x
 }
 
@@ -274,9 +274,9 @@ set_hour_offset <- function(x, value, ...) {
 
 #' @rdname setters
 #' @export
-set_hour_offset.datetimeoffset <- function(x, value, ...) {
+set_hour_offset.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
-    field(x, "hour_offset") <- rep_len(value, length(x))
+    field(x, "hour_offset") <- set_helper(x, value, na_set)
     x
 }
 
@@ -312,9 +312,9 @@ set_minute_offset <- function(x, value, ...) {
 
 #' @rdname setters
 #' @export
-set_minute_offset.datetimeoffset <- function(x, value, ...) {
+set_minute_offset.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
-    field(x, "minute_offset") <- rep_len(value, length(x))
+    field(x, "minute_offset") <- set_helper(x, value, na_set)
     x
 }
 
@@ -357,9 +357,9 @@ set_tz <- function(x, value, ...) {
 
 #' @rdname setters
 #' @export
-set_tz.datetimeoffset <- function(x, value, ...) {
+set_tz.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     tzone <- clean_tz(value)
-    field(x, "tz") <- rep_len(tzone, length(x))
+    field(x, "tz") <- set_helper(x, tzone, na_set)
     x
 }
 
@@ -368,4 +368,12 @@ set_tz.datetimeoffset <- function(x, value, ...) {
 set_tz.default <- function(x, value, ...) {
     assert_suggested("lubridate")
     lubridate::force_tz(x, value)
+}
+
+set_helper <- function(x, value, na_set) {
+    na <- NA
+    storage.mode(na) <- storage.mode(value)
+    ifelse(na_set | !is.na(x),
+           rep_len(value, length(x)),
+           rep_len(na, length(x)))
 }

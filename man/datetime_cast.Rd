@@ -32,7 +32,8 @@ datetime_widen(x, precision, ...)
   hour = 0L,
   minute = 0L,
   second = 0L,
-  nanosecond = 0L
+  nanosecond = 0L,
+  na_set = FALSE
 )
 
 \method{datetime_widen}{clock_calendar}(x, precision, ...)
@@ -59,6 +60,8 @@ datetime_widen(x, precision, ...)
 \item{second}{If missing what second to assume}
 
 \item{nanosecond}{If missing what nanosecond to assume}
+
+\item{na_set}{If \code{TRUE} widen the "missing" datetimes as well.}
 }
 \value{
 A datetime vector.
@@ -70,7 +73,7 @@ by setting any missing elements to their minimum possible value.
 any more precise elements missing.
 }
 \examples{
-  dts <- as_datetimeoffset(c("2020", "2020-04-10", "2020-04-10T10:10"))
+  dts <- as_datetimeoffset(c(NA_character_, "2020", "2020-04-10", "2020-04-10T10:10"))
   datetime_precision(dts)
   datetime_narrow(dts, "day")
   datetime_widen(dts, "day")
@@ -79,7 +82,7 @@ any more precise elements missing.
   # vectorized "precision" is allowed
   datetime_narrow(as_datetimeoffset(Sys.time()),
                   c("year", "month", "day"))
-  datetime_widen(NA_datetimeoffset_, c("year", "month", "day"))
+  datetime_widen(NA_datetimeoffset_, c("year", "month", "day"), na_set = TRUE)
 
   library("clock")
   ymd <- year_month_day(1918, 11, 11, 11)

@@ -35,10 +35,14 @@ mode_tz.datetimeoffset <- function(x, tz = "", ...) {
     x <- set_tz(x, ifelse(is.na(get_tz(x)), tz, get_tz(x)))
     x <- set_tz(x, ifelse(get_tz(x) == "", Sys.timezone(), get_tz(x)))
 
-    tzones <- get_tz(x)
+    tzones <- na_omit(get_tz(x))
     keys <- unique(tzones)
     tbl <- tabulate(match(tzones, keys))
-    keys[which.max(tbl)]
+    value <- keys[which.max(tbl)]
+    if (is.na(value))
+        tz
+    else
+        value
 }
 
 #' @rdname mode_tz

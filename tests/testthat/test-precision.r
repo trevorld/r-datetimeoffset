@@ -18,6 +18,8 @@ test_that("precision", {
     expect_equal(format(datetime_widen(ymd, "hour")), "2020-04-10T00")
 
     dtw <- datetime_widen(dts, "day")
+    expect_equal(format(dtw), c(NA_character_, "2020-01-01", "2020-04-10", "2020-04-10T10:10"))
+    dtw <- datetime_widen(dts, "day", na_set = TRUE)
     expect_equal(format(dtw), c("0000-01-01", "2020-01-01", "2020-04-10", "2020-04-10T10:10"))
 
     # vectorize precision
@@ -26,7 +28,7 @@ test_that("precision", {
                  c(NA_character_, "2020", "2020-04", "2020-04-10"))
 
     dt <- NA_datetimeoffset_
-    expect_equal(format(datetime_widen(dt, c("missing", "year", "month", "day"))),
+    expect_equal(format(datetime_widen(dt, c("missing", "year", "month", "day"), na_set = TRUE)),
                  c(NA_character_, "0000", "0000-01", "0000-01-01"))
 
     # EDTF precisions
