@@ -89,6 +89,7 @@ test_that("clock classes", {
                  "2020-Q1-61")
     expect_equal(format(as_year_day(dt)),
                  "2020-061")
+    expect_equal(format(as_weekday(dt)), "Sun")
 
     skip_if_not(all(c("America/Los_Angeles") %in% OlsonNames()))
     dts <- as_datetimeoffset(c("2000-01-02",

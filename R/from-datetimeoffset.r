@@ -17,6 +17,7 @@
 #' * `as_naive_time()` returns a "clock" naive-time
 #' * `as_sys_time()` returns a "clock" sys-time
 #' * `as_zoned_time()` returns a "clock" zoned-time
+#' * `as_weekday()` returns a [clock::weekday()] object
 #'
 #' @param x A [datetimeoffset()] object
 #' @param tz,zone   What time zone to assume
@@ -45,6 +46,8 @@
 #'   clock::as_naive_time(now)
 #'   clock::as_sys_time(now)
 #'   clock::as_zoned_time(now)
+#'
+#'   clock::as_weekday(now)
 #'
 #'   if (require("nanotime")) {
 #'     nanotime::as.nanotime(now)
@@ -211,4 +214,11 @@ as_zoned_time.datetimeoffset <- function(x, zone = mode_tz(x)) {
     is.na(x) <- ifelse(precisions < precision_to_int("day"), TRUE, FALSE)
     st <- as_sys_time.datetimeoffset(x)
     clock::as_zoned_time(st, zone)
+}
+
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_weekday
+#' @export
+as_weekday.datetimeoffset <- function(x) {
+    clock::as_weekday(as_naive_time.datetimeoffset(x))
 }

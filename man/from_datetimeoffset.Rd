@@ -15,6 +15,7 @@
 \alias{as_naive_time.datetimeoffset}
 \alias{as_sys_time.datetimeoffset}
 \alias{as_zoned_time.datetimeoffset}
+\alias{as_weekday.datetimeoffset}
 \title{Convert to other datetime objects}
 \usage{
 \method{as.Date}{datetimeoffset}(x, ...)
@@ -42,6 +43,8 @@
 \method{as_sys_time}{datetimeoffset}(x)
 
 \method{as_zoned_time}{datetimeoffset}(x, zone = mode_tz(x))
+
+\method{as_weekday}{datetimeoffset}(x)
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object}
@@ -69,6 +72,7 @@ We provide the following methods:
 \item \code{as_naive_time()} returns a "clock" naive-time
 \item \code{as_sys_time()} returns a "clock" sys-time
 \item \code{as_zoned_time()} returns a "clock" zoned-time
+\item \code{as_weekday()} returns a \code{\link[clock:weekday]{clock::weekday()}} object
 }
 }
 \examples{
@@ -94,6 +98,8 @@ We provide the following methods:
   clock::as_naive_time(now)
   clock::as_sys_time(now)
   clock::as_zoned_time(now)
+
+  clock::as_weekday(now)
 
   if (require("nanotime")) {
     nanotime::as.nanotime(now)
