@@ -78,7 +78,9 @@ as_date.datetimeoffset <- function(x) {
 #' @rdname from_datetimeoffset
 #' @export
 as.POSIXct.datetimeoffset <- function(x, tz = mode_tz(x), ...) {
-    as.POSIXct(as_zoned_time.datetimeoffset(x, tz))
+    x <- datetime_widen.datetimeoffset(x, "nanosecond")
+    nt <- as_naive_time(as_zoned_time.datetimeoffset(x, tz))
+    as.POSIXct(format(nt), tz = tz, format = "%FT%H:%M:%OS")
 }
 
 #' @rdname from_datetimeoffset
@@ -91,7 +93,9 @@ as_date_time.datetimeoffset <- function(x, zone = mode_tz(x), ...) {
 #' @rdname from_datetimeoffset
 #' @export
 as.POSIXlt.datetimeoffset <- function(x, tz = mode_tz(x), ...) {
-    as.POSIXlt(as_zoned_time.datetimeoffset(x, tz))
+    x <- datetime_widen.datetimeoffset(x, "nanosecond")
+    nt <- as_naive_time(as_zoned_time.datetimeoffset(x, tz))
+    as.POSIXlt(format(nt), tz = tz, format = "%FT%H:%M:%OS")
 }
 
 as.nanotime.datetimeoffset <- function(from, tz = "") {

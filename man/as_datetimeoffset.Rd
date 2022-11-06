@@ -80,4 +80,6 @@ as_datetimeoffset("2020/05/15 08:23:16")
 as_datetimeoffset("D:20200515")
 as_datetimeoffset("D:20200515082316")
 as_datetimeoffset("D:20200515082316+03'30'")
+
+as_datetimeoffset(Sys.time())
 }

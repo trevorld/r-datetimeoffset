@@ -25,17 +25,23 @@ test_that("as.POSIXct()", {
                  format(as.POSIXct(as_datetimeoffset("2020-03-23 04:04:04", tz=""))))
     expect_equal(format(as.POSIXct("2020-03-23 04:04:04")),
                  format(as_date_time(as_datetimeoffset("2020-03-23 04:04:04", tz=""))))
-    skip_if_not(all(c("America/Los_Angeles") %in% OlsonNames()))
+    skip_if_not(all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames()))
     dt <- as_datetimeoffset(c("2020-06-15T10:10:10[America/Los_Angeles]", NA_character_))
     expect_equal(is.na(as.POSIXct(dt)), c(FALSE, TRUE))
+
+    dt <- as_datetimeoffset("2019-01-01 01:00:00.123456[America/New_York]")
+    expect_equal(format(as.POSIXct(dt), tz = "America/New_York", digits = 6L),  "2019-01-01 01:00:00.123456")
 })
 
 test_that("as.POSIXlt()", {
     expect_equal(format(as.POSIXlt("2020-03-23 04:04:04")),
                  format(as.POSIXlt(as_datetimeoffset("2020-03-23 04:04:04", tz=""))))
-    skip_if_not(all(c("America/Los_Angeles") %in% OlsonNames()))
+    skip_if_not(all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames()))
     dt <- as_datetimeoffset(c("2020-06-15T10:10:10[America/Los_Angeles]", NA_character_))
     expect_equal(is.na(as.POSIXlt(dt)), c(FALSE, TRUE))
+
+    dt <- as_datetimeoffset("2019-01-01 01:00:00.123456[America/New_York]")
+    expect_equal(format(as.POSIXlt(dt), tz = "America/New_York", digits = 6L),  "2019-01-01 01:00:00.123456")
 })
 
 test_that("clock classes", {
