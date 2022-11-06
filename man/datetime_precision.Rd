@@ -27,7 +27,7 @@ precision_to_int(precision)
 \arguments{
 \item{x}{A datetime vector.  Either \code{\link[=datetimeoffset]{datetimeoffset()}}, a "clock" "calendar", or a "clock" "time".}
 
-\item{...}{Reserved for other methods.}
+\item{...}{Used by some S3 methods.}
 
 \item{range}{If \code{TRUE} return just the minimum and maximum "precision".}
 

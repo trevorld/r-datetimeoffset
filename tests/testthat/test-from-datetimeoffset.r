@@ -1,15 +1,23 @@
 test_that("as.Date()", {
     expect_equal(as.Date(as_datetimeoffset(c("2020-03-23T10:10:10", "2020-03-23", ""))),
                  as.Date(c("2020-03-23", "2020-03-23", NA_character_)))
+    expect_equal(as_date(as_datetimeoffset(c("2020-03-23T10:10:10", "2020-03-23", ""))),
+                 as.Date(c("2020-03-23", "2020-03-23", NA_character_)))
 })
 
 test_that("as.nanotime()", {
     skip_if_not_installed("nanotime")
     expect_equal(as.nanotime(as_datetimeoffset("2020-03-23")),
                  as.nanotime("2020-03-23T00:00:00Z"))
+    expect_equal(as.nanotime(as_datetimeoffset(c("2020-03-23T04:04:04", "2020-03-23T04:04:04")), tz = "GMT"),
+                 as.nanotime(c("2020-03-23T04:04:04Z", "2020-03-23T04:04:04Z")))
+    skip_if_not(all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames()))
+    expect_equal(as.nanotime(as_datetimeoffset("2020-03-23T04:04:04"),
+                             tz = c("America/Los_Angeles", "America/New_York")),
+                 as.nanotime(c("2020-03-23T11:04:04Z", "2020-03-23T08:04:04Z")))
     skip_if_not_installed("RcppCCTZ", "0.2.12") # fixes bug with `as.nanotime(NA_character_)`
     expect_equal(as.nanotime(as_datetimeoffset(c("2020-03-23T04:04:04Z", NA_character_))),
-                 c(as.nanotime("2020-03-23T04:04:04Z"), as.nanotime(NA_integer_)))
+                 as.nanotime(c("2020-03-23T04:04:04Z", NA_character_)))
 })
 
 test_that("as.POSIXct()", {

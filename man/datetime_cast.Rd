@@ -6,10 +6,13 @@
 \alias{datetime_narrow.datetimeoffset}
 \alias{datetime_narrow.clock_calendar}
 \alias{datetime_narrow.clock_time_point}
+\alias{datetime_narrow.POSIXt}
 \alias{datetime_widen}
 \alias{datetime_widen.datetimeoffset}
 \alias{datetime_widen.clock_calendar}
 \alias{datetime_widen.clock_time_point}
+\alias{datetime_widen.POSIXt}
+\alias{datetime_cast.default}
 \title{Widen/narrow datetime precision}
 \usage{
 datetime_narrow(x, precision, ...)
@@ -18,7 +21,21 @@ datetime_narrow(x, precision, ...)
 
 \method{datetime_narrow}{clock_calendar}(x, precision, ...)
 
-\method{datetime_narrow}{clock_time_point}(x, precision, ...)
+\method{datetime_narrow}{clock_time_point}(
+  x,
+  precision,
+  ...,
+  method = c("floor", "round", "ceiling", "cast")
+)
+
+\method{datetime_narrow}{POSIXt}(
+  x,
+  precision,
+  ...,
+  method = c("floor", "round", "ceiling"),
+  nonexistent = "error",
+  ambiguous = x
+)
 
 datetime_widen(x, precision, ...)
 
@@ -39,13 +56,28 @@ datetime_widen(x, precision, ...)
 \method{datetime_widen}{clock_calendar}(x, precision, ...)
 
 \method{datetime_widen}{clock_time_point}(x, precision, ...)
+
+\method{datetime_widen}{POSIXt}(x, precision, ...)
+
+datetime_cast(x, precision, ...)
+
+\method{datetime_cast}{default}(x, precision, ...)
 }
 \arguments{
 \item{x}{A datetime vector.  Either \code{\link[=datetimeoffset]{datetimeoffset()}}, a "clock" "calendar", or a "clock" "time point".}
 
 \item{precision}{Precision to narrow/widen to.  Either "missing", "year", "month", "day", "hour", "minute", "second", or "nanosecond".}
 
-\item{...}{Used by certain methods}
+\item{...}{Used by some methods.
+The default method for \code{datetime_cast()} will pass this to both \code{datetime_narrow()} and \code{datetime_widen()}.}
+
+\item{method}{Depending on the class either "floor", "ceiling", "round", and/or "cast".}
+
+\item{nonexistent}{What to do when the "clock time" in the new time zone doesn't exist.
+See \code{\link[clock:as-zoned-time-naive-time]{clock::as_zoned_time.clock_naive_time()}}.}
+
+\item{ambiguous}{What to do when the "clock time" in the new time zone is ambiguous.
+See \code{\link[clock:as-zoned-time-naive-time]{clock::as_zoned_time.clock_naive_time()}}.}
 
 \item{year}{If missing what year to assume}
 
@@ -71,18 +103,22 @@ A datetime vector.
 by setting any missing elements to their minimum possible value.
 \code{datetime_narrow()} sets a cap on the maximum "precision" by setting
 any more precise elements missing.
+\code{datetime_cast()} sets the precision exactly by calling both
+\code{datetime_narrow()} and \code{datetime_widen()}.
 }
 \examples{
   dts <- as_datetimeoffset(c(NA_character_, "2020", "2020-04-10", "2020-04-10T10:10"))
   datetime_precision(dts)
   datetime_narrow(dts, "day")
   datetime_widen(dts, "day")
-  datetime_widen(dts, "day", month = 6, day = 15)
+  datetime_cast(dts, "day")
+
+  datetime_widen(datetimeoffset(2020L), "day", month = 6, day = 15)
 
   # vectorized "precision" is allowed
   datetime_narrow(as_datetimeoffset(Sys.time()),
-                  c("year", "month", "day"))
-  datetime_widen(NA_datetimeoffset_, c("year", "month", "day"), na_set = TRUE)
+                  c("year", "day", "second"))
+  datetime_widen(NA_datetimeoffset_, c("year", "day", "second"), na_set = TRUE)
 
   library("clock")
   ymd <- year_month_day(1918, 11, 11, 11)
@@ -99,7 +135,9 @@ any more precise elements missing.
 
   nt <- as_naive_time(ymd)
   datetime_narrow(nt, "day")
-  datetime_narrow(ymd, "second")
+  datetime_narrow(nt, "second")
   datetime_widen(nt, "second")
-  datetime_widen(ymd, "day")
+  datetime_widen(nt, "day")
+  datetime_cast(nt, "day") # same as clock::time_point_floor(nt, "day")
+  datetime_cast(nt, "day", method = "cast") # same as clock::time_point_cast(nt, "day")
 }

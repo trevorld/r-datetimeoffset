@@ -382,6 +382,17 @@ set_tz.default <- function(x, value, ...) {
     lubridate::force_tz(x, value)
 }
 
+force_tz.datetimeoffset <- function(time, tzone = "", ...) {
+    set_tz.datetimeoffset(time, tzone)
+}
+
+`date<-.datetimeoffset` <- function(x, value) {
+    x <- set_year(x, get_year(value))
+    x <- set_month(x, get_month(value))
+    x <- set_day(x, get_day(value))
+    x
+}
+
 set_helper <- function(x, value, na_set) {
     na <- NA
     storage.mode(na) <- storage.mode(value)

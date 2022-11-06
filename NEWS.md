@@ -86,6 +86,7 @@ Initial features
 
 * Get/set datetime "precision" S3 methods
 
+  + `datetime_cast()`
   + `datetime_narrow()`
   + `datetime_precision()`
   + `datetime_widen()`

@@ -282,7 +282,7 @@ print(creation_date)
 ```
 
 ```
-## [1] "2022-11-05 21:27:08 PDT"
+## [1] "2022-11-06 13:19:50 PST"
 ```
 
 ```r
@@ -301,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-05T21:27:08
+## CreationDate: 2022-11-06T13:19:50
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-05T21:27:08
+## ModDate: 2022-11-06T13:19:50
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-05T21:27:08-07:00
+## CreationDate: 2022-11-06T13:19:50-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-05T21:27:14-07:00
+## ModDate: 2022-11-06T13:19:55-08:00
 ```
 
 ## <a name="features">Features</a>
@@ -420,6 +420,7 @@ print(di)
 
 * Get/set datetime "precision" S3 methods
 
+  + `datetime_cast()`
   + `datetime_narrow()`
   + `datetime_precision()`
   + `datetime_widen()`

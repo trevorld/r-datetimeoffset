@@ -117,6 +117,15 @@ format_iso8601 <- function(x, offsets = TRUE, precision = NULL, sep = ":", ...) 
     s
 }
 
+format_ISO8601.datetimeoffset <- function(x, usetz = FALSE, precision = NULL, ...) {
+   if (!is.null(precision))
+       precision <- switch(precision,
+                           y = "year", ym = "month", ymd = "day",
+                           ymdh = "hour", ymdhm = "minute", ymdhms = "second",
+                           stop(paste("Don't recognize precision", sQuote(precision))))
+   format_iso8601(x, offsets = usetz, precision = precision, sep = "")
+}
+
 #' @rdname format
 #' @export
 format_pdfmark <- function(x) {

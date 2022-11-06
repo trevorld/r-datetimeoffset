@@ -6,55 +6,33 @@
     vctrs::s3_register("lubridate::minute", "datetimeoffset", get_minute.datetimeoffset)
     vctrs::s3_register("lubridate::second", "datetimeoffset", get_second.datetimeoffset)
     vctrs::s3_register("lubridate::tz", "datetimeoffset", get_tz.datetimeoffset)
-    vctrs::s3_register("lubridate::date", "datetimeoffset", as.Date.datetimeoffset)
-    vctrs::s3_register("lubridate::force_tz", "datetimeoffset",
-                       function(time, tzone = "", ...) set_tz.datetimeoffset(time, tzone))
+    vctrs::s3_register("lubridate::date", "datetimeoffset", function(x) as.Date.datetimeoffset(x))
+    vctrs::s3_register("lubridate::force_tz", "datetimeoffset", force_tz.datetimeoffset)
 
     if (requireNamespace("lubridate", quietly = TRUE)) {
         methods::setOldClass("datetimeoffset")
         methods::setGeneric("format_ISO8601", lubridate::format_ISO8601)
+        methods::setMethod("format_ISO8601", signature = "datetimeoffset", format_ISO8601.datetimeoffset)
         methods::setGeneric("year<-", lubridate::"year<-")
+        methods::setMethod("year<-", "datetimeoffset", function(x, value) set_year.datetimeoffset(x, value))
         methods::setGeneric("month<-", lubridate::"month<-")
+        methods::setMethod("month<-", "datetimeoffset", function(x, value) set_month.datetimeoffset(x, value))
         methods::setGeneric("day<-", lubridate::"day<-")
+        methods::setMethod("day<-", "datetimeoffset", function(x, value) set_day.datetimeoffset(x, value))
         methods::setGeneric("hour<-", lubridate::"hour<-")
+        methods::setMethod("hour<-", "datetimeoffset", function(x, value) set_hour.datetimeoffset(x, value))
         methods::setGeneric("minute<-", lubridate::"minute<-")
+        methods::setMethod("minute<-", "datetimeoffset", function(x, value) set_minute.datetimeoffset(x, value))
         methods::setGeneric("second<-", lubridate::"second<-")
+        methods::setMethod("second<-", "datetimeoffset", function(x, value) set_second.datetimeoffset(x, value))
         methods::setGeneric("date<-", lubridate::"date<-")
-        methods::setMethod("format_ISO8601", signature = "datetimeoffset",
-                           function(x, usetz = FALSE, precision = NULL, ...) {
-                               if (!is.null(precision))
-                                   precision <- switch(precision,
-                                                       y = "year", ym = "month", ymd = "day",
-                                                       ymdh = "hour", ymdhm = "minute", ymdhms = "second",
-                                                       stop(paste("Don't recognize precision", sQuote(precision))))
-                               format_iso8601(x, offsets = usetz, precision = precision, sep = "")
-                           })
-        methods::setMethod("year<-", "datetimeoffset",
-                           function(x, value) set_year.datetimeoffset(x, value))
-        methods::setMethod("month<-", "datetimeoffset",
-                           function(x, value) set_month.datetimeoffset(x, value))
-        methods::setMethod("day<-", "datetimeoffset",
-                           function(x, value) set_day.datetimeoffset(x, value))
-        methods::setMethod("hour<-", "datetimeoffset",
-                           function(x, value) set_hour.datetimeoffset(x, value))
-        methods::setMethod("minute<-", "datetimeoffset",
-                           function(x, value) set_minute.datetimeoffset(x, value))
-        methods::setMethod("second<-", "datetimeoffset",
-                           function(x, value) set_second.datetimeoffset(x, value))
-        methods::setMethod("date<-", "datetimeoffset",
-            function(x, value) {
-                x <- set_year(x, get_year(value))
-                x <- set_month(x, get_month(value))
-                x <- set_day(x, get_day(value))
-                x
-            })
+        methods::setMethod("date<-", "datetimeoffset", `date<-.datetimeoffset`)
     }
 
     if (requireNamespace("nanotime", quietly = TRUE)) {
         methods::setOldClass("datetimeoffset")
         methods::setGeneric("as.nanotime", nanotime::as.nanotime)
-        methods::setMethod("as.nanotime", methods::signature(from="datetimeoffset"),
-            function(from, tz = "") as.nanotime.datetimeoffset(from, tz = tz))
+        methods::setMethod("as.nanotime", methods::signature(from="datetimeoffset"), as.nanotime.datetimeoffset)
     }
 }
 

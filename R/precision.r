@@ -7,7 +7,7 @@
 #' @param range If `TRUE` return just the minimum and maximum "precision".
 #' @param unspecified If `TRUE` use the smallest non-missing component's as the precision even
 #'                    if there is a missing value for a larger component.
-#' @param ... Reserved for other methods.
+#' @param ... Used by some S3 methods.
 #' @return `datetime_precision()` returns a character vector of precisions.
 #'         Depending on the object either "missing", "year", "quarter", "month", "week",
 #'         "day", "hour", "minute", "second", "millisecond", "microsecond", or "nanosecond".
@@ -97,22 +97,27 @@ datetime_precision.nanotime <- function(x, ...) {
 #'  by setting any missing elements to their minimum possible value.
 #' `datetime_narrow()` sets a cap on the maximum "precision" by setting
 #' any more precise elements missing.
+#' `datetime_cast()` sets the precision exactly by calling both
+#' `datetime_narrow()` and `datetime_widen()`.
 #'
 #' @param x A datetime vector.  Either [datetimeoffset()], a "clock" "calendar", or a "clock" "time point".
 #' @param precision Precision to narrow/widen to.  Either "missing", "year", "month", "day", "hour", "minute", "second", or "nanosecond".
-#' @param ... Reserved for other methods.
+#' @param ... Used by some methods.
+#'            The default method for `datetime_cast()` will pass this to both `datetime_narrow()` and `datetime_widen()`.
 #' @return A datetime vector.
 #' @examples
 #'   dts <- as_datetimeoffset(c(NA_character_, "2020", "2020-04-10", "2020-04-10T10:10"))
 #'   datetime_precision(dts)
 #'   datetime_narrow(dts, "day")
 #'   datetime_widen(dts, "day")
-#'   datetime_widen(dts, "day", month = 6, day = 15)
+#'   datetime_cast(dts, "day")
+#'
+#'   datetime_widen(datetimeoffset(2020L), "day", month = 6, day = 15)
 #'
 #'   # vectorized "precision" is allowed
 #'   datetime_narrow(as_datetimeoffset(Sys.time()),
-#'                   c("year", "month", "day"))
-#'   datetime_widen(NA_datetimeoffset_, c("year", "month", "day"), na_set = TRUE)
+#'                   c("year", "day", "second"))
+#'   datetime_widen(NA_datetimeoffset_, c("year", "day", "second"), na_set = TRUE)
 #'
 #'   library("clock")
 #'   ymd <- year_month_day(1918, 11, 11, 11)
@@ -129,9 +134,11 @@ datetime_precision.nanotime <- function(x, ...) {
 #'
 #'   nt <- as_naive_time(ymd)
 #'   datetime_narrow(nt, "day")
-#'   datetime_narrow(ymd, "second")
+#'   datetime_narrow(nt, "second")
 #'   datetime_widen(nt, "second")
-#'   datetime_widen(ymd, "day")
+#'   datetime_widen(nt, "day")
+#'   datetime_cast(nt, "day") # same as clock::time_point_floor(nt, "day")
+#'   datetime_cast(nt, "day", method = "cast") # same as clock::time_point_cast(nt, "day")
 #' @name datetime_cast
 NULL
 
@@ -170,27 +177,45 @@ datetime_narrow.clock_calendar <- function(x, precision, ...) {
 }
 
 #' @rdname datetime_cast
+#' @param method Depending on the class either "floor", "ceiling", "round", and/or "cast".
 #' @export
-datetime_narrow.clock_time_point <- function(x, precision, ...) {
+datetime_narrow.clock_time_point <- function(x, precision, ...,
+                                             method = c("floor", "round", "ceiling", "cast")) {
     old_precision <- precision_to_int(clock::time_point_precision(x))
     new_precision <- precision_to_int(precision)
-    if (old_precision <= new_precision)
+    if (old_precision <= new_precision) {
         x
-    else
-        clock::time_point_floor(x, precision)
+    } else {
+        method <- match.arg(method, c("floor", "round", "ceiling", "cast"))
+        switch(method,
+               floor = clock::time_point_floor(x, precision),
+               round = clock::time_point_round(x, precision),
+               ceiling = clock::time_point_ceiling(x, precision),
+               cast = clock::time_point_cast(x, precision))
+    }
 }
 
 #' @rdname datetime_cast
-#' @param ... Used by certain methods
+#' @param nonexistent What to do when the "clock time" in the new time zone doesn't exist.
+#'                    See [clock::as_zoned_time.clock_naive_time()].
+#' @param ambiguous What to do when the "clock time" in the new time zone is ambiguous.
+#'                  See [clock::as_zoned_time.clock_naive_time()].
+#' @export
+datetime_narrow.POSIXt <- function(x, precision, ...,
+                                   method = c("floor", "round", "ceiling"),
+                                   nonexistent = "error", ambiguous = x) {
+        method <- match.arg(method, c("floor", "round", "ceiling"))
+        switch(method,
+               floor = clock::date_floor(x, precision, nonexistent = nonexistent, ambiguous = ambiguous),
+               round = clock::date_round(x, precision, nonexistent = nonexistent, ambiguous = ambiguous),
+               ceiling = clock::date_ceiling(x, precision, nonexistent = nonexistent, ambiguous = ambiguous))
+}
+
+#' @rdname datetime_cast
 #' @export
 datetime_widen <- function(x, precision, ...) {
     UseMethod("datetime_widen")
 }
-
-# precisions used by {datetimeoffset} and/or {clock}
-datetime_precisions <- c("missing",
-                         "year", "quarter", "month", "week", "day",
-                         "hour", "minute", "second", "millisecond", "microsecond", "nanosecond")
 
 #' @rdname datetime_cast
 #' @param year If missing what year to assume
@@ -219,27 +244,6 @@ datetime_widen.datetimeoffset <- function(x, precision, ...,
     x
 }
 
-#' @param precision A datetime precision (as returned by `datetime_precision()`).
-#' @rdname datetime_precision
-#' @export
-precision_to_int <- function(precision) {
-    f <- factor(precision, datetime_precisions)
-    as.integer(f)
-}
-PRECISION_MISSING <- precision_to_int("missing")
-PRECISION_YEAR <- precision_to_int("year")
-PRECISION_MONTH <- precision_to_int("month")
-PRECISION_DAY <- precision_to_int("day")
-PRECISION_HOUR <- precision_to_int("hour")
-PRECISION_MINUTE <- precision_to_int("minute")
-PRECISION_SECOND <- precision_to_int("second")
-PRECISION_NANOSECOND <- precision_to_int("nanosecond")
-
-update_missing <- function(original, replacement) ifelse(is.na(original), replacement, original)
-update_missing_zone <- function(x, tz = "") {
-    set_tz(x, ifelse(is.na(get_tz(x)) & is.na(get_hour_offset(x)), clean_tz(tz), get_tz(x)))
-}
-
 #' @rdname datetime_cast
 #' @export
 datetime_widen.clock_calendar <- function(x, precision, ...) {
@@ -260,4 +264,48 @@ datetime_widen.clock_time_point <- function(x, precision, ...) {
         x
     else
         clock::time_point_cast(x, precision)
+}
+
+#' @rdname datetime_cast
+#' @export
+datetime_widen.POSIXt <- function(x, precision, ...) {
+    x
+}
+
+#' @rdname datetime_cast
+#' @export
+datetime_cast <- function(x, precision, ...) {
+    UseMethod("datetime_cast")
+}
+
+#' @rdname datetime_cast
+#' @export
+datetime_cast.default <- function(x, precision, ...) {
+    datetime_widen(datetime_narrow(x, precision, ...), precision, ...)
+}
+
+# precisions used by {datetimeoffset} and/or {clock}
+datetime_precisions <- c("missing",
+                         "year", "quarter", "month", "week", "day",
+                         "hour", "minute", "second", "millisecond", "microsecond", "nanosecond")
+
+#' @param precision A datetime precision (as returned by `datetime_precision()`).
+#' @rdname datetime_precision
+#' @export
+precision_to_int <- function(precision) {
+    f <- factor(precision, datetime_precisions)
+    as.integer(f)
+}
+PRECISION_MISSING <- precision_to_int("missing")
+PRECISION_YEAR <- precision_to_int("year")
+PRECISION_MONTH <- precision_to_int("month")
+PRECISION_DAY <- precision_to_int("day")
+PRECISION_HOUR <- precision_to_int("hour")
+PRECISION_MINUTE <- precision_to_int("minute")
+PRECISION_SECOND <- precision_to_int("second")
+PRECISION_NANOSECOND <- precision_to_int("nanosecond")
+
+update_missing <- function(original, replacement) ifelse(is.na(original), replacement, original)
+update_missing_zone <- function(x, tz = "") {
+    set_tz(x, ifelse(is.na(get_tz(x)) & is.na(get_hour_offset(x)), clean_tz(tz), get_tz(x)))
 }
