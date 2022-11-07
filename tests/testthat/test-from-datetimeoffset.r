@@ -29,9 +29,6 @@ test_that("as.POSIXct()", {
     dt <- as_datetimeoffset(c("2020-06-15T10:10:10[America/Los_Angeles]", NA_character_))
     expect_equal(is.na(as.POSIXct(dt)), c(FALSE, TRUE))
 
-    dt <- as_datetimeoffset("2019-01-01 01:00:00.123456[America/New_York]")
-    expect_equal(format(as.POSIXct(dt), tz = "America/New_York", digits = 6L),  "2019-01-01 01:00:00.123456")
-
     # ambiguous times
     dt <- as_datetimeoffset("2020-11-01T01:30:00-05:00[America/New_York]")
     expect_equal(format(dt), "2020-11-01T01:30:00-05:00[America/New_York]")
@@ -39,6 +36,11 @@ test_that("as.POSIXct()", {
     dt <- as_datetimeoffset("2020-11-01T01:30:00-04:00[America/New_York]")
     expect_equal(format(dt), "2020-11-01T01:30:00-04:00[America/New_York]")
     expect_equal(format(as.POSIXct(dt), tz = "America/New_York", digits = 6L),  "2020-11-01 01:30:00")
+
+    # Preserve sub-seconds
+    skip_if_not(getRversion() > '4.2.0')
+    dt <- as_datetimeoffset("2019-01-01 01:00:00.123456[America/New_York]")
+    expect_equal(format(as.POSIXct(dt), tz = "America/New_York", digits = 6L),  "2019-01-01 01:00:00.123456")
     dt <- as_datetimeoffset("2020-11-01T01:30:00.123456-04:00[America/New_York]")
     expect_equal(format(as.POSIXct(dt), tz = "America/New_York", digits = 6L),  "2020-11-01 01:30:00.123456")
 })
@@ -50,14 +52,16 @@ test_that("as.POSIXlt()", {
     dt <- as_datetimeoffset(c("2020-06-15T10:10:10[America/Los_Angeles]", NA_character_))
     expect_equal(is.na(as.POSIXlt(dt)), c(FALSE, TRUE))
 
-    dt <- as_datetimeoffset("2019-01-01 01:00:00.123456[America/New_York]")
-    expect_equal(format(as.POSIXlt(dt), tz = "America/New_York", digits = 6L),  "2019-01-01 01:00:00.123456")
-
     # ambiguous times
     dt <- as_datetimeoffset("2020-11-01T01:30:00-05:00[America/New_York]")
     expect_equal(format(as.POSIXlt(dt), tz = "America/New_York", digits = 6L),  "2020-11-01 01:30:00")
     dt <- as_datetimeoffset("2020-11-01T01:30:00-04:00[America/New_York]")
     expect_equal(format(as.POSIXlt(dt), tz = "America/New_York", digits = 6L),  "2020-11-01 01:30:00")
+
+    # Preserve sub-seconds
+    skip_if_not(getRversion() > '4.2.0')
+    dt <- as_datetimeoffset("2019-01-01 01:00:00.123456[America/New_York]")
+    expect_equal(format(as.POSIXlt(dt), tz = "America/New_York", digits = 6L),  "2019-01-01 01:00:00.123456")
     dt <- as_datetimeoffset("2020-11-01T01:30:00.123456-04:00[America/New_York]")
     expect_equal(format(as.POSIXlt(dt), tz = "America/New_York", digits = 6L),  "2020-11-01 01:30:00.123456")
 })
