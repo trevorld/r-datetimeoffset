@@ -299,6 +299,8 @@ print(di)
   + `{clock}` will often make you explicitly make casting decisions if necessary to avoid any possibly ambiguous datetimes or else throw an error
   + More explicit control over the expected format of input strings
 
+* `{clock}` is a lower-level library with lots of C++ code.  Will likely process large amounts of data faster.
+
 ### <a name="datetimeoffset-advantages">Things {datetimeoffset} can do that {clock} can't do</a>
 
 * `{datetimeoffset}` vectors can have more than one time zone within it:
@@ -310,11 +312,20 @@ print(di)
   clock::zoned_time_parse_complete(dts)
   ```
 
+* `{datetimeoffset}` can import `POSIXt` objects at a microsecond precision instead of a second precision 
+  (importing `POSIXt` objects at a microsecond precision requires suggested package `{nanotime}`):
+
+  ```{r microsecond-posixt}
+  dts <- as.POSIXct(c("2019-01-01 01:00:00.1", "2019-01-01 01:00:00.123456", "2019-01-01 01:00:00.3"),
+                    tz = "America/New_York")
+  as_datetimeoffset(dts, precision = "microsecond")
+  clock::as_zoned_time(dts)
+  ```
+
 * `{datetimeoffset}` vectors allow lower precision elements to be missing:
 
-  ```{r}
+  ```{r edtf-precision}
   datetimeoffset(2020, NA_integer_, 10) |> format_edtf()
-
   clock::year_month_day(2020, NA_integer_, 10)
   ```
 
@@ -322,7 +333,6 @@ print(di)
 
   ```{r precision}
   c(datetimeoffset(2020), datetimeoffset(2020, 1, 1))
-
   c(clock::year_month_day(2020),
     clock::year_month_day(2020, 1, 1))
   ```

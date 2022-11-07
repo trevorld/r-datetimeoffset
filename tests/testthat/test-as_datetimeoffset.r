@@ -188,23 +188,27 @@ test_that("base R classes", {
     skip_if_not("America/New_York" %in% OlsonNames())
     # POSIXct
     dt <- as.POSIXct(c("2022-10-10 10:00:00", NA_character_), tz = "America/New_York")
-    expect_equal(format(as_datetimeoffset(dt)),
+    expect_equal(format(as_datetimeoffset(dt, precision = "second")),
                  c("2022-10-10T10:00:00-04:00[America/New_York]", NA_character_))
 
     # POSIXlt
     dt <- as.POSIXlt(c("2022-10-10 10:00:00", NA_character_), tz = "America/New_York")
-    expect_equal(format(as_datetimeoffset(dt)),
+    expect_equal(format(as_datetimeoffset(dt, precision = "second")),
                  c("2022-10-10T10:00:00-04:00[America/New_York]", NA_character_))
 
-
-    dt <- as.POSIXct(c("2019-01-01 01:00:00.1", "2019-01-01 01:00:00.3"), tz = "America/New_York")
 
     dt <- as.POSIXct(c("2022-10-10 10:00:00.123456", NA_character_), tz = "America/New_York")
     # format(dt, tz = "America/New_York", digits = 6L)
-    expect_equal(format(as_datetimeoffset(dt)),
+    expect_equal(format(as_datetimeoffset(dt, precision = "second")),
                  c("2022-10-10T10:00:00-04:00[America/New_York]", NA_character_))
-    expect_equal(format(as_datetimeoffset(as.nanotime(dt), tz = get_tz(dt))),
+
+    skip_if_not_installed("nanotime")
+    expect_equal(format(as_datetimeoffset(dt, precision = "microsecond"), tz = get_tz(dt)),
                  c("2022-10-10T10:00:00.123456-04:00[America/New_York]", NA_character_))
+    dt <- as.POSIXct(c("2019-01-01 01:00:00.1", "2019-01-01 01:00:00.3"), tz = "America/New_York")
+    expect_equal(format(as_datetimeoffset(dt, precision = "microsecond"), tz = get_tz(dt)),
+                 c("2019-01-01T01:00:00.1-05:00[America/New_York]",
+                   "2019-01-01T01:00:00.3-05:00[America/New_York]"))
 })
 
 test_that("{clock} classes", {

@@ -282,7 +282,7 @@ print(creation_date)
 ```
 
 ```
-## [1] "2022-11-06 13:19:50 PST"
+## [1] "2022-11-06 22:20:47 PST"
 ```
 
 ```r
@@ -301,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-06T13:19:50
+## CreationDate: 2022-11-06T22:20:47
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-06T13:19:50
+## ModDate: 2022-11-06T22:20:47
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-06T13:19:50-08:00
+## CreationDate: 2022-11-06T22:20:47-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-06T13:19:55-08:00
+## ModDate: 2022-11-06T22:20:53-08:00
 ```
 
 ## <a name="features">Features</a>
@@ -460,6 +460,8 @@ print(di)
   + `{clock}` will often make you explicitly make casting decisions if necessary to avoid any possibly ambiguous datetimes or else throw an error
   + More explicit control over the expected format of input strings
 
+* `{clock}` is a lower-level library with lots of C++ code.  Will likely process large amounts of data faster.
+
 ### <a name="datetimeoffset-advantages">Things {datetimeoffset} can do that {clock} can't do</a>
 
 * `{datetimeoffset}` vectors can have more than one time zone within it:
@@ -484,6 +486,33 @@ print(di)
   ```
   ## Error:
   ## ! All elements of `x` must have the same time zone name. Found different zone names of: 'America/Los_Angeles' and 'America/New_York'.
+  ```
+
+* `{datetimeoffset}` can import `POSIXt` objects at a microsecond precision instead of a second precision 
+  (importing `POSIXt` objects at a microsecond precision requires suggested package `{nanotime}`):
+
+  
+  ```r
+  dts <- as.POSIXct(c("2019-01-01 01:00:00.1", "2019-01-01 01:00:00.123456", "2019-01-01 01:00:00.3"),
+                    tz = "America/New_York")
+  as_datetimeoffset(dts, precision = "microsecond")
+  ```
+  
+  ```
+  ## <datetimeoffset[3]>
+  ## [1] 2019-01-01T01:00:00.1-05:00[America/New_York]     
+  ## [2] 2019-01-01T01:00:00.123456-05:00[America/New_York]
+  ## [3] 2019-01-01T01:00:00.3-05:00[America/New_York]
+  ```
+  
+  ```r
+  clock::as_zoned_time(dts)
+  ```
+  
+  ```
+  ## <zoned_time<second><America/New_York>[3]>
+  ## [1] "2019-01-01T01:00:00-05:00" "2019-01-01T01:00:00-05:00"
+  ## [3] "2019-01-01T01:00:00-05:00"
   ```
 
 * `{datetimeoffset}` vectors allow lower precision elements to be missing:
