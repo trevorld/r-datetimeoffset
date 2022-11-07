@@ -261,10 +261,10 @@ datetimeoffset_now(c("America/Los_Angeles", "America/New_York",
 
 ```
 ## <datetimeoffset[4]>
-## [1] 2022-11-07T10:08:25.667833101-08:00[America/Los_Angeles]
-## [2] 2022-11-07T13:08:25.667833101-05:00[America/New_York]   
-## [3] 2022-11-07T18:08:25.667833101+00:00[Europe/London]      
-## [4] 2022-11-08T02:08:25.667833101+08:00[Asia/Shanghai]
+## [1] 2022-11-07T14:39:15.608902043-08:00[America/Los_Angeles]
+## [2] 2022-11-07T17:39:15.608902043-05:00[America/New_York]   
+## [3] 2022-11-07T22:39:15.608902043+00:00[Europe/London]      
+## [4] 2022-11-08T06:39:15.608902043+08:00[Asia/Shanghai]
 ```
 
 ### <a name="pdf">Augmenting pdf datetime metadata</a>
@@ -276,12 +276,13 @@ By default `grDevices::pdf()` stores the local datetime without any UTC offset i
 library("grid")
 library("xmpdf") # remotes::install_github("trevorld/r-xmpdf")
 
-creation_date <- Sys.time()
+creation_date <- datetimeoffset_now()
 print(creation_date)
 ```
 
 ```
-## [1] "2022-11-07 10:08:25 PST"
+## <datetimeoffset[1]>
+## [1] 2022-11-07T14:39:15.669771609-08:00[America/Los_Angeles]
 ```
 
 ```r
@@ -300,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-07T10:08:25
+## CreationDate: 2022-11-07T14:39:15
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-07T10:08:25
+## ModDate: 2022-11-07T14:39:15
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -316,7 +317,7 @@ We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime me
 di$creation_date <- di$creation_date |>
     set_hour_offset(get_hour_offset(creation_date)) |>
     set_minute_offset(get_minute_offset(creation_date))
-di$mod_date <- Sys.time() # We've last modified pdf metadata now
+di$mod_date <- datetimeoffset_now() # Last modified metadata now
 di$subject <- "Augmenting pdf metadata with UTC offsets"
 
 xmpdf::set_docinfo(di, f)
@@ -326,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-07T10:08:25-08:00
+## CreationDate: 2022-11-07T14:39:15-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-07T10:08:31-08:00
+## ModDate: 2022-11-07T14:39:21-08:00
 ```
 
 ## <a name="features">Features</a>
@@ -493,7 +494,9 @@ print(di)
 
   
   ```r
-  dts <- as.POSIXct(c("2019-01-01 01:00:00.1", "2019-01-01 01:00:00.123456", "2019-01-01 01:00:00.3"),
+  dts <- as.POSIXct(c("2019-01-01 01:00:00.1", 
+                      "2019-01-01 01:00:00.123456",
+                      "2019-01-01 01:00:00.3"),
                     tz = "America/New_York")
   as_datetimeoffset(dts, precision = "microsecond")
   ```
