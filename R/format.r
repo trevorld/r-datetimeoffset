@@ -271,7 +271,7 @@ my_format_tz <- function(x, sep = ":", no_zulu = FALSE, edtf = FALSE, add_tz = F
                                        format(dt, format = "%z")
                                    })
         s_offsets <- paste0(substr(offsets, 1, 3), sep, substr(offsets, 4, 5))
-        s_offsets <- ifelse(is.na(offsets), "", s_offsets)
+        s_offsets <- ifelse(is.na(offsets), s[is.na(offsets)], s_offsets)
         if (add_tz) {
             s_offsets <- paste0(s_offsets, "[", tz_id, "]")
         }
