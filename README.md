@@ -254,18 +254,17 @@ as_datetimeoffset("1918/11/11 11:11") |>
 
 
 ```r
-# DST boundary in the continental United States
-boundary <- as_datetimeoffset("2009-03-08 01:59:59",
-                               tz = c("America/Los_Angeles", "America/Denver",
-                                      "America/Chicago", "America/New_York"))
-format(boundary)
+# Current time in a number of time zones
+datetimeoffset_now(c("America/Los_Angeles", "America/New_York",
+                     "Europe/London", "Asia/Shanghai"))
 ```
 
 ```
-## [1] "2009-03-08T01:59:59-08:00[America/Los_Angeles]"
-## [2] "2009-03-08T01:59:59-07:00[America/Denver]"     
-## [3] "2009-03-08T01:59:59-06:00[America/Chicago]"    
-## [4] "2009-03-08T01:59:59-05:00[America/New_York]"
+## <datetimeoffset[4]>
+## [1] 2022-11-07T10:08:25.667833101-08:00[America/Los_Angeles]
+## [2] 2022-11-07T13:08:25.667833101-05:00[America/New_York]   
+## [3] 2022-11-07T18:08:25.667833101+00:00[Europe/London]      
+## [4] 2022-11-08T02:08:25.667833101+08:00[Asia/Shanghai]
 ```
 
 ### <a name="pdf">Augmenting pdf datetime metadata</a>
@@ -282,7 +281,7 @@ print(creation_date)
 ```
 
 ```
-## [1] "2022-11-06 22:20:47 PST"
+## [1] "2022-11-07 10:08:25 PST"
 ```
 
 ```r
@@ -301,13 +300,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-06T22:20:47
+## CreationDate: 2022-11-07T10:08:25
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-06T22:20:47
+## ModDate: 2022-11-07T10:08:25
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +326,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-06T22:20:47-08:00
+## CreationDate: 2022-11-07T10:08:25-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-06T22:20:53-08:00
+## ModDate: 2022-11-07T10:08:31-08:00
 ```
 
 ## <a name="features">Features</a>
@@ -427,6 +426,7 @@ print(di)
 
 * Other utilities:
 
+  + `datetimeoffset_now()` returns the current time in the corresponding time zone(s).
   + `is_datetimeoffset()` and `NA_datetimeoffset_`
   + `mode_tz()` is an S3 method that gets most common time zone for a datetime object
   + `precision_to_int()` converts datetime precisions to an integer

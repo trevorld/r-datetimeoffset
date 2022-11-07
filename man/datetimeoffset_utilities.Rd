@@ -5,6 +5,7 @@
 \alias{datetimeoffset_utilities}
 \alias{is_datetimeoffset}
 \alias{NA_datetimeoffset_}
+\alias{datetimeoffset_now}
 \title{Various "datetimeoffset" object utilities}
 \format{
 An object of class \code{datetimeoffset} (inherits from \code{vctrs_rcrd}, \code{vctrs_vctr}) of length 1.
@@ -13,13 +14,22 @@ An object of class \code{datetimeoffset} (inherits from \code{vctrs_rcrd}, \code
 is_datetimeoffset(x)
 
 NA_datetimeoffset_
+
+datetimeoffset_now(tz = Sys.timezone())
 }
 \arguments{
 \item{x}{An object to be tested}
+
+\item{tz}{Time zone(s)}
+}
+\value{
+\code{is_datetimeoffset()} returns a logical vector.
+\code{datetimeoffset_now()} returns a \code{\link[=datetimeoffset]{datetimeoffset()}} vector.
 }
 \description{
 \code{is_datetimeoffset()} tests whether a datetime object is of the "datetimeoffset" class.
 \code{NA_datetimeoffset_} provides a "missing" "datetimeoffset" object.
+\code{datetimeoffset_now()} returns the current time in the corresponding time zone(s).
 }
 \examples{
   is_datetimeoffset(as_datetimeoffset(Sys.time()))
@@ -27,6 +37,9 @@ NA_datetimeoffset_
 
   is.na(NA_datetimeoffset_)
   is.na(as_datetimeoffset(""))
+
+  if (all(c("America/Los_Angeles", "America/New_York") \%in\% OlsonNames()))
+    datetimeoffset_now(c("America/Los_Angeles", "America/New_York"))
 
 }
 \keyword{datasets}

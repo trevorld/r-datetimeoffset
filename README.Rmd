@@ -130,11 +130,9 @@ as_datetimeoffset("1918/11/11 11:11") |>
 `datetimeoffset()` objects support heteregenous time zones:
 
 ```{r examples-boundary}
-# DST boundary in the continental United States
-boundary <- as_datetimeoffset("2009-03-08 01:59:59",
-                               tz = c("America/Los_Angeles", "America/Denver",
-                                      "America/Chicago", "America/New_York"))
-format(boundary)
+# Current time in a number of time zones
+datetimeoffset_now(c("America/Los_Angeles", "America/New_York",
+                     "Europe/London", "Asia/Shanghai"))
 ```
 
 ### <a name="pdf">Augmenting pdf datetime metadata</a>
@@ -266,6 +264,7 @@ print(di)
 
 * Other utilities:
 
+  + `datetimeoffset_now()` returns the current time in the corresponding time zone(s).
   + `is_datetimeoffset()` and `NA_datetimeoffset_`
   + `mode_tz()` is an S3 method that gets most common time zone for a datetime object
   + `precision_to_int()` converts datetime precisions to an integer

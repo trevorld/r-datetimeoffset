@@ -102,7 +102,11 @@ na_omit <- function(x) Filter(Negate(is.na), x)
 #'
 #' `is_datetimeoffset()` tests whether a datetime object is of the "datetimeoffset" class.
 #' `NA_datetimeoffset_` provides a "missing" "datetimeoffset" object.
+#' `datetimeoffset_now()` returns the current time in the corresponding time zone(s).
 #' @param x An object to be tested
+#' @param tz Time zone(s)
+#' @return `is_datetimeoffset()` returns a logical vector.
+#'         `datetimeoffset_now()` returns a [datetimeoffset()] vector.
 #'
 #' @examples
 #'   is_datetimeoffset(as_datetimeoffset(Sys.time()))
@@ -110,6 +114,9 @@ na_omit <- function(x) Filter(Negate(is.na), x)
 #'
 #'   is.na(NA_datetimeoffset_)
 #'   is.na(as_datetimeoffset(""))
+#'
+#'   if (all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames()))
+#'     datetimeoffset_now(c("America/Los_Angeles", "America/New_York"))
 #'
 #' @name datetimeoffset_utilities
 NULL
@@ -121,6 +128,16 @@ is_datetimeoffset <- function(x) inherits(x, "datetimeoffset")
 #' @rdname datetimeoffset_utilities
 #' @export
 NA_datetimeoffset_ <- datetimeoffset(NA_integer_)
+
+#' @rdname datetimeoffset_utilities
+#' @export
+datetimeoffset_now <- function(tz = Sys.timezone()) {
+    st <- clock::sys_time_now()
+    tz <- clean_tz(tz, Sys.timezone())
+    purrr::map_vec(tz,
+                   function(x) as_datetimeoffset(clock::as_zoned_time(st, x)),
+                   .ptype = datetimeoffset())
+}
 
 #' @export
 vec_ptype_abbr.datetimeoffset <- function(x, ...) "dto"

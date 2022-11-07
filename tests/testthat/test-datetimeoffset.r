@@ -39,9 +39,13 @@ test_that("format.datetimeoffset()", {
     expect_true(datetimeoffset(1980, 10) < datetimeoffset(1981, 10))
     expect_true(datetimeoffset(1980, 10) < datetimeoffset(1980, 11))
 
-    skip_if_not(all(c("US/Pacific", "US/Eastern") %in% OlsonNames()))
-    expect_equal(format(datetimeoffset(2020, 5, 15, 8, 23, 16, tz = "US/Pacific")),
-                 "2020-05-15T08:23:16-07:00[US/Pacific]")
-    expect_equal(format(datetimeoffset(2020, 5, 15, 8, 23, 16, tz = "US/Eastern")),
-                 "2020-05-15T08:23:16-04:00[US/Eastern]")
+    skip_if_not(all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames()))
+    expect_equal(format(datetimeoffset(2020, 5, 15, 8, 23, 16, tz = "America/Los_Angeles")),
+                 "2020-05-15T08:23:16-07:00[America/Los_Angeles]")
+    expect_equal(format(datetimeoffset(2020, 5, 15, 8, 23, 16, tz = "America/New_York")),
+                 "2020-05-15T08:23:16-04:00[America/New_York]")
+
+    dton <- datetimeoffset_now()
+    expect_true(is_datetimeoffset(dton))
+    expect_equal(clean_tz(get_tz(dton)), Sys.timezone())
 })
