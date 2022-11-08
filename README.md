@@ -261,10 +261,10 @@ datetimeoffset_now(c("America/Los_Angeles", "America/New_York",
 
 ```
 ## <datetimeoffset[4]>
-## [1] 2022-11-08T12:48:09.746740838-08:00[America/Los_Angeles]
-## [2] 2022-11-08T15:48:09.746740838-05:00[America/New_York]   
-## [3] 2022-11-08T20:48:09.746740838+00:00[Europe/London]      
-## [4] 2022-11-09T04:48:09.746740838+08:00[Asia/Shanghai]
+## [1] 2022-11-08T13:38:26.012913563-08:00[America/Los_Angeles]
+## [2] 2022-11-08T16:38:26.012913563-05:00[America/New_York]   
+## [3] 2022-11-08T21:38:26.012913563+00:00[Europe/London]      
+## [4] 2022-11-09T05:38:26.012913563+08:00[Asia/Shanghai]
 ```
 
 ### <a name="pdf">Augmenting pdf datetime metadata</a>
@@ -282,7 +282,7 @@ print(creation_date)
 
 ```
 ## <datetimeoffset[1]>
-## [1] 2022-11-08T12:48:09.807081879-08:00[America/Los_Angeles]
+## [1] 2022-11-08T13:38:26.074527469-08:00[America/Los_Angeles]
 ```
 
 ```r
@@ -301,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-08T12:48:09
+## CreationDate: 2022-11-08T13:38:26
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-08T12:48:09
+## ModDate: 2022-11-08T13:38:26
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-08T12:48:09-08:00
+## CreationDate: 2022-11-08T13:38:26-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-08T12:48:15-08:00
+## ModDate: 2022-11-08T13:38:31-08:00
 ```
 
 ## <a name="features">Features</a>
@@ -431,6 +431,7 @@ print(di)
   + `is_datetimeoffset()` and `NA_datetimeoffset_`
   + `mode_tz()` is an S3 method that gets most common time zone for a datetime object
   + `precision_to_int()` converts datetime precisions to an integer
+  + Support for `{base}` datetime extractors `weekdays()`, `months()`, `quarters()`, and `julian()`
 
 ## <a name="clock">Comparison with {clock}</a>
 
