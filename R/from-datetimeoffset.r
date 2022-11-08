@@ -151,11 +151,13 @@ as_iso_year_week_day.datetimeoffset <- function(x) {
 }
 
 #' @rdname from_datetimeoffset
+#' @param start The month to start the fiscal year in.
+#'              See [clock::as_year_quarter_day()].
 #' @importFrom clock as_year_quarter_day
 #' @export
-as_year_quarter_day.datetimeoffset <- function(x) {
+as_year_quarter_day.datetimeoffset <- function(x, ..., start = NULL) {
     ymd <- as_year_month_day.datetimeoffset(x)
-    clock::as_year_quarter_day(ymd)
+    clock::as_year_quarter_day(ymd, start = start)
 }
 
 #' @rdname from_datetimeoffset
@@ -178,6 +180,11 @@ as_naive_time.datetimeoffset <- function(x) {
 #' @importFrom clock as_sys_time
 #' @export
 as_sys_time.datetimeoffset <- function(x) {
+    as_sys_time_dto(x, ambiguous = "error", nonexistent = "error")
+}
+
+# `clock::as_sys_time()` currently doesn't support `...`
+as_sys_time_dto <- function(x, ambiguous = "error", nonexistent = "error") {
     # {clock} won't convert to time point if less precise than day so make missing
     precisions <- precision_to_int(datetime_precision(x))
     is.na(x) <- ifelse(precisions < precision_to_int("day"), TRUE, FALSE)
@@ -185,10 +192,11 @@ as_sys_time.datetimeoffset <- function(x) {
     precision <- datetime_precision(na_omit(x), range = TRUE)[1]
     if (!is.na(precision))
         x <- datetime_narrow(x, precision)
-    purrr::map_vec(x, as_sys_time_helper)
+    purrr::map_vec(x, as_sys_time_helper,
+                   ambiguous = ambiguous, nonexistent = nonexistent)
 }
 
-as_sys_time_helper <- function(x) {
+as_sys_time_helper <- function(x, ambiguous = "error", nonexistent = "error") {
     if (is.na(x))
         return(clock::sys_time_parse(NA_character_))
     if (!is.na(get_hour_offset(x))) {
@@ -201,7 +209,7 @@ as_sys_time_helper <- function(x) {
     } else if (!is.na(get_tz(x))) {
         nt <- as_naive_time.datetimeoffset(x)
         zt <- clock::as_zoned_time(nt, get_tz(x),
-                                   ambiguous = "error", nonexistent = "error")
+                                   ambiguous = ambiguous, nonexistent = nonexistent)
         st <- clock::as_sys_time(zt)
     } else {
         ymd <- as_year_month_day.datetimeoffset(x)
@@ -212,13 +220,18 @@ as_sys_time_helper <- function(x) {
 
 #' @rdname from_datetimeoffset
 #' @importFrom clock as_zoned_time
+#' @param nonexistent What to do when the "clock time" in the new time zone doesn't exist.
+#'                    See [clock::as_zoned_time.clock_naive_time()].
+#' @param ambiguous What to do when the "clock time" in the new time zone is ambiguous.
+#'                  See [clock::as_zoned_time.clock_naive_time()].
 #' @export
-as_zoned_time.datetimeoffset <- function(x, zone = mode_tz(x)) {
+as_zoned_time.datetimeoffset <- function(x, zone = mode_tz(x), ...,
+                                         ambiguous = "error", nonexistent = "error") {
     x <- update_missing_zone(x, tz = zone)
     # {clock} won't convert to time point if less precise than day so make missing
     precisions <- precision_to_int(datetime_precision(x))
     is.na(x) <- ifelse(precisions < precision_to_int("day"), TRUE, FALSE)
-    st <- as_sys_time.datetimeoffset(x)
+    st <- as_sys_time_dto(x, ambiguous = ambiguous, nonexistent = nonexistent)
     clock::as_zoned_time(st, zone)
 }
 

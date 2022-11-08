@@ -246,6 +246,33 @@ test_that("{clock} classes", {
     dto <- as_datetimeoffset(clock::as_zoned_time(clock::as_sys_time(ymd), Sys.timezone()))
     expect_equal(format(dto)[1], c(NA_character_))
     expect_equal(is.na(dto), c(TRUE, FALSE))
+
+    # ambiguous times
+    dts <- c("2020-11-01T01:30:00[America/New_York]", # ambiguous sys time
+             "2020-11-01T01:30:00-05:00",
+             "2020-11-01T01:30:00-04:00")
+    dto <- as_datetimeoffset(dts)
+    expect_error(clock::as_sys_time(dto))
+    expect_equal(format(as_sys_time_dto(dto, ambiguous = "NA")),
+                 c(NA_character_, "2020-11-01T06:30:00", "2020-11-01T05:30:00"))
+    expect_equal(format(as_sys_time_dto(dto, ambiguous = "earliest")),
+                 c("2020-11-01T05:30:00", "2020-11-01T06:30:00", "2020-11-01T05:30:00"))
+    expect_equal(format(as_sys_time_dto(dto, ambiguous = "latest")),
+                 c("2020-11-01T06:30:00", "2020-11-01T06:30:00", "2020-11-01T05:30:00"))
+    expect_error(clock::as_zoned_time(dto))
+    skip_if_not("UTC" %in% OlsonNames())
+    expect_equal(format(as_zoned_time(dto, "UTC", ambiguous = "NA")),
+                 c(NA_character_,
+                   "2020-11-01T06:30:00+00:00[UTC]",
+                   "2020-11-01T05:30:00+00:00[UTC]"))
+    expect_equal(format(as_zoned_time(dto, "UTC", ambiguous = "earliest")),
+                 c("2020-11-01T05:30:00+00:00[UTC]",
+                   "2020-11-01T06:30:00+00:00[UTC]",
+                   "2020-11-01T05:30:00+00:00[UTC]"))
+    expect_equal(format(as_zoned_time(dto, "UTC", ambiguous = "latest")),
+                 c("2020-11-01T06:30:00+00:00[UTC]",
+                   "2020-11-01T06:30:00+00:00[UTC]",
+                   "2020-11-01T05:30:00+00:00[UTC]"))
 })
 
 test_that("as_datetimeoffset.nanotime()", {

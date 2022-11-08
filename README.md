@@ -261,10 +261,10 @@ datetimeoffset_now(c("America/Los_Angeles", "America/New_York",
 
 ```
 ## <datetimeoffset[4]>
-## [1] 2022-11-08T12:01:21.367018535-08:00[America/Los_Angeles]
-## [2] 2022-11-08T15:01:21.367018535-05:00[America/New_York]   
-## [3] 2022-11-08T20:01:21.367018535+00:00[Europe/London]      
-## [4] 2022-11-09T04:01:21.367018535+08:00[Asia/Shanghai]
+## [1] 2022-11-08T12:48:09.746740838-08:00[America/Los_Angeles]
+## [2] 2022-11-08T15:48:09.746740838-05:00[America/New_York]   
+## [3] 2022-11-08T20:48:09.746740838+00:00[Europe/London]      
+## [4] 2022-11-09T04:48:09.746740838+08:00[Asia/Shanghai]
 ```
 
 ### <a name="pdf">Augmenting pdf datetime metadata</a>
@@ -282,7 +282,7 @@ print(creation_date)
 
 ```
 ## <datetimeoffset[1]>
-## [1] 2022-11-08T12:01:21.426774062-08:00[America/Los_Angeles]
+## [1] 2022-11-08T12:48:09.807081879-08:00[America/Los_Angeles]
 ```
 
 ```r
@@ -301,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-08T12:01:21
+## CreationDate: 2022-11-08T12:48:09
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-08T12:01:21
+## ModDate: 2022-11-08T12:48:09
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-08T12:01:21-08:00
+## CreationDate: 2022-11-08T12:48:09-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-08T12:01:26-08:00
+## ModDate: 2022-11-08T12:48:15-08:00
 ```
 
 ## <a name="features">Features</a>
@@ -436,7 +436,8 @@ print(di)
 
 **Note**: Please feel free to [open a pull request to fix any {clock} mis-understandings or statements that are now out-of-date](https://github.com/trevorld/r-datetimeoffset/edit/main/README.Rmd).
 
-`{datetimeoffset}` is most similar to the excellent [{clock}](https://clock.r-lib.org/index.html):
+`{datetimeoffset}` is most similar to the excellent [{clock}](https://clock.r-lib.org/index.html)
+(which `{datetimeoffset}` uses internally):
 
 * Both use [{vctrs}](https://vctrs.r-lib.org/index.html) "record" objects
 * Both support variable precision datetimes
@@ -447,7 +448,7 @@ print(di)
 
 * `{datetimeoffset}` only supports what `{clock}` considers "year-month-day" "calendars".  `{clock}` supports a wider variety of "calendars":
 
-  + `isoyear_week_day()`
+  + `iso_year_week_day()`
   + `year_day()`
   + `year_month_day()`
   + `year_month_weekday()`
@@ -497,7 +498,7 @@ print(di)
                       "2019-01-01 01:00:00.123456",
                       "2019-01-01 01:00:00.3"),
                     tz = "America/New_York")
-  as_datetimeoffset(dts, precision = "microsecond")
+  as_datetimeoffset(dts)
   ```
   
   ```

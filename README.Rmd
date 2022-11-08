@@ -273,7 +273,8 @@ print(di)
 
 **Note**: Please feel free to [open a pull request to fix any {clock} mis-understandings or statements that are now out-of-date](https://github.com/trevorld/r-datetimeoffset/edit/main/README.Rmd).
 
-`{datetimeoffset}` is most similar to the excellent [{clock}](https://clock.r-lib.org/index.html):
+`{datetimeoffset}` is most similar to the excellent [{clock}](https://clock.r-lib.org/index.html)
+(which `{datetimeoffset}` uses internally):
 
 * Both use [{vctrs}](https://vctrs.r-lib.org/index.html) "record" objects
 * Both support variable precision datetimes
@@ -284,7 +285,7 @@ print(di)
 
 * `{datetimeoffset}` only supports what `{clock}` considers "year-month-day" "calendars".  `{clock}` supports a wider variety of "calendars":
 
-  + `isoyear_week_day()`
+  + `iso_year_week_day()`
   + `year_day()`
   + `year_month_day()`
   + `year_month_weekday()`
@@ -318,7 +319,7 @@ print(di)
                       "2019-01-01 01:00:00.123456",
                       "2019-01-01 01:00:00.3"),
                     tz = "America/New_York")
-  as_datetimeoffset(dts, precision = "microsecond")
+  as_datetimeoffset(dts)
   clock::as_zoned_time(dts)
   ```
 

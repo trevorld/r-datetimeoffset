@@ -34,7 +34,7 @@
 
 \method{as_iso_year_week_day}{datetimeoffset}(x)
 
-\method{as_year_quarter_day}{datetimeoffset}(x)
+\method{as_year_quarter_day}{datetimeoffset}(x, ..., start = NULL)
 
 \method{as_year_day}{datetimeoffset}(x)
 
@@ -42,7 +42,13 @@
 
 \method{as_sys_time}{datetimeoffset}(x)
 
-\method{as_zoned_time}{datetimeoffset}(x, zone = mode_tz(x))
+\method{as_zoned_time}{datetimeoffset}(
+  x,
+  zone = mode_tz(x),
+  ...,
+  ambiguous = "error",
+  nonexistent = "error"
+)
 
 \method{as_weekday}{datetimeoffset}(x)
 }
@@ -52,6 +58,15 @@
 \item{...}{Ignored}
 
 \item{tz, zone}{What time zone to assume}
+
+\item{start}{The month to start the fiscal year in.
+See \code{\link[clock:as_year_quarter_day]{clock::as_year_quarter_day()}}.}
+
+\item{ambiguous}{What to do when the "clock time" in the new time zone is ambiguous.
+See \code{\link[clock:as-zoned-time-naive-time]{clock::as_zoned_time.clock_naive_time()}}.}
+
+\item{nonexistent}{What to do when the "clock time" in the new time zone doesn't exist.
+See \code{\link[clock:as-zoned-time-naive-time]{clock::as_zoned_time.clock_naive_time()}}.}
 }
 \description{
 We provide methods to convert \code{\link[=datetimeoffset]{datetimeoffset()}} objects to
