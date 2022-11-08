@@ -26,12 +26,7 @@ as_datetimeoffset(x, ...)
 
 \method{as_datetimeoffset}{default}(x, ...)
 
-\method{as_datetimeoffset}{POSIXt}(
-  x,
-  ...,
-  precision = ifelse(requireNamespace("nanotime", quietly = TRUE), "microsecond",
-    "second")
-)
+\method{as_datetimeoffset}{POSIXt}(x, ...)
 
 \method{as_datetimeoffset}{character}(x, tz = NA_character_, ...)
 
@@ -63,10 +58,6 @@ or something with an \code{\link[=as.POSIXct]{as.POSIXct()}} method.}
 \item{tz}{Time zone to use for the conversion.
 Ignored by \code{as_datetimeoffset.Date()}.
 Generally need not be a single value.}
-
-\item{precision}{What precision to treat the \code{POSIXt} datetime as.
-Either "second" or "microsecond".
-\code{precision = "microsecond"} requires that the suggested package \code{nanotime} is installed.}
 }
 \description{
 \code{as_datetimeoffset()} coerces to \code{\link[=datetimeoffset]{datetimeoffset()}} objects.

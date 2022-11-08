@@ -261,10 +261,10 @@ datetimeoffset_now(c("America/Los_Angeles", "America/New_York",
 
 ```
 ## <datetimeoffset[4]>
-## [1] 2022-11-07T14:39:15.608902043-08:00[America/Los_Angeles]
-## [2] 2022-11-07T17:39:15.608902043-05:00[America/New_York]   
-## [3] 2022-11-07T22:39:15.608902043+00:00[Europe/London]      
-## [4] 2022-11-08T06:39:15.608902043+08:00[Asia/Shanghai]
+## [1] 2022-11-08T12:01:21.367018535-08:00[America/Los_Angeles]
+## [2] 2022-11-08T15:01:21.367018535-05:00[America/New_York]   
+## [3] 2022-11-08T20:01:21.367018535+00:00[Europe/London]      
+## [4] 2022-11-09T04:01:21.367018535+08:00[Asia/Shanghai]
 ```
 
 ### <a name="pdf">Augmenting pdf datetime metadata</a>
@@ -282,7 +282,7 @@ print(creation_date)
 
 ```
 ## <datetimeoffset[1]>
-## [1] 2022-11-07T14:39:15.669771609-08:00[America/Los_Angeles]
+## [1] 2022-11-08T12:01:21.426774062-08:00[America/Los_Angeles]
 ```
 
 ```r
@@ -301,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-07T14:39:15
+## CreationDate: 2022-11-08T12:01:21
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-07T14:39:15
+## ModDate: 2022-11-08T12:01:21
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-07T14:39:15-08:00
+## CreationDate: 2022-11-08T12:01:21-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-07T14:39:21-08:00
+## ModDate: 2022-11-08T12:01:26-08:00
 ```
 
 ## <a name="features">Features</a>
@@ -489,8 +489,7 @@ print(di)
   ## ! All elements of `x` must have the same time zone name. Found different zone names of: 'America/Los_Angeles' and 'America/New_York'.
   ```
 
-* `{datetimeoffset}` can import `POSIXt` objects at a microsecond precision instead of a second precision 
-  (importing `POSIXt` objects at a microsecond precision requires suggested package `{nanotime}`):
+* `{datetimeoffset}` can import `POSIXt` objects at a microsecond precision instead of a second precision:
 
   
   ```r

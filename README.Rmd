@@ -311,8 +311,7 @@ print(di)
   clock::zoned_time_parse_complete(dts)
   ```
 
-* `{datetimeoffset}` can import `POSIXt` objects at a microsecond precision instead of a second precision 
-  (importing `POSIXt` objects at a microsecond precision requires suggested package `{nanotime}`):
+* `{datetimeoffset}` can import `POSIXt` objects at a microsecond precision instead of a second precision:
 
   ```{r microsecond-posixt}
   dts <- as.POSIXct(c("2019-01-01 01:00:00.1", 

@@ -53,18 +53,17 @@ as_datetimeoffset.default <- function(x, ...) {
 }
 
 #' @rdname as_datetimeoffset
-#' @param precision What precision to treat the `POSIXt` datetime as.
-#'        Either "second" or "microsecond".
-#'        `precision = "microsecond"` requires that the suggested package `nanotime` is installed.
 #' @export
-as_datetimeoffset.POSIXt <- function(x, ..., precision = ifelse(requireNamespace("nanotime", quietly = TRUE), "microsecond", "second")) {
-    precision <- match.arg(precision, c("second", "microsecond"))
-    if (precision == "second") {
-        as_datetimeoffset(clock::as_zoned_time(x))
-    } else {
-        assert_suggested("nanotime")
-        as_datetimeoffset.nanotime(nanotime::as.nanotime(x), tz = get_tz(x))
-    }
+as_datetimeoffset.POSIXt <- function(x, ...) {
+    microseconds <- formatC(as.integer(round(1e6 * as.POSIXlt(x)[, "sec"])),
+                            width = 8L, format = "d", flag = "0")
+    ymd <- clock::as_year_month_day(clock::as_naive_time(x))
+    ymd <- clock::set_second(ymd, dto_as_integer(substr(microseconds, 1L, 2L)))
+    ymd <- clock::set_microsecond(ymd, dto_as_integer(substr(microseconds, 3L, 8L)))
+    as_datetimeoffset(clock::as_zoned_time(clock::as_naive_time(ymd),
+                                           zone = clock::date_zone(x),
+                                           ambiguous = list(x, "error"),
+                                           nonexistent = "error"))
 }
 
 #' @rdname as_datetimeoffset
