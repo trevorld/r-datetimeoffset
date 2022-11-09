@@ -13,6 +13,7 @@ Initial features
       minute, second, nanosecond, hour\_offset, minute\_offset, and time zone all of which 
       can be missing except year and can all be accessed by `{clock}` (style) 
       accessor functions.  
+      If suggested `{lubridate}` is installed can also use `{lubridate}` accessors/extractors.
     - Non-missing time zones need not all be the same value 
 
   + Supports lossless import/export of pdfmark datetime strings and a decent subset of 
@@ -98,3 +99,7 @@ Initial features
   + `mode_tz()` is an S3 method that gets most common time zone for a datetime object
   + `precision_to_int()` converts datetime precisions to an integer
   + Support for `{base}` datetime extractors `weekdays()`, `months()`, `quarters()`, and `julian()`
+  + Support for `{lubridate}` datetime extractors `isoyear()`, `epiyear()`, 
+    `quarter()`, `semester()`, `isoweek()`, `epiweek()`,
+    `qday()`, `qday<-()`, `wday()`, `wday<-()`, `yday()`, `yday<-()`,
+    `am()`, `pm()`, `days_in_month()`, `dst()`, and `leap_year()`.

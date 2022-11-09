@@ -28,6 +28,10 @@ test_that("getters", {
     expect_equal(lubridate::tz(dt), "Europe/Paris")
     expect_equal(lubridate::year(dt), 1918L)
     expect_equal(lubridate::month(dt), 11L)
+    expect_equal(as.character(lubridate::month(dt, label = TRUE)),
+                 "Nov")
+    expect_equal(as.character(lubridate::month(dt, label = TRUE, abbr = FALSE)),
+                 "November")
     expect_equal(lubridate::day(dt), 11L)
     expect_equal(lubridate::hour(dt), 11L)
     expect_equal(lubridate::minute(dt), 11L)

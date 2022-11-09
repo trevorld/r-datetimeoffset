@@ -68,7 +68,7 @@ See \code{\link[clock:as-zoned-time-naive-time]{clock::as_zoned_time.clock_naive
 A datetime object.
 }
 \description{
-Setter methods for \code{\link[=datetimeoffset]{datetimeoffset()}} objects
+Setter methods for \code{\link[=datetimeoffset]{datetimeoffset()}} objects.
 }
 \details{
 We implement \code{\link[=datetimeoffset]{datetimeoffset()}} support for the following S3 methods from \code{clock}:

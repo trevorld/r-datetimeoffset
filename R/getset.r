@@ -1,6 +1,6 @@
 #' Get datetime components
 #'
-#' Getter methods for [datetimeoffset()] objects
+#' Getter methods for [datetimeoffset()] objects.
 #'
 #' We implement [datetimeoffset()] support for the following S3 methods from `clock`:
 #'
@@ -58,7 +58,7 @@ NULL
 
 #' Set datetime components
 #'
-#' Setter methods for [datetimeoffset()] objects
+#' Setter methods for [datetimeoffset()] objects.
 #'
 #' We implement [datetimeoffset()] support for the following S3 methods from `clock`:
 #'
@@ -391,6 +391,11 @@ force_tz.datetimeoffset <- function(time, tzone = "", ...) {
     x <- set_month(x, get_month(value))
     x <- set_day(x, get_day(value))
     x
+}
+
+month.datetimeoffset <- function(x, label = FALSE, abbr = TRUE, locale = Sys.getlocale("LC_TIME")) {
+    assert_suggested("lubridate")
+    lubridate::month(get_month(x), label = label, abbr = abbr, locale = locale)
 }
 
 set_helper <- function(x, value, na_set) {

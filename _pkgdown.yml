@@ -28,7 +28,7 @@ reference:
     contents:
       - datetime_narrow.datetimeoffset
       - datetime_precision.datetimeoffset
-  - title: Base datetime extractors
-    desc: "Methods for the base generics for extracting the weekday, month, quarter, or Julian time"
+  - title: Additional datetime extractors
+    desc: "Support for additional base/lubridate datetime extractors"
     contents:
       - weekdays.datetimeoffset

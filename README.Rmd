@@ -269,6 +269,10 @@ print(di)
   + `mode_tz()` is an S3 method that gets most common time zone for a datetime object
   + `precision_to_int()` converts datetime precisions to an integer
   + Support for `{base}` datetime extractors `weekdays()`, `months()`, `quarters()`, and `julian()`
+  + Support for `{lubridate}` datetime extractors `isoyear()`, `epiyear()`, 
+    `quarter()`, `semester()`, `isoweek()`, `epiweek()`,
+    `qday()`, `qday<-()`, `wday()`, `wday<-()`, `yday()`, `yday<-()`,
+    `am()`, `pm()`, `days_in_month()`, `dst()`, and `leap_year()`.
 
 ## <a name="clock">Comparison with {clock}</a>
 

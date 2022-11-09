@@ -1,6 +1,6 @@
 .onLoad <- function(libname, pkgname) {
     vctrs::s3_register("lubridate::year", "datetimeoffset", get_year.datetimeoffset)
-    vctrs::s3_register("lubridate::month", "datetimeoffset", get_month.datetimeoffset)
+    vctrs::s3_register("lubridate::month", "datetimeoffset", month.datetimeoffset)
     vctrs::s3_register("lubridate::mday", "datetimeoffset", get_day.datetimeoffset)
     vctrs::s3_register("lubridate::hour", "datetimeoffset", get_hour.datetimeoffset)
     vctrs::s3_register("lubridate::minute", "datetimeoffset", get_minute.datetimeoffset)
@@ -8,6 +8,10 @@
     vctrs::s3_register("lubridate::tz", "datetimeoffset", get_tz.datetimeoffset)
     vctrs::s3_register("lubridate::date", "datetimeoffset", function(x) as.Date.datetimeoffset(x))
     vctrs::s3_register("lubridate::force_tz", "datetimeoffset", force_tz.datetimeoffset)
+    vctrs::s3_register("lubridate::wday", "datetimeoffset", wday.datetimeoffset)
+    vctrs::s3_register("lubridate::qday", "datetimeoffset", qday.datetimeoffset)
+    vctrs::s3_register("lubridate::yday", "datetimeoffset", yday.datetimeoffset)
+    vctrs::s3_register("stats::update", "datetimeoffset", update.datetimeoffset)
 
     if (requireNamespace("lubridate", quietly = TRUE)) {
         methods::setOldClass("datetimeoffset")
@@ -27,6 +31,8 @@
         methods::setMethod("second<-", "datetimeoffset", function(x, value) set_second.datetimeoffset(x, value))
         methods::setGeneric("date<-", lubridate::"date<-")
         methods::setMethod("date<-", "datetimeoffset", `date<-.datetimeoffset`)
+        methods::setGeneric("qday<-", lubridate::"qday<-")
+        methods::setMethod("qday<-", "datetimeoffset", `qday<-.datetimeoffset`)
     }
 
     if (requireNamespace("nanotime", quietly = TRUE)) {

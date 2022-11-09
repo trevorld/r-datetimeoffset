@@ -71,7 +71,7 @@ get_tz(x)
 The component
 }
 \description{
-Getter methods for \code{\link[=datetimeoffset]{datetimeoffset()}} objects
+Getter methods for \code{\link[=datetimeoffset]{datetimeoffset()}} objects.
 }
 \details{
 We implement \code{\link[=datetimeoffset]{datetimeoffset()}} support for the following S3 methods from \code{clock}:
