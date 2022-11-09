@@ -40,7 +40,7 @@ There is also \code{\link[=datetimeoffset]{datetimeoffset()}} support for the fo
 \itemize{
 \item \code{isoyear()} and \code{epiyear()}
 \item \code{quarter()} and \code{semester()}
-\item \code{isoweek()} and \code{epiweek()}
+\item \code{week()}, \code{isoweek()}, and \code{epiweek()}
 \item \code{wday()} and \verb{wday<-()}
 \item \code{qday()} and \verb{qday<-()}
 \item \code{yday()} and \verb{yday<-()}
@@ -63,6 +63,7 @@ if (require("lubridate")) {
   cat("`epiyear(dto)`: ", epiyear(dto), "\n")
   cat("`semester(dto)`: ", semester(dto), "\n")
   cat("`quarter(dto)`: ", quarter(dto), "\n")
+  cat("`week(dto)`: ", week(dto), "\n")
   cat("`isoweek(dto)`: ", isoweek(dto), "\n")
   cat("`epiweek(dto)`: ", epiweek(dto), "\n")
   cat("`wday(dto)`: ", wday(dto), "\n")

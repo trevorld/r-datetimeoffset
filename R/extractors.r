@@ -13,7 +13,7 @@
 #'
 #' * `isoyear()` and `epiyear()`
 #' * `quarter()` and `semester()`
-#' * `isoweek()` and `epiweek()`
+#' * `week()`, `isoweek()`, and `epiweek()`
 #' * `wday()` and `wday<-()`
 #' * `qday()` and `qday<-()`
 #' * `yday()` and `yday<-()`
@@ -35,6 +35,7 @@
 #'   cat("`epiyear(dto)`: ", epiyear(dto), "\n")
 #'   cat("`semester(dto)`: ", semester(dto), "\n")
 #'   cat("`quarter(dto)`: ", quarter(dto), "\n")
+#'   cat("`week(dto)`: ", week(dto), "\n")
 #'   cat("`isoweek(dto)`: ", isoweek(dto), "\n")
 #'   cat("`epiweek(dto)`: ", epiweek(dto), "\n")
 #'   cat("`wday(dto)`: ", wday(dto), "\n")

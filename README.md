@@ -261,10 +261,10 @@ datetimeoffset_now(c("America/Los_Angeles", "America/New_York",
 
 ```
 ## <datetimeoffset[4]>
-## [1] 2022-11-08T20:37:21.394180366-08:00[America/Los_Angeles]
-## [2] 2022-11-08T23:37:21.394180366-05:00[America/New_York]   
-## [3] 2022-11-09T04:37:21.394180366+00:00[Europe/London]      
-## [4] 2022-11-09T12:37:21.394180366+08:00[Asia/Shanghai]
+## [1] 2022-11-09T09:08:47.261469973-08:00[America/Los_Angeles]
+## [2] 2022-11-09T12:08:47.261469973-05:00[America/New_York]   
+## [3] 2022-11-09T17:08:47.261469973+00:00[Europe/London]      
+## [4] 2022-11-10T01:08:47.261469973+08:00[Asia/Shanghai]
 ```
 
 ### <a name="pdf">Augmenting pdf datetime metadata</a>
@@ -282,7 +282,7 @@ print(creation_date)
 
 ```
 ## <datetimeoffset[1]>
-## [1] 2022-11-08T20:37:21.50452144-08:00[America/Los_Angeles]
+## [1] 2022-11-09T09:08:47.32107688-08:00[America/Los_Angeles]
 ```
 
 ```r
@@ -301,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-08T20:37:21
+## CreationDate: 2022-11-09T09:08:47
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-08T20:37:21
+## ModDate: 2022-11-09T09:08:47
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-08T20:37:21-08:00
+## CreationDate: 2022-11-09T09:08:47-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-08T20:37:27-08:00
+## ModDate: 2022-11-09T09:08:52-08:00
 ```
 
 ## <a name="features">Features</a>
@@ -433,7 +433,7 @@ print(di)
   + `precision_to_int()` converts datetime precisions to an integer
   + Support for `{base}` datetime extractors `weekdays()`, `months()`, `quarters()`, and `julian()`
   + Support for `{lubridate}` datetime extractors `isoyear()`, `epiyear()`, 
-    `quarter()`, `semester()`, `isoweek()`, `epiweek()`,
+    `quarter()`, `semester()`, `week()`, `isoweek()`, `epiweek()`,
     `qday()`, `qday<-()`, `wday()`, `wday<-()`, `yday()`, `yday<-()`,
     `am()`, `pm()`, `days_in_month()`, `dst()`, and `leap_year()`.
 

@@ -14,6 +14,7 @@ test_that("lubridate extractors functions", {
     expect_equal(lubridate::epiyear(dto), c(1969, 2013))
     expect_equal(lubridate::quarter(dto), c(1L, 4L))
     expect_equal(lubridate::semester(dto), c(1L, 2L))
+    expect_equal(lubridate::week(dto), c(1, 47))
     expect_equal(lubridate::isoweek(dto), c(1, 47))
     expect_equal(lubridate::epiweek(dto), c(53, 47))
     expect_equal(lubridate::wday(dto), c(5, 7))

@@ -100,6 +100,6 @@ Initial features
   + `precision_to_int()` converts datetime precisions to an integer
   + Support for `{base}` datetime extractors `weekdays()`, `months()`, `quarters()`, and `julian()`
   + Support for `{lubridate}` datetime extractors `isoyear()`, `epiyear()`, 
-    `quarter()`, `semester()`, `isoweek()`, `epiweek()`,
+    `quarter()`, `semester()`, `week()`, `isoweek()`, `epiweek()`,
     `qday()`, `qday<-()`, `wday()`, `wday<-()`, `yday()`, `yday<-()`,
     `am()`, `pm()`, `days_in_month()`, `dst()`, and `leap_year()`.
