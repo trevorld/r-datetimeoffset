@@ -306,6 +306,3 @@ PRECISION_SECOND <- precision_to_int("second")
 PRECISION_NANOSECOND <- precision_to_int("nanosecond")
 
 update_missing <- function(original, replacement) ifelse(is.na(original), replacement, original)
-update_missing_zone <- function(x, tz = "") {
-    set_tz(x, ifelse(is.na(get_tz(x)) & is.na(get_hour_offset(x)), clean_tz(tz), get_tz(x)))
-}

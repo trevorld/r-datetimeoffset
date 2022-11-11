@@ -77,9 +77,10 @@ as_date.datetimeoffset <- function(x) {
 
 #' @rdname from_datetimeoffset
 #' @export
-as.POSIXct.datetimeoffset <- function(x, tz = mode_tz(x), ...) {
+as.POSIXct.datetimeoffset <- function(x, tz = mode_tz(x), ..., fill = "") {
     x <- datetime_widen.datetimeoffset(x, "nanosecond")
-    zt <- as_zoned_time.datetimeoffset(x, tz)
+    x <- fill_tz(x, fill)
+    zt <- as_zoned_time.datetimeoffset(x)
     as.POSIXct(format(zt, format = "%FT%H:%M:%S%z"),
                tz = tz, format = "%FT%H:%M:%OS%z")
 }
@@ -87,27 +88,23 @@ as.POSIXct.datetimeoffset <- function(x, tz = mode_tz(x), ...) {
 #' @rdname from_datetimeoffset
 #' @importFrom clock as_date_time
 #' @export
-as_date_time.datetimeoffset <- function(x, zone = mode_tz(x), ...) {
-    as.POSIXct.datetimeoffset(x, tz = zone, ...)
+as_date_time.datetimeoffset <- function(x, zone = mode_tz(x), ..., fill = NA_character_) {
+    as.POSIXct.datetimeoffset(x, tz = zone, ..., fill = fill)
 }
 
 #' @rdname from_datetimeoffset
 #' @export
-as.POSIXlt.datetimeoffset <- function(x, tz = mode_tz(x), ...) {
+as.POSIXlt.datetimeoffset <- function(x, tz = mode_tz(x), ..., fill = "") {
     x <- datetime_widen.datetimeoffset(x, "nanosecond")
-    zt <- as_zoned_time.datetimeoffset(x, tz)
+    x <- fill_tz(x, fill)
+    zt <- as_zoned_time.datetimeoffset(x)
     as.POSIXlt(format(zt, format = "%FT%H:%M:%S%z"),
                tz = tz, format = "%FT%H:%M:%OS%z")
 }
 
-as.nanotime.datetimeoffset <- function(from, tz = "") {
-    n <- max(length(from), length(tz))
-    if (length(from) < n)
-        from <- rep(from, length.out = n)
-    if (length(tz) < n)
-        tz <- rep(tz, length.out = n)
+as.nanotime.datetimeoffset <- function(from, fill = NA_character_) {
     x <- datetime_widen(from, "nanosecond")
-    x <- update_missing_zone(x, tz = tz)
+    x <- fill_tz(x, fill)
     s <- ifelse(is.na(from), NA_character_, format_iso8601(x))
     nanotime::as.nanotime(s)
 }
@@ -176,31 +173,35 @@ as_naive_time.datetimeoffset <- function(x) {
     clock::as_naive_time(ymd)
 }
 
-#' @rdname from_datetimeoffset
-#' @importFrom clock as_sys_time
-#' @export
-as_sys_time.datetimeoffset <- function(x) {
-    as_sys_time_dto(x, ambiguous = "error", nonexistent = "error")
-}
 
-# `clock::as_sys_time()` currently doesn't support `...`
-as_sys_time_dto <- function(x, ambiguous = "error", nonexistent = "error") {
+as_sys_time_dto <- function(x, ...,
+                            ambiguous = "error",
+                            nonexistent = "error",
+                            fill = NA_character_) {
     # {clock} won't convert to time point if less precise than day so make missing
     precisions <- precision_to_int(datetime_precision(x))
     is.na(x) <- ifelse(precisions < precision_to_int("day"), TRUE, FALSE)
-    # {clock} doesn't allow mixed precision so standardize to narrowest precision
-    precision <- datetime_precision(na_omit(x), range = TRUE)[1]
+    x <- fill_tz(x, fill)
+    # {clock} doesn't allow mixed precision so standardize to widest precision
+    precision <- datetime_precision(na_omit(x), range = TRUE)[2]
     if (!is.na(precision))
-        x <- datetime_narrow(x, precision)
+        x <- datetime_widen(x, precision)
     purrr::map_vec(x, as_sys_time_helper,
                    ambiguous = ambiguous, nonexistent = nonexistent)
 }
 
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_sys_time
+#' @export
+as_sys_time.datetimeoffset <- function(x) {
+    # `clock::as_sys_time()` currently doesn't support `...`
+    as_sys_time_dto(x)
+}
+
 as_sys_time_helper <- function(x, ambiguous = "error", nonexistent = "error") {
-    if (is.na(x))
-        return(clock::sys_time_parse(NA_character_))
     if (!is.na(get_hour_offset(x))) {
         ft <- datetime_widen(x, "nanosecond")
+        ft <- set_tz(ft, NA_character_)
         if (is.na(get_minute_offset(x)))
             ft <- set_minute_offset(ft, 0L)
         st <- clock::sys_time_parse(format(ft),
@@ -212,8 +213,7 @@ as_sys_time_helper <- function(x, ambiguous = "error", nonexistent = "error") {
                                    ambiguous = ambiguous, nonexistent = nonexistent)
         st <- clock::as_sys_time(zt)
     } else {
-        ymd <- as_year_month_day.datetimeoffset(x)
-        st <- clock::as_sys_time(ymd)
+        return(clock::sys_time_parse(NA_character_))
     }
     clock::time_point_floor(st, datetime_precision(x))
 }
@@ -224,13 +224,16 @@ as_sys_time_helper <- function(x, ambiguous = "error", nonexistent = "error") {
 #'                    See [clock::as_zoned_time.clock_naive_time()].
 #' @param ambiguous What to do when the "clock time" in the new time zone is ambiguous.
 #'                  See [clock::as_zoned_time.clock_naive_time()].
+#' @param fill If timezone and UTC offset info is missing what
+#'             timezone to assume.  See [fill_tz()].
 #' @export
 as_zoned_time.datetimeoffset <- function(x, zone = mode_tz(x), ...,
-                                         ambiguous = "error", nonexistent = "error") {
-    x <- update_missing_zone(x, tz = zone)
+                                         ambiguous = "error", nonexistent = "error",
+                                         fill = NA_character_) {
     # {clock} won't convert to time point if less precise than day so make missing
     precisions <- precision_to_int(datetime_precision(x))
     is.na(x) <- ifelse(precisions < precision_to_int("day"), TRUE, FALSE)
+    x <- fill_tz(x, fill)
     st <- as_sys_time_dto(x, ambiguous = ambiguous, nonexistent = nonexistent)
     clock::as_zoned_time(st, zone)
 }

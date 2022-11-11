@@ -22,11 +22,11 @@
 
 \method{as_date}{datetimeoffset}(x)
 
-\method{as.POSIXct}{datetimeoffset}(x, tz = mode_tz(x), ...)
+\method{as.POSIXct}{datetimeoffset}(x, tz = mode_tz(x), ..., fill = "")
 
-\method{as_date_time}{datetimeoffset}(x, zone = mode_tz(x), ...)
+\method{as_date_time}{datetimeoffset}(x, zone = mode_tz(x), ..., fill = NA_character_)
 
-\method{as.POSIXlt}{datetimeoffset}(x, tz = mode_tz(x), ...)
+\method{as.POSIXlt}{datetimeoffset}(x, tz = mode_tz(x), ..., fill = "")
 
 \method{as_year_month_day}{datetimeoffset}(x)
 
@@ -47,7 +47,8 @@
   zone = mode_tz(x),
   ...,
   ambiguous = "error",
-  nonexistent = "error"
+  nonexistent = "error",
+  fill = NA_character_
 )
 
 \method{as_weekday}{datetimeoffset}(x)
@@ -58,6 +59,9 @@
 \item{...}{Ignored}
 
 \item{tz, zone}{What time zone to assume}
+
+\item{fill}{If timezone and UTC offset info is missing what
+timezone to assume.  See \code{\link[=fill_tz]{fill_tz()}}.}
 
 \item{start}{The month to start the fiscal year in.
 See \code{\link[clock:as_year_quarter_day]{clock::as_year_quarter_day()}}.}

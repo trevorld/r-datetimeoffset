@@ -261,10 +261,10 @@ datetimeoffset_now(c("America/Los_Angeles", "America/New_York",
 
 ```
 ## <datetimeoffset[4]>
-## [1] 2022-11-09T09:08:47.261469973-08:00[America/Los_Angeles]
-## [2] 2022-11-09T12:08:47.261469973-05:00[America/New_York]   
-## [3] 2022-11-09T17:08:47.261469973+00:00[Europe/London]      
-## [4] 2022-11-10T01:08:47.261469973+08:00[Asia/Shanghai]
+## [1] 2022-11-10T17:42:15.078115171-08:00[America/Los_Angeles]
+## [2] 2022-11-10T20:42:15.078115171-05:00[America/New_York]   
+## [3] 2022-11-11T01:42:15.078115171+00:00[Europe/London]      
+## [4] 2022-11-11T09:42:15.078115171+08:00[Asia/Shanghai]
 ```
 
 ### <a name="pdf">Augmenting pdf datetime metadata</a>
@@ -282,7 +282,7 @@ print(creation_date)
 
 ```
 ## <datetimeoffset[1]>
-## [1] 2022-11-09T09:08:47.32107688-08:00[America/Los_Angeles]
+## [1] 2022-11-10T17:42:15.185484094-08:00[America/Los_Angeles]
 ```
 
 ```r
@@ -301,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-09T09:08:47
+## CreationDate: 2022-11-10T17:42:15
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-09T09:08:47
+## ModDate: 2022-11-10T17:42:15
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-09T09:08:47-08:00
+## CreationDate: 2022-11-10T17:42:15-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-09T09:08:52-08:00
+## ModDate: 2022-11-10T17:42:20-08:00
 ```
 
 ## <a name="features">Features</a>
@@ -364,7 +364,7 @@ print(di)
   + `POSIXct()` objects
   + `POSIXlt()` objects
   + `nanotime()` objects
-  + `{clock}` calendars and times
+  + five `{clock}` calendars and three `{clock}` times
   + Any other R datetime objects with an `as.POSIXct()` method
 
 * Support for formatting output datetime strings:
@@ -389,7 +389,11 @@ print(di)
   + `as.POSIXct()` and `as_date_time()` converts the datetime to a `base::POSIXct()` object
   + `as.POSIXlt()` converts the datetime to a `base::POSIXlt()` object
   + `as.nanotime()` converts the datetime to a `nanotime::nanotime()` object
-  + `{clock}` calendars and times
+  + `{clock}` calendars, times, and weekdays:
+
+    - `as_iso_year_week_day()`, `as_year_day()`, `as_year_month_day()`, `as_year_month_weekday()`, `as_year_quarter_day()`
+    - `as_naive_time()`, `as_sys_time()`, `as_zoned_time()`
+    - `as_weekday()`
 
 * Support for several accessor S3 methods from `{clock}`
 
@@ -429,6 +433,7 @@ print(di)
 
   + `datetimeoffset_now()` returns the current time in the corresponding time zone(s).
   + `is_datetimeoffset()` and `NA_datetimeoffset_`
+  + `fill_tz()` and `fill_offsets()` fill in missing time zones and missing UTC offsets respectively.
   + `mode_tz()` is an S3 method that gets most common time zone for a datetime object
   + `precision_to_int()` converts datetime precisions to an integer
   + Support for `{base}` datetime extractors `weekdays()`, `months()`, `quarters()`, and `julian()`
@@ -467,7 +472,7 @@ print(di)
   + `{clock}` will often make you explicitly make casting decisions if necessary to avoid any possibly ambiguous datetimes or else throw an error
   + More explicit control over the expected format of input strings
 
-* `{clock}` is a lower-level library with lots of C++ code.  Will likely process large amounts of data faster.
+* `{clock}` is a lower-level library with lots of C++ code.  Will likely process large amounts of data faster with a lower memory overhead.
 
 ### <a name="datetimeoffset-advantages">Things {datetimeoffset} can do that {clock} can't do</a>
 

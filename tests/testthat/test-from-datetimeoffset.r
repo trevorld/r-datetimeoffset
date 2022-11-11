@@ -7,15 +7,13 @@ test_that("as.Date()", {
 
 test_that("as.nanotime()", {
     skip_if_not_installed("nanotime")
-    expect_equal(as.nanotime(as_datetimeoffset("2020-03-23")),
-                 as.nanotime("2020-03-23T00:00:00Z"))
-    expect_equal(as.nanotime(as_datetimeoffset(c("2020-03-23T04:04:04", "2020-03-23T04:04:04")), tz = "GMT"),
-                 as.nanotime(c("2020-03-23T04:04:04Z", "2020-03-23T04:04:04Z")))
-    skip_if_not(all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames()))
-    expect_equal(as.nanotime(as_datetimeoffset("2020-03-23T04:04:04"),
-                             tz = c("America/Los_Angeles", "America/New_York")),
-                 as.nanotime(c("2020-03-23T11:04:04Z", "2020-03-23T08:04:04Z")))
     skip_if_not_installed("RcppCCTZ", "0.2.12") # fixes bug with `as.nanotime(NA_character_)`
+    expect_equal(as.nanotime(as_datetimeoffset("2020-03-23Z", "2020-03-23")),
+                 as.nanotime("2020-03-23T00:00:00Z", NA_character_))
+    skip_if_not(all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames()))
+    expect_equal(as.nanotime(as_datetimeoffset("2020-03-23T04:04:04",
+                             tz = c("America/Los_Angeles", "America/New_York"))),
+                 as.nanotime(c("2020-03-23T11:04:04Z", "2020-03-23T08:04:04Z")))
     expect_equal(as.nanotime(as_datetimeoffset(c("2020-03-23T04:04:04Z", NA_character_))),
                  as.nanotime(c("2020-03-23T04:04:04Z", NA_character_)))
 })
@@ -133,21 +131,22 @@ test_that("clock classes", {
                                "2000-01-02T03:04:05.006-02",
                                "2000-01-02T03:04:05.006-02:00",
                                "", "1984"))
-    expect_equal(format(as_sys_time(dts[1])),  "2000-01-02")
-    expect_equal(format(as_sys_time(dts[2])),  "2000-01-02T03")
-    expect_equal(format(as_sys_time(dts[3])),  "2000-01-02T11")
-    expect_equal(format(as_sys_time(dts[4])),  "2000-01-02T03:04")
-    expect_equal(format(as_sys_time(dts[5])),  "2000-01-02T05:04")
-    expect_equal(format(as_sys_time(dts[6])),  "2000-01-02T05:04")
-    expect_equal(format(as_sys_time(dts[7])),  "2000-01-02T03:04:05")
-    expect_equal(format(as_sys_time(dts[8])),  "2000-01-02T05:04:05")
-    expect_equal(format(as_sys_time(dts[9])),  "2000-01-02T05:04:05")
-    expect_equal(format(as_sys_time(dts[10])), "2000-01-02T11:04:05.006000000")
-    expect_equal(format(as_sys_time(dts[11])), "2000-01-02T05:04:05.006000000")
-    expect_equal(format(as_sys_time(dts[12])), "2000-01-02T05:04:05.006000000")
-    expect_equal(is.na(as_sys_time(dts[13:14])), c(TRUE, TRUE))
+    dts <- fill_tz(dts, "GMT")
+    expect_equal(format(clock::as_sys_time(dts[1])),  "2000-01-02")
+    expect_equal(format(clock::as_sys_time(dts[2])),  "2000-01-02T03")
+    expect_equal(format(clock::as_sys_time(dts[3])),  "2000-01-02T11")
+    expect_equal(format(clock::as_sys_time(dts[4])),  "2000-01-02T03:04")
+    expect_equal(format(clock::as_sys_time(dts[5])),  "2000-01-02T05:04")
+    expect_equal(format(clock::as_sys_time(dts[6])),  "2000-01-02T05:04")
+    expect_equal(format(clock::as_sys_time(dts[7])),  "2000-01-02T03:04:05")
+    expect_equal(format(clock::as_sys_time(dts[8])),  "2000-01-02T05:04:05")
+    expect_equal(format(clock::as_sys_time(dts[9])),  "2000-01-02T05:04:05")
+    expect_equal(format(clock::as_sys_time(dts[10])), "2000-01-02T11:04:05.006000000")
+    expect_equal(format(clock::as_sys_time(dts[11])), "2000-01-02T05:04:05.006000000")
+    expect_equal(format(clock::as_sys_time(dts[12])), "2000-01-02T05:04:05.006000000")
+    expect_equal(is.na(clock::as_sys_time(dts[13:14])), c(TRUE, TRUE))
 
-    st <- as_sys_time(dts[3])
+    st <- clock::as_sys_time(dts[3])
     expect_equal(format(as_datetimeoffset(st)), "2000-01-02T11Z")
 
     expect_equal(format(as_zoned_time(dts[3])),

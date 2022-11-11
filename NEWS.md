@@ -31,7 +31,7 @@ Initial features
   + `POSIXct()` objects
   + `POSIXlt()` objects
   + `nanotime()` objects
-  + `{clock}` calendars and times
+  + five `{clock}` calendars and three `{clock}` times
   + Any other datetime objects with an `as.POSIXct()` method
 
 * Support for formatting output strings:
@@ -56,7 +56,11 @@ Initial features
   + `as.POSIXct()` and `as_date_time()` converts the datetime to a `base::POSIXct()` object
   + `as.POSIXlt()` converts the datetime to a `base::POSIXlt()` object
   + `as.nanotime()` converts the datetime to a `nanotime::nanotime()` object
-  + `{clock}` calendars and times
+  + `{clock}` calendars, times, and weekdays:
+
+    - `as_iso_year_week_day()`, `as_year_day()`, `as_year_month_day()`, `as_year_month_weekday()`, `as_year_quarter_day()`
+    - `as_naive_time()`, `as_sys_time()`, `as_zoned_time()`
+    - `as_weekday()`
 
 * Support for several accessor S3 methods from `{clock}`
 
@@ -96,6 +100,7 @@ Initial features
 
   + `datetimeoffset_now()` returns the current time in the corresponding time zone(s).
   + `is_datetimeoffset()` and `NA_datetimeoffset_`
+  + `fill_tz()` and `fill_offsets()` fill in missing time zones and missing UTC offsets respectively.
   + `mode_tz()` is an S3 method that gets most common time zone for a datetime object
   + `precision_to_int()` converts datetime precisions to an integer
   + Support for `{base}` datetime extractors `weekdays()`, `months()`, `quarters()`, and `julian()`

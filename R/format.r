@@ -145,9 +145,13 @@ format_pdfmark <- function(x) {
 }
 
 #' @rdname format
+#' @inheritParams as_sys_time.datetimeoffset
 #' @export
-format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = get_tz(x), usetz = FALSE) {
+format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = get_tz(x),
+                            usetz = FALSE, fill = mode_tz(x)) {
     tz <- clean_tz(tz, na = Sys.timezone())
+    fill <- clean_tz(fill, na = NA_character_)
+    x <- fill_tz(x, fill)
     x <- as.POSIXct(x)
     df <- data.frame(x = x, format = format, tz = tz, usetz = usetz, stringsAsFactors = FALSE)
     purrr::pmap_chr(df, strftime)
@@ -155,10 +159,10 @@ format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = get_tz(x), use
 
 #' @rdname format
 #' @export
-format_nanotime <- function(x, format = "%Y-%m-%dT%H:%M:%E9S%Ez", tz = get_tz(x)) {
+format_nanotime <- function(x, format = "%Y-%m-%dT%H:%M:%E9S%Ez", tz = get_tz(x), fill = "") {
     assert_suggested("nanotime")
     tz <- clean_tz(tz, na = Sys.timezone())
-    x <- nanotime::as.nanotime(x)
+    x <- as.nanotime.datetimeoffset(x, fill = fill)
     df <- data.frame(x = x, format = format, tz = tz, stringsAsFactors = FALSE)
     purrr::pmap_chr(df, base::format)
 }
@@ -215,8 +219,7 @@ update_nas <- function(x, pdfmark = FALSE) {
 }
 
 as_ymd_hms_str <- function(x, ...) {
-    x <- set_minute(x, update_missing(get_minute(x), 0L))
-    x <- set_second(x, update_missing(get_second(x), 0L))
+    x <- datetime_cast(x, "second")
 
     year_str <- my_format(field(x, "year"), width = 4L)
     month_str <- my_format(field(x, "month"), prefix = "-")
@@ -262,16 +265,15 @@ my_format_tz <- function(x, sep = ":", no_zulu = FALSE, edtf = FALSE, add_tz = F
     id_tz <- which(!is.na(tz) & !is_utc(tz))
     if (length(id_tz) > 0L) {
         tz_id <- tz[id_tz]
-        df <- data.frame(x = as_ymd_hms_str(x[id_tz]), tz = tz_id,
-                         stringsAsFactors = FALSE)
-        offsets <- purrr::pmap_chr(df, function(x, tz) {
-                                       dt <- clock::naive_time_parse(x)
-                                       dt <- clock::as_zoned_time(dt, tz,
-                                                                  ambiguous = "NA", nonexistent = "error")
-                                       format(dt, format = "%z")
-                                   })
-        s_offsets <- paste0(substr(offsets, 1, 3), sep, substr(offsets, 4, 5))
-        s_offsets <- ifelse(is.na(offsets), s[is.na(offsets)], s_offsets)
+
+        x[id_tz] <- fill_offsets(x[id_tz])
+        hour_offset <- field(x[id_tz], "hour_offset")
+        minute_offset <- field(x[id_tz], "minute_offset")
+        hos <- my_format(hour_offset, width = 3L, flag = "0+")
+        mos <- my_format(minute_offset, prefix = sep)
+
+        s_offsets <- paste0(hos, mos)
+        s_offsets <- ifelse(is.na(hour_offset), s[is.na(hour_offset)], s_offsets)
         if (add_tz) {
             s_offsets <- paste0(s_offsets, "[", tz_id, "]")
         }

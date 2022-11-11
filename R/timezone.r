@@ -52,6 +52,75 @@ mode_tz.default <- function(x, ...) {
     ifelse(tz == "", Sys.timezone(), tz)
 }
 
+#' Fill in missing time zones and/or UTC offsets
+#'
+#' `fill_tz()` fills in missing time zones.
+#' `fill_offsets()` fills in missing UTC offsets.
+#'
+#' @param x A datetime object
+#' @param tz Timezone used to fill in missing time zones
+#' @examples
+#' dts <- as_datetimeoffset(c("2020-01-01T01:01:01", "2020-01-01T01:01:01Z"))
+#' fill_tz(dts, "UTC")
+#' fill_tz(dts, Sys.timezone())
+#' clock::as_sys_time(dts)
+#' clock::as_sys_time(fill_tz(dts, "UTC"))
+#' clock::as_zoned_time(dts)
+#' clock::as_zoned_time(fill_tz(dts, ""))
+#'
+#' if ("America/New_York" %in% OlsonNames()) {
+#'   get_offsets <- function(x) {
+#'     paste(formatC(get_hour_offset(x), width = 3, format = "d", flag = "+0"),
+#'           formatC(get_minute_offset(x), width = 2, format = "d", flag = "0"),
+#'           sep = ":")
+#'   }
+#'   # non-ambiguous UTC offsets
+#'   dt <- as_datetimeoffset("2020-11-01T12:30:00[America/New_York]")
+#'   cat("unfilled: ", get_offsets(dt), "\n")
+#'   dt <- fill_offsets(dt)
+#'   cat("filled: ", get_offsets(dt), "\n")
+#'
+#'   # ambiguous UTC offsets due to DST
+#'   dt0 <- as_datetimeoffset("2020-11-01T01:30:00[America/New_York]")
+#'   dt <- fill_offsets(dt0)
+#'   cat('`ambiguous = "NA"` (default): ', get_offsets(dt), "\n")
+#'   dt <- fill_offsets(dt0, ambiguous = "earliest")
+#'   cat('`ambiguous = "earliest"`: ', get_offsets(dt), "\n")
+#'   dt <- fill_offsets(dt0, ambiguous = "latest")
+#'   cat('`ambiguos = "latest"`: ', get_offsets(dt), "\n")
+#' }
+#' @return A datetime object
+#' @export
+fill_tz <- function(x, tz = "") {
+    set_tz(x, ifelse(is.na(get_tz(x)) & is.na(get_hour_offset(x)), clean_tz(tz), get_tz(x)))
+}
+
+#' @rdname fill_tz
+#' @inheritParams as_sys_time.datetimeoffset
+#' @export
+fill_offsets <- function(x, ambiguous = "NA") {
+    # Fill missing minute offset to zero if hour offset is not missing
+    x <- set_minute_offset(x, ifelse(!is.na(get_hour_offset(x)) & !is.na(get_minute_offset(x)),
+                                     0L,
+                                     get_minute_offset(x)))
+
+    tz <- get_tz(x)
+    id_tz <- which(!is.na(tz) & is.na(get_hour_offset(x)))
+    if (length(id_tz) > 0L) {
+        df <- data.frame(x = as_ymd_hms_str(x[id_tz]), tz = tz[id_tz],
+                         stringsAsFactors = FALSE)
+        offsets <- purrr::pmap_chr(df, function(x, tz) {
+                                       dt <- clock::naive_time_parse(x)
+                                       dt <- clock::as_zoned_time(dt, tz,
+                                                                  ambiguous = ambiguous, nonexistent = "error")
+                                       format(dt, format = "%z")
+                                   })
+        x[id_tz] <- set_hour_offset(x[id_tz], as.integer(substr(offsets, 1, 3)))
+        x[id_tz] <- set_minute_offset(x[id_tz], as.integer(substr(offsets, 4, 5)))
+    }
+    x
+}
+
 clean_tz <- function(tz, na = NA_character_) {
     tz <- as.character(tz)
     if (isTRUE(any(tz == "")))

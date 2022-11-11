@@ -20,10 +20,16 @@ format_strftime(
   x,
   format = "\%Y-\%m-\%d \%H:\%M:\%S",
   tz = get_tz(x),
-  usetz = FALSE
+  usetz = FALSE,
+  fill = mode_tz(x)
 )
 
-format_nanotime(x, format = "\%Y-\%m-\%dT\%H:\%M:\%E9S\%Ez", tz = get_tz(x))
+format_nanotime(
+  x,
+  format = "\%Y-\%m-\%dT\%H:\%M:\%E9S\%Ez",
+  tz = get_tz(x),
+  fill = ""
+)
 
 format_edtf(x, offsets = TRUE, precision = NULL, usetz = FALSE, ...)
 }
@@ -46,6 +52,9 @@ For \code{format_nanotime()} see \url{https://github.com/google/cctz/blob/6e09ce
 Can be a length greater than one.}
 
 \item{usetz}{Include the time zone in the formatting}
+
+\item{fill}{If timezone and UTC offset info is missing what
+timezone to assume.  See \code{\link[=fill_tz]{fill_tz()}}.}
 }
 \value{
 A character vector

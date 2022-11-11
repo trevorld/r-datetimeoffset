@@ -22,6 +22,7 @@ reference:
   - title: "Time zone utilities"
     desc: "Find most common time zone"
     contents:
+      - fill_tz
       - mode_tz
   - title: 'Get/set date time "precision"'
     desc: 'Get/set date time "precision"'
