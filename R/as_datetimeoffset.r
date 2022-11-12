@@ -140,8 +140,9 @@ as_datetimeoffset.clock_naive_time <- function(x, ...) {
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.clock_sys_time <- function(x, ...) {
-    set_tz(as_datetimeoffset(format(x)),
-           ifelse(is.na(x), NA_character_, "GMT"))
+    s <- paste0(format(x), "Z")
+    is.na(s) <- is.na(x)
+    as_datetimeoffset(s)
 }
 
 #' @rdname as_datetimeoffset

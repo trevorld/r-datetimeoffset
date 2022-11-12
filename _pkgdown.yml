@@ -25,6 +25,7 @@ reference:
       - fill_tz
       - mode_tz
       - datetime_at_tz
+      - get_utc_offsets
   - title: 'Get/set date time "precision"'
     desc: 'Get/set date time "precision"'
     contents:

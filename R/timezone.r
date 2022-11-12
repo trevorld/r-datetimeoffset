@@ -52,10 +52,62 @@ mode_tz.default <- function(x, ...) {
     ifelse(tz == "", Sys.timezone(), tz)
 }
 
+#' Get/set UTC offset strings
+#'
+#' `get_utc_offsets()` and `set_utc_offsets()` gets/sets UTC offset strings
+#' @param x A [datetimeoffset()] object
+#' @param sep Separator between hour and minute offsets.  Either ":" or "".
+#' @param value Replace UTC offset string
+#' @name getset_utc_offsets
+#' @return `get_utc_offsets()` returns a character string of UTC offset info.
+#'         `set_utc_offsets()` returns a datetime (whose UTC offset info has been set).
+#' @seealso [get_hour_offset()], [set_hour_offset()], [get_minute_offset()], and [set_minute_offset()]
+#'          allow getting/setting the separate individual hour/minute offset components with integers.
+#'          [fill_utc_offsets()] fills any missing UTC offsets using non-missing time zones.
+#' @examples
+#'   dt <- as_datetimeoffset("2020-01-01T01:01")
+#'   get_utc_offsets(dt)
+#'   dt <- set_utc_offsets(dt, "-07:00")
+#'   get_utc_offsets(dt)
+#'   dt <- set_utc_offsets(dt, "+0800")
+#'   get_utc_offsets(dt)
+#'   dt <- set_utc_offsets(dt, "+00")
+#'   get_utc_offsets(dt)
+#'   dt <- set_utc_offsets(dt, NA_character_)
+#'   get_utc_offsets(dt)
+#' @export
+get_utc_offsets <- function(x, sep = ":") {
+    stopifnot(sep %in% c(":", ""))
+    ho <- my_format(get_hour_offset(x), width = 3, flag = "+0")
+    mo <- my_format(get_minute_offset(x), prefix = sep)
+    s <- paste0(ho, mo)
+    is.na(s) <- is.na(get_hour_offset(x))
+    s
+}
+
+#' @rdname getset_utc_offsets
+#' @export
+set_utc_offsets <- function(x, value) {
+    stopifnot(is.character(value))
+    stopifnot(all(na_omit(nchar(value)) %in% c(3L, 5L, 6L)))
+    ho <- purrr::map_int(value, function(v) {
+        dto_as_integer(substr(v, 1, 3))
+    })
+    mo <- purrr::map_int(value, function(v) {
+        if (isTRUE(nchar(v) > 3L))
+            dto_as_integer(substr(v, nchar(v) - 1L, nchar(v)))
+        else
+            NA_integer_
+    })
+    x <- set_hour_offset(x, ho)
+    x <- set_minute_offset(x, mo)
+    x
+}
+
 #' Fill in missing time zones and/or UTC offsets
 #'
 #' `fill_tz()` fills in missing time zones.
-#' `fill_offsets()` fills in missing UTC offsets.
+#' `fill_utc_offsets()` fills in missing UTC offsets.
 #'
 #' @param x A datetime object
 #' @param tz Timezone used to fill in missing time zones
@@ -69,25 +121,20 @@ mode_tz.default <- function(x, ...) {
 #' clock::as_zoned_time(fill_tz(dts, ""))
 #'
 #' if ("America/New_York" %in% OlsonNames()) {
-#'   get_offsets <- function(x) {
-#'     paste(formatC(get_hour_offset(x), width = 3, format = "d", flag = "+0"),
-#'           formatC(get_minute_offset(x), width = 2, format = "d", flag = "0"),
-#'           sep = ":")
-#'   }
 #'   # non-ambiguous UTC offsets
 #'   dt <- as_datetimeoffset("2020-11-01T12:30:00[America/New_York]")
-#'   cat("unfilled: ", get_offsets(dt), "\n")
-#'   dt <- fill_offsets(dt)
-#'   cat("filled: ", get_offsets(dt), "\n")
+#'   cat("unfilled: ", get_utc_offsets(dt), "\n")
+#'   dt <- fill_utc_offsets(dt)
+#'   cat("filled: ", get_utc_offsets(dt), "\n")
 #'
 #'   # ambiguous UTC offsets due to DST
 #'   dt0 <- as_datetimeoffset("2020-11-01T01:30:00[America/New_York]")
-#'   dt <- fill_offsets(dt0)
-#'   cat('`ambiguous = "NA"` (default): ', get_offsets(dt), "\n")
-#'   dt <- fill_offsets(dt0, ambiguous = "earliest")
-#'   cat('`ambiguous = "earliest"`: ', get_offsets(dt), "\n")
-#'   dt <- fill_offsets(dt0, ambiguous = "latest")
-#'   cat('`ambiguos = "latest"`: ', get_offsets(dt), "\n")
+#'   dt <- fill_utc_offsets(dt0)
+#'   cat('`ambiguous = "NA"` (default): ', get_utc_offsets(dt), "\n")
+#'   dt <- fill_utc_offsets(dt0, ambiguous = "earliest")
+#'   cat('`ambiguous = "earliest"`: ', get_utc_offsets(dt), "\n")
+#'   dt <- fill_utc_offsets(dt0, ambiguous = "latest")
+#'   cat('`ambiguos = "latest"`: ', get_utc_offsets(dt), "\n")
 #' }
 #' @return A datetime object
 #' @export
@@ -98,7 +145,7 @@ fill_tz <- function(x, tz = "") {
 #' @rdname fill_tz
 #' @inheritParams as_sys_time.datetimeoffset
 #' @export
-fill_offsets <- function(x, ambiguous = "NA") {
+fill_utc_offsets <- function(x, ambiguous = "NA") {
     # Fill missing minute offset to zero if hour offset is not missing
     x <- set_minute_offset(x, ifelse(!is.na(get_hour_offset(x)) & !is.na(get_minute_offset(x)),
                                      0L,

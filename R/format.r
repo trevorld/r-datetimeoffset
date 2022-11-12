@@ -266,7 +266,7 @@ my_format_tz <- function(x, sep = ":", no_zulu = FALSE, edtf = FALSE, add_tz = F
     if (length(id_tz) > 0L) {
         tz_id <- tz[id_tz]
 
-        x[id_tz] <- fill_offsets(x[id_tz])
+        x[id_tz] <- fill_utc_offsets(x[id_tz])
         hour_offset <- field(x[id_tz], "hour_offset")
         minute_offset <- field(x[id_tz], "minute_offset")
         hos <- my_format(hour_offset, width = 3L, flag = "0+")

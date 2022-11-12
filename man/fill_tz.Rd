@@ -2,12 +2,12 @@
 % Please edit documentation in R/timezone.r
 \name{fill_tz}
 \alias{fill_tz}
-\alias{fill_offsets}
+\alias{fill_utc_offsets}
 \title{Fill in missing time zones and/or UTC offsets}
 \usage{
 fill_tz(x, tz = "")
 
-fill_offsets(x, ambiguous = "NA")
+fill_utc_offsets(x, ambiguous = "NA")
 }
 \arguments{
 \item{x}{A datetime object}
@@ -22,7 +22,7 @@ A datetime object
 }
 \description{
 \code{fill_tz()} fills in missing time zones.
-\code{fill_offsets()} fills in missing UTC offsets.
+\code{fill_utc_offsets()} fills in missing UTC offsets.
 }
 \examples{
 dts <- as_datetimeoffset(c("2020-01-01T01:01:01", "2020-01-01T01:01:01Z"))
@@ -34,24 +34,19 @@ clock::as_zoned_time(dts)
 clock::as_zoned_time(fill_tz(dts, ""))
 
 if ("America/New_York" \%in\% OlsonNames()) {
-  get_offsets <- function(x) {
-    paste(formatC(get_hour_offset(x), width = 3, format = "d", flag = "+0"),
-          formatC(get_minute_offset(x), width = 2, format = "d", flag = "0"),
-          sep = ":")
-  }
   # non-ambiguous UTC offsets
   dt <- as_datetimeoffset("2020-11-01T12:30:00[America/New_York]")
-  cat("unfilled: ", get_offsets(dt), "\n")
-  dt <- fill_offsets(dt)
-  cat("filled: ", get_offsets(dt), "\n")
+  cat("unfilled: ", get_utc_offsets(dt), "\n")
+  dt <- fill_utc_offsets(dt)
+  cat("filled: ", get_utc_offsets(dt), "\n")
 
   # ambiguous UTC offsets due to DST
   dt0 <- as_datetimeoffset("2020-11-01T01:30:00[America/New_York]")
-  dt <- fill_offsets(dt0)
-  cat('`ambiguous = "NA"` (default): ', get_offsets(dt), "\n")
-  dt <- fill_offsets(dt0, ambiguous = "earliest")
-  cat('`ambiguous = "earliest"`: ', get_offsets(dt), "\n")
-  dt <- fill_offsets(dt0, ambiguous = "latest")
-  cat('`ambiguos = "latest"`: ', get_offsets(dt), "\n")
+  dt <- fill_utc_offsets(dt0)
+  cat('`ambiguous = "NA"` (default): ', get_utc_offsets(dt), "\n")
+  dt <- fill_utc_offsets(dt0, ambiguous = "earliest")
+  cat('`ambiguous = "earliest"`: ', get_utc_offsets(dt), "\n")
+  dt <- fill_utc_offsets(dt0, ambiguous = "latest")
+  cat('`ambiguos = "latest"`: ', get_utc_offsets(dt), "\n")
 }
 }

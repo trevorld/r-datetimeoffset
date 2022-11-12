@@ -80,8 +80,7 @@ Initial features
   + `hour()` and `hour()<-`
   + `minute()` and `minute()<-`
   + `second()` and `second()<-`
-  + `date()` and `date()<-`
-  + `tz()`, `tz()<-`, `force_tz()`, and `with_tz()`
+  + `tz()` and `tz()<-`
 
 * New accessor S3 methods:
 
@@ -100,13 +99,15 @@ Initial features
 
   + `datetimeoffset_now()` returns the current time in the corresponding time zone(s).
   + `is_datetimeoffset()` and `NA_datetimeoffset_`
-  + `fill_tz()` and `fill_offsets()` fill in missing time zones and missing UTC offsets respectively.
+  + `fill_tz()` and `fill_utc_offsets()` fill in missing time zones and missing UTC offsets respectively.
   + `mode_tz()` is an S3 method that gets most common time zone for a datetime object
   + `datetime_at_tz()` can be used to change the timezone 
-    (changes clock time, not system time)
+    (changes clock time, not system time).
+  + `get_utc_offsets()` and `set_utc_offsets()` gets/sets UTC offset strings
   + `precision_to_int()` converts datetime precisions to an integer
   + Support for `{base}` datetime extractors `weekdays()`, `months()`, `quarters()`, and `julian()`
-  + Support for `{lubridate}` datetime extractors `isoyear()`, `epiyear()`, 
+  + Support for `{lubridate}` datetime extractors `date()`, `date()<-`, `isoyear()`, `epiyear()`, 
     `quarter()`, `semester()`, `week()`, `isoweek()`, `epiweek()`,
     `qday()`, `qday<-()`, `wday()`, `wday<-()`, `yday()`, `yday<-()`,
     `am()`, `pm()`, `days_in_month()`, `dst()`, and `leap_year()`.
+  + Support for `{lubridate}` `force_tz()` and `with_tz()`.

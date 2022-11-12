@@ -11,7 +11,9 @@ test_that("mode_tz()", {
     expect_equal(mode_tz(dt), Sys.timezone())
 
     expect_equal(mode_tz(Sys.time()), Sys.timezone())
+})
 
+test_that("datetime_at_tz()", {
     dt <- as_datetimeoffset("2020-01-01T01:01[America/Los_Angeles]")
     expect_equal(format(datetime_at_tz(dt, "America/New_York")),
                  "2020-01-01T04:01-05:00[America/New_York]")
@@ -21,7 +23,6 @@ test_that("mode_tz()", {
 
     expect_equal(format(datetime_at_tz(as.POSIXct(dt), "America/New_York"), tz = "America/New_York"),
                  "2020-01-01 04:01:00")
-
 
     expect_equal(format(datetime_at_tz(as_zoned_time(dt), "America/New_York")),
                  "2020-01-01T04:01:00-05:00[America/New_York]")
@@ -36,4 +37,21 @@ test_that("mode_tz()", {
                                "2020-01-01T04:01[America/New_York]"))
     expect_equal(format(datetime_at_tz(dts, "GMT")),
                  c("2020-01-01T09:01Z", "2020-01-01T09:01Z"))
+})
+
+test_that("get_utc_offsets()", {
+    dts <- as_datetimeoffset(c("2020-01-01T01:01",
+                               "2020-01-01T01:01-07",
+                               "2020-01-01T01:01-07:00"))
+    expect_equal(get_utc_offsets(dts), c(NA_character_, "-07", "-07:00"))
+    expect_equal(get_utc_offsets(dts, sep = ""), c(NA_character_, "-07", "-0700"))
+
+    dts <- set_utc_offsets(dts, "-07:00")
+    expect_equal(get_utc_offsets(dts), c("-07:00", "-07:00", "-07:00"))
+    dts <- set_utc_offsets(dts, "+0800")
+    expect_equal(get_utc_offsets(dts), c("+08:00", "+08:00", "+08:00"))
+    dts <- set_utc_offsets(dts, "+00")
+    expect_equal(get_utc_offsets(dts), c("+00", "+00", "+00"))
+    dts <- set_utc_offsets(dts, NA_character_)
+    expect_equal(get_utc_offsets(dts), c(NA_character_, NA_character_, NA_character_))
 })
