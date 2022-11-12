@@ -11,4 +11,29 @@ test_that("mode_tz()", {
     expect_equal(mode_tz(dt), Sys.timezone())
 
     expect_equal(mode_tz(Sys.time()), Sys.timezone())
+
+    dt <- as_datetimeoffset("2020-01-01T01:01[America/Los_Angeles]")
+    expect_equal(format(datetime_at_tz(dt, "America/New_York")),
+                 "2020-01-01T04:01-05:00[America/New_York]")
+    expect_equal(format(datetime_at_tz(dt, c("America/Los_Angeles", "America/New_York"))),
+                 c("2020-01-01T01:01-08:00[America/Los_Angeles]",
+                   "2020-01-01T04:01-05:00[America/New_York]"))
+
+    expect_equal(format(datetime_at_tz(as.POSIXct(dt), "America/New_York"), tz = "America/New_York"),
+                 "2020-01-01 04:01:00")
+
+
+    expect_equal(format(datetime_at_tz(as_zoned_time(dt), "America/New_York")),
+                 "2020-01-01T04:01:00-05:00[America/New_York]")
+
+    skip_if_not_installed("lubridate", "1.9.0")
+    expect_equal(format(datetime_at_tz(as.Date(dt), "America/New_York")),
+                 "2019-12-31 19:00:00")
+    expect_equal(format(lubridate::with_tz(dt, "America/New_York")),
+                 "2020-01-01T04:01-05:00[America/New_York]")
+
+    dts <- as_datetimeoffset(c("2020-01-01T01:01[America/Los_Angeles]",
+                               "2020-01-01T04:01[America/New_York]"))
+    expect_equal(format(datetime_at_tz(dts, "GMT")),
+                 c("2020-01-01T09:01Z", "2020-01-01T09:01Z"))
 })

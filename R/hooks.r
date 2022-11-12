@@ -8,6 +8,7 @@
     vctrs::s3_register("lubridate::tz", "datetimeoffset", get_tz.datetimeoffset)
     vctrs::s3_register("lubridate::date", "datetimeoffset", function(x) as.Date.datetimeoffset(x))
     vctrs::s3_register("lubridate::force_tz", "datetimeoffset", force_tz.datetimeoffset)
+    vctrs::s3_register("lubridate::with_tz", "datetimeoffset", with_tz.datetimeoffset)
     vctrs::s3_register("lubridate::wday", "datetimeoffset", wday.datetimeoffset)
     vctrs::s3_register("lubridate::qday", "datetimeoffset", qday.datetimeoffset)
     vctrs::s3_register("lubridate::yday", "datetimeoffset", yday.datetimeoffset)

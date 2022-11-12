@@ -20,10 +20,11 @@ reference:
       - get_year.datetimeoffset
       - set_year.datetimeoffset
   - title: "Time zone utilities"
-    desc: "Find most common time zone"
+    desc: "Various time zone functions"
     contents:
       - fill_tz
       - mode_tz
+      - datetime_at_tz
   - title: 'Get/set date time "precision"'
     desc: 'Get/set date time "precision"'
     contents:
