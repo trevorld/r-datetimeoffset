@@ -31,6 +31,10 @@ reference:
     contents:
       - datetime_narrow.datetimeoffset
       - datetime_precision.datetimeoffset
+  - title: 'Detect invalid "datetimeoffset" datetimes'
+    desc: 'Detect invalid "datetimeoffset" datetimes'
+    contents:
+      - invalid_detect.datetimeoffset
   - title: Additional datetime extractors
     desc: "Support for additional base/lubridate datetime extractors"
     contents:

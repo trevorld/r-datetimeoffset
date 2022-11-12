@@ -147,7 +147,7 @@ fill_tz <- function(x, tz = "") {
 #' @export
 fill_utc_offsets <- function(x, ambiguous = "NA") {
     # Fill missing minute offset to zero if hour offset is not missing
-    x <- set_minute_offset(x, ifelse(!is.na(get_hour_offset(x)) & !is.na(get_minute_offset(x)),
+    x <- set_minute_offset(x, ifelse(!is.na(get_hour_offset(x)) & is.na(get_minute_offset(x)),
                                      0L,
                                      get_minute_offset(x)))
 

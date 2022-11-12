@@ -273,7 +273,7 @@ my_format_tz <- function(x, sep = ":", no_zulu = FALSE, edtf = FALSE, add_tz = F
         mos <- my_format(minute_offset, prefix = sep)
 
         s_offsets <- paste0(hos, mos)
-        s_offsets <- ifelse(is.na(hour_offset), s[is.na(hour_offset)], s_offsets)
+        s_offsets <- ifelse(is.na(hour_offset), s[id_tz][is.na(hour_offset)], s_offsets)
         if (add_tz) {
             s_offsets <- paste0(s_offsets, "[", tz_id, "]")
         }
