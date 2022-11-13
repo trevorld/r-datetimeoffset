@@ -261,10 +261,10 @@ datetimeoffset_now(c("America/Los_Angeles", "America/New_York",
 
 ```
 ## <datetimeoffset[4]>
-## [1] 2022-11-11T23:06:09.525176436-08:00[America/Los_Angeles]
-## [2] 2022-11-12T02:06:09.525176436-05:00[America/New_York]   
-## [3] 2022-11-12T07:06:09.525176436+00:00[Europe/London]      
-## [4] 2022-11-12T15:06:09.525176436+08:00[Asia/Shanghai]
+## [1] 2022-11-12T15:52:14.785139725-08:00[America/Los_Angeles]
+## [2] 2022-11-12T18:52:14.785139725-05:00[America/New_York]   
+## [3] 2022-11-12T23:52:14.785139725+00:00[Europe/London]      
+## [4] 2022-11-13T07:52:14.785139725+08:00[Asia/Shanghai]
 ```
 
 ### <a name="pdf">Augmenting pdf datetime metadata</a>
@@ -282,7 +282,7 @@ print(creation_date)
 
 ```
 ## <datetimeoffset[1]>
-## [1] 2022-11-11T23:06:09.650666006-08:00[America/Los_Angeles]
+## [1] 2022-11-12T15:52:14.893366195-08:00[America/Los_Angeles]
 ```
 
 ```r
@@ -301,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-11T23:06:09
+## CreationDate: 2022-11-12T15:52:14
 ## Creator: R
 ## Producer: R 4.2.1
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-11T23:06:09
+## ModDate: 2022-11-12T15:52:14
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-11T23:06:09-08:00
+## CreationDate: 2022-11-12T15:52:14-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-11T23:06:15-08:00
+## ModDate: 2022-11-12T15:52:20-08:00
 ```
 
 ## <a name="features">Features</a>
@@ -439,7 +439,7 @@ print(di)
     As an alternative can also use `lubridate::with_tz()`.
   + `get_utc_offsets()` and `set_utc_offsets()` gets/sets UTC offset strings
   + Support for `{clock}` invalid datetime methods `invalid_detect()`, `invalid_any()`,
-    `invalid_count()`, and `invalid_remove()`.
+    `invalid_count()`, `invalid_remove()`, and `invalid_resolve()`.
   + `precision_to_int()` converts datetime precisions to an integer
   + Support for `{base}` datetime extractors `weekdays()`, `months()`, `quarters()`, and `julian()`
   + Support for `{lubridate}` datetime extractors `date()`, `date()<-`, `isoyear()`, `epiyear()`, 

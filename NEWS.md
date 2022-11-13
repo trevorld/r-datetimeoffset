@@ -105,7 +105,7 @@ Initial features
     (changes clock time, not system time).
   + `get_utc_offsets()` and `set_utc_offsets()` gets/sets UTC offset strings
   + Support for `{clock}` invalid datetime methods `invalid_detect()`, `invalid_any()`,
-    `invalid_count()`, and `invalid_remove()`.
+    `invalid_count()`, `invalid_remove()`, and `invalid_resolve()`.
   + `precision_to_int()` converts datetime precisions to an integer
   + Support for `{base}` datetime extractors `weekdays()`, `months()`, `quarters()`, and `julian()`
   + Support for `{lubridate}` datetime extractors `date()`, `date()<-`, `isoyear()`, `epiyear()`, 
