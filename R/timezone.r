@@ -78,10 +78,17 @@ mode_tz.default <- function(x, ...) {
 #' @export
 get_utc_offsets <- function(x, sep = ":") {
     stopifnot(sep %in% c(":", ""))
-    ho <- my_format(get_hour_offset(x), width = 3, flag = "+0")
+    if (inherits(x, "POSIXt")) {
+        if (sep == ":")
+            clock::date_format(x, format = "%Ez")
+        else
+            clock::date_format(x, format = "%z")
+    }
+    hour_offset <- get_hour_offset(x)
+    ho <- my_format(hour_offset, width = 3, flag = "+0")
     mo <- my_format(get_minute_offset(x), prefix = sep)
     s <- paste0(ho, mo)
-    is.na(s) <- is.na(get_hour_offset(x))
+    is.na(s) <- is.na(hour_offset)
     s
 }
 
@@ -157,7 +164,7 @@ fill_utc_offsets <- function(x, ambiguous = "NA") {
         df <- data.frame(x = as_ymd_hms_str(x[id_tz]), tz = tz[id_tz],
                          stringsAsFactors = FALSE)
         offsets <- purrr::pmap_chr(df, function(x, tz) {
-                                       dt <- clock::naive_time_parse(x)
+                                       dt <- suppressWarnings(clock::naive_time_parse(x))
                                        dt <- clock::as_zoned_time(dt, tz,
                                                                   ambiguous = ambiguous, nonexistent = "error")
                                        format(dt, format = "%z")

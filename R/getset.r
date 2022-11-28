@@ -304,7 +304,7 @@ get_hour_offset.default <- function(x) {
 #' @rdname getters
 #' @export
 get_hour_offset.POSIXt <- function(x) {
-    as.integer(substr(format(x, format = "%z"), 1, 3))
+    as.integer(substr(clock::date_format(x, format = "%z"), 1, 3))
 }
 
 #' @rdname setters
@@ -342,7 +342,7 @@ get_minute_offset.default <- function(x) {
 #' @rdname getters
 #' @export
 get_minute_offset.POSIXt <- function(x) {
-    as.integer(substr(format(x, format = "%z"), 4, 5))
+    as.integer(substr(clock::date_format(x, format = "%z"), 4, 5))
 }
 
 #' @rdname setters

@@ -14,6 +14,7 @@ test_that("mode_tz()", {
 })
 
 test_that("datetime_at_tz()", {
+    skip_if_not(all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames()))
     dt <- as_datetimeoffset("2020-01-01T01:01[America/Los_Angeles]")
     expect_equal(format(datetime_at_tz(dt, "America/New_York")),
                  "2020-01-01T04:01-05:00[America/New_York]")
@@ -54,4 +55,9 @@ test_that("get_utc_offsets()", {
     expect_equal(get_utc_offsets(dts), c("+00", "+00", "+00"))
     dts <- set_utc_offsets(dts, NA_character_)
     expect_equal(get_utc_offsets(dts), c(NA_character_, NA_character_, NA_character_))
+
+    skip_if_not(all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames()))
+    dt <- as.POSIXct("2020-01-01 10:10:10", tz = "America/Los_Angeles")
+    expect_equal(get_utc_offsets(dt), "-08:00")
+    expect_equal(get_utc_offsets(dt, sep = ""), "-0800")
 })

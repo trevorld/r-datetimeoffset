@@ -55,15 +55,31 @@ as_datetimeoffset.default <- function(x, ...) {
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.POSIXt <- function(x, ...) {
-    microseconds <- formatC(as.integer(round(1e6 * as.POSIXlt(x)[, "sec"])),
+    purrr::map_vec(x, as_dto_posix, .ptype = datetimeoffset(0))
+}
+
+as_dto_posix <- function(x) {
+    if (is.na(x)) return(NA_datetimeoffset_)
+    lt <- as.POSIXlt(x)
+    seconds <- trunc(lt[, "sec"])
+    microseconds <- formatC(round(1e6 * lt[, "sec"]),
                             width = 8L, format = "d", flag = "0")
-    ymd <- clock::as_year_month_day(clock::as_naive_time(x))
-    ymd <- clock::set_second(ymd, dto_as_integer(substr(microseconds, 1L, 2L)))
-    ymd <- clock::set_microsecond(ymd, dto_as_integer(substr(microseconds, 3L, 8L)))
-    as_datetimeoffset(clock::as_zoned_time(clock::as_naive_time(ymd),
-                                           zone = clock::date_zone(x),
-                                           ambiguous = list(x, "error"),
-                                           nonexistent = "error"))
+    seconds_ms <- dto_as_integer(substr(microseconds, 1L, 2L))
+    microseconds <- ifelse(seconds_ms == seconds,
+                           substr(microseconds, 3L, 8L),
+                           "999999")
+    if (seconds >= 60L) { # {clock} doesn't seem to handle leap seconds
+        tz <- clean_tz(get_tz(lt))
+        FT <- format(lt, format = "%FT%T", digits = 0L, tz = tz)
+        offset <- get_utc_offsets(x)
+        s <- paste0(FT, ".", microseconds, offset, "[", tz, "]")
+        as_datetimeoffset(s)
+    } else {
+        ymd <- clock::as_year_month_day(clock::as_sys_time(x))
+        ymd <- clock::set_microsecond(ymd, dto_as_integer(microseconds))
+        as_datetimeoffset(clock::as_zoned_time(clock::as_sys_time(ymd),
+                                               zone = clock::date_zone(x)))
+    }
 }
 
 #' @rdname as_datetimeoffset

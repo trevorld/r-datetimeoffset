@@ -340,9 +340,6 @@ test_that("improved subsecond precision", {
                    "hundred microseconds", "ten microseconds", "microsecond",
                    "hundred nanoseconds", "ten nanoseconds", "nanosecond"))
 
-    # leap second
-    dt <- as_datetimeoffset.character("2005-12-31 23:59:60Z")
-
     # keep precision of explicit zeroes
     dt <- as_datetimeoffset.character("2020-02-02T10:10:10.10")
     expect_equal(get_subsecond_digits(dt), 2L)
