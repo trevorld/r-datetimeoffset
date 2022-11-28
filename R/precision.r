@@ -50,7 +50,7 @@ datetime_precision.datetimeoffset <- function(x, range = FALSE, unspecified = FA
         for (component in c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
             precision <- ifelse(!is.na(field(x, component)), component, precision)
     } else {
-        precision <- rep_len("nanosecond", length(x))
+        precision <- subsecond_digit_to_precision(field(x, "subsecond_digits"))
         precision <- ifelse(is.na(field(x, "nanosecond")), "second", precision)
         precision <- ifelse(is.na(field(x, "second")), "minute", precision)
         precision <- ifelse(is.na(field(x, "minute")), "hour", precision)
@@ -65,6 +65,38 @@ datetime_precision.datetimeoffset <- function(x, range = FALSE, unspecified = FA
     } else {
         precision
     }
+}
+
+subsecond_digit_to_precision <- function(x) {
+    purrr::map_chr(x, function(x) {
+                       precision <- switch(x,
+                                           "decisecond",
+                                           "centisecond",
+                                           "millisecond",
+                                           "hundred microseconds",
+                                           "ten microseconds",
+                                           "microsecond",
+                                           "hundred nanoseconds",
+                                           "ten nanoseconds",
+                                           "nanosecond")
+                       precision %||% "nanosecond"
+                    })
+}
+
+precision_to_subsecond_digit <- function(x) {
+    purrr::map_int(x, function(x) {
+                       switch(x,
+                              nanosecond = 9L,
+                              `ten nanoseconds` = 8L,
+                              `hundred nanoseconds` = 7L,
+                              microsecond = 6L,
+                              `ten microseconds` = 5L,
+                              `hundred microseconds` = 4L,
+                              millisecond = 3L,
+                              centisecond = 2L,
+                              decisecond = 1L,
+                              NA_integer_)
+                    })
 }
 
 #' @rdname datetime_precision
@@ -151,15 +183,23 @@ datetime_narrow <- function(x, precision, ...) {
 #' @rdname datetime_cast
 #' @export
 datetime_narrow.datetimeoffset <- function(x, precision, ...) {
-    precision <- precision_to_int(precision)
+    precision_int <- precision_to_int(precision)
     n <- max(length(x), length(precision))
     if (length(x) < n)
         x <- rep(x, length.out = n)
-    if (length(precision) < n)
+    if (length(precision_int) < n) {
         precision <- rep(precision, length.out = n)
+        precision_int <- rep(precision_int, length.out = n)
+    }
     nas <- rep_len(NA_integer_, n)
-    for (component in c("nanosecond", "second", "minute", "hour", "day", "month", "year"))
-        field(x, component) <- ifelse(precision < precision_to_int(component),
+    field(x, "nanosecond") <- ifelse(precision_int <= precision_to_int("second"),
+                                     nas,
+                                     field(x, "nanosecond"))
+    field(x, "subsecond_digits") <- ifelse(precision_int <= precision_to_int("second"),
+                                           nas,
+                                           precision_to_subsecond_digit(precision))
+    for (component in c("second", "minute", "hour", "day", "month", "year"))
+        field(x, component) <- ifelse(precision_int < precision_to_int(component),
                                       nas,
                                       field(x, component))
     x
@@ -231,16 +271,24 @@ datetime_widen.datetimeoffset <- function(x, precision, ...,
                                           year = 0L, month = 1L, day = 1L,
                                           hour = 0L, minute = 0L, second = 0L, nanosecond = 0L,
                                           na_set = FALSE) {
-    precision <- precision_to_int(precision)
-    n <- max(length(x), length(precision))
+    precision_int <- precision_to_int(precision)
+    n <- max(length(x), length(precision_int))
     if (length(x) < n)
         x <- rep(x, length.out = n)
-    if (length(precision) < n)
+    if (length(precision_int) < n) {
         precision <- rep(precision, length.out = n)
-    for (component in c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
-        field(x, component) <- ifelse((na_set | !is.na(x)) & precision >= precision_to_int(component),
+        precision_int <- rep(precision_int, length.out = n)
+    }
+    for (component in c("year", "month", "day", "hour", "minute", "second"))
+        field(x, component) <- ifelse((na_set | !is.na(x)) & precision_int >= precision_to_int(component),
                                       update_missing(field(x, component), get(component)),
                                       field(x, component))
+    field(x, "nanosecond") <- ifelse((na_set | !is.na(x)) & precision_int > precision_to_int("second"),
+                                     update_missing(field(x, "nanosecond"), nanosecond),
+                                     field(x, "nanosecond"))
+    field(x, "subsecond_digits") <- ifelse((na_set | !is.na(x)) & precision_int > precision_to_int("second"),
+                                           precision_to_subsecond_digit(precision),
+                                           field(x, "subsecond_digits"))
     x
 }
 
@@ -287,7 +335,10 @@ datetime_cast.default <- function(x, precision, ...) {
 # precisions used by {datetimeoffset} and/or {clock}
 datetime_precisions <- c("missing",
                          "year", "quarter", "month", "week", "day",
-                         "hour", "minute", "second", "millisecond", "microsecond", "nanosecond")
+                         "hour", "minute", "second",
+                         "decisecond", "centisecond", "millisecond",
+                         "hundred microseconds", "ten microseconds", "microsecond",
+                         "hundred nanoseconds", "ten nanoseconds", "nanosecond")
 
 #' @param precision A datetime precision (as returned by `datetime_precision()`).
 #' @rdname datetime_precision
@@ -303,6 +354,8 @@ PRECISION_DAY <- precision_to_int("day")
 PRECISION_HOUR <- precision_to_int("hour")
 PRECISION_MINUTE <- precision_to_int("minute")
 PRECISION_SECOND <- precision_to_int("second")
+PRECISION_MILLISECOND <- precision_to_int("millisecond")
+PRECISION_MICROSECOND <- precision_to_int("microsecond")
 PRECISION_NANOSECOND <- precision_to_int("nanosecond")
 
 update_missing <- function(original, replacement) ifelse(is.na(original), replacement, original)

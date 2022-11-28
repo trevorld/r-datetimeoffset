@@ -56,10 +56,47 @@ test_that("setters", {
     dt <- set_minute_offset(dt, 0L)
     expect_equal(format(dt), "1918-11-11T11:11:11+00:00[Europe/Paris]")
 
+    dt <- set_nanosecond(dt, 123456789)
+    dt <- set_subsecond_digits(dt, 4L)
+    expect_equal(format(dt), "1918-11-11T11:11:11.1234+00:00[Europe/Paris]")
+
+    expect_equal(get_subsecond(dt, 1L), 1L)
+    expect_equal(get_subsecond(dt, 2L), 12L)
+    expect_equal(get_subsecond(dt, 3L), 123L)
+    expect_equal(get_subsecond(dt, 9L), 123456789L)
+
+    expect_equal(get_subsecond_digits(Sys.time()), 6L)
+
+    dt <- as_datetimeoffset("2020-01-01T10:10:10")
+    dts <- datetime_widen(dt, precision = c("decisecond", "centisecond", "millisecond",
+                                            "hundred microseconds", "ten microseconds", "microsecond",
+                                            "hundred nanoseconds", "ten nanoseconds", "nanosecond"))
+    expect_equal(format(dts),
+                 c("2020-01-01T10:10:10.0",
+                   "2020-01-01T10:10:10.00",
+                   "2020-01-01T10:10:10.000",
+                   "2020-01-01T10:10:10.0000",
+                   "2020-01-01T10:10:10.00000",
+                   "2020-01-01T10:10:10.000000",
+                   "2020-01-01T10:10:10.0000000",
+                   "2020-01-01T10:10:10.00000000",
+                   "2020-01-01T10:10:10.000000000"))
+
     expect_equal(get_tz(Sys.time()), "")
 
     expect_error(set_hour_offset("Boo", 0L))
     expect_error(set_minute_offset("Boo", 0L))
+
+    dt <- as_datetimeoffset("1918-11-11T11:11:11.123456789")
+    expect_equal(get_millisecond(dt), 123L)
+    expect_equal(get_microsecond(dt), 123456L)
+    dt <- set_millisecond(dt, 123L)
+    expect_equal(format(dt), "1918-11-11T11:11:11.123")
+    dt <- set_microsecond(dt, 123456L)
+    expect_equal(format(dt), "1918-11-11T11:11:11.123456")
+
+    dt <- set_subsecond(dt, 1234, 4L)
+    expect_equal(format(dt), "1918-11-11T11:11:11.1234")
 })
 
 test_that("setters for {clock}", {

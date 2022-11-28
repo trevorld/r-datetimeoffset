@@ -35,6 +35,10 @@ reference:
     desc: 'Detect invalid "datetimeoffset" datetimes'
     contents:
       - invalid_detect.datetimeoffset
+  - title: 'Additional subsecond accessors'
+    desc: 'Additional subsecond accessors'
+    contents:
+      - get_millisecond.datetimeoffset
   - title: Additional datetime extractors
     desc: "Support for additional base/lubridate datetime extractors"
     contents:

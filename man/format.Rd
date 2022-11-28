@@ -40,7 +40,10 @@ format_edtf(x, offsets = TRUE, precision = NULL, usetz = FALSE, ...)
 
 \item{offsets}{Include the UTC offsets in the formatting}
 
-\item{precision}{The amount of precision: either "year", "month", "day", "hour", "minute", "second", or "nanosecond".
+\item{precision}{The amount of precision: either "year", "month", "day", "hour", "minute", "second",
+"decisecond", "centisecond", "millisecond",
+"hundred microseconds", "ten microseconds", "microsecond",
+"hundred nanoseconds", "ten nanoseconds", or "nanosecond".
 If \code{NULL} then full precision for the object is shown.}
 
 \item{sep}{UTC offset separator.  Either ":" or "".}
@@ -97,6 +100,4 @@ with as much \strong{known} information possible (RFC 3339 with de facto standar
   format_edtf(as_datetimeoffset("2020-05-10T20:15:05-07"))
   dt <- datetimeoffset(2020, NA_integer_, 10)
   format_edtf(dt)
-  # Not a valid EDTF string but useful serialization of `datetimeoffset()`
-  format_edtf(dt, precision = "nanosecond", usetz = TRUE)
 }

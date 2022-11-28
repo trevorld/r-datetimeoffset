@@ -79,7 +79,8 @@ as_datetimeoffset.character <- function(x, tz = NA_character_, ...) {
     tz <- ifelse(is.na(tz_df), tz, tz_df)
 
     datetimeoffset(df$year, df$month, df$day,
-                    df$hour, df$minute, df$second, df$nanosecond,
+                    df$hour, df$minute, df$second,
+                    df$nanosecond, df$subsecond_digits,
                     df$hour_offset, df$minute_offset, tz)
 }
 
@@ -152,10 +153,14 @@ as_datetimeoffset.clock_zoned_time <- function(x, ...) {
 }
 
 parse_nanoseconds <- function(x) {
-    x <- substr(x, 2L, nchar(x))
-    stopifnot(nchar(x) <= 9L)
     n <- nchar(x)
-    x <- paste0(x, paste(rep_len("0", 9L - n), collapse = ""))
+    if (n > 9L) {
+        # warn/message?
+        x <- substr(x, 1L, 9L)
+    }
+    if (n < 9L) {
+        x <- paste0(x, paste(rep_len("0", 9L - n), collapse = ""))
+    }
     dto_as_integer(x)
 }
 
@@ -178,7 +183,7 @@ as_dtos_character_helper <- function(x) {
     s <- gsub(":", "", s)
     l <- list(year = NA_integer_, month = NA_integer_, day = NA_integer_,
               hour = NA_integer_, minute = NA_integer_, second = NA_integer_,
-              nanosecond = NA_integer_,
+              nanosecond = NA_integer_, subsecond_digits = NA_integer_,
               hour_offset = NA_integer_, minute_offset = NA_integer_, tz = NA_character_)
     # "2020-05-15T08:23:16-07:00"
     if (is.na(s) || s == "") {
@@ -218,7 +223,9 @@ as_dtos_character_helper <- function(x) {
         l$second <- dto_as_integer(substr(s, 13L, 14L))
     } else if (grepl("^[[:digit:]X]{14}\\.[[:digit:]X]{1,}$", s)) { # "20200515082316.003"
         l <- as_dtos_character_helper(substr(s, 1L, 14L))
-        l$nanosecond <-  parse_nanoseconds(substr(s, 15L, nchar(s)))
+        subseconds <- substr(s, 16L, nchar(s))
+        l$nanosecond <-  parse_nanoseconds(subseconds)
+        l$subsecond_digits <- min(nchar(subseconds), 9L)
     } else {
         stop(paste("Can't parse datetime", x))
     }

@@ -15,7 +15,10 @@
 #'           Can be a length greater than one.
 #' @param offsets Include the UTC offsets in the formatting
 #' @param usetz Include the time zone in the formatting
-#' @param precision The amount of precision: either "year", "month", "day", "hour", "minute", "second", or "nanosecond".
+#' @param precision The amount of precision: either "year", "month", "day", "hour", "minute", "second",
+#'                  "decisecond", "centisecond", "millisecond",
+#'                  "hundred microseconds", "ten microseconds", "microsecond",
+#'                  "hundred nanoseconds", "ten nanoseconds", or "nanosecond".
 #'        If `NULL` then full precision for the object is shown.
 #' @param ... Ignored
 #' @return A character vector
@@ -48,8 +51,6 @@
 #'   format_edtf(as_datetimeoffset("2020-05-10T20:15:05-07"))
 #'   dt <- datetimeoffset(2020, NA_integer_, 10)
 #'   format_edtf(dt)
-#'   # Not a valid EDTF string but useful serialization of `datetimeoffset()`
-#'   format_edtf(dt, precision = "nanosecond", usetz = TRUE)
 NULL
 
 #' @rdname format
@@ -62,7 +63,7 @@ format.datetimeoffset <- function(x, ...) {
     hour_str <- my_format(field(x, "hour"), prefix = "T")
     minute_str <- my_format(field(x, "minute"), prefix = ":")
     second_str <- my_format(field(x, "second"), prefix = ":")
-    nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"))
+    nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"), field(x, "subsecond_digits"))
     offset_str <- my_format_tz(x, add_tz = TRUE)
     s <- paste0(year_str, month_str, day_str,
                 hour_str, minute_str, second_str, nanosecond_str,
@@ -71,16 +72,13 @@ format.datetimeoffset <- function(x, ...) {
     s
 }
 
-my_format_nanosecond <- function(ns, edtf = FALSE, blank = FALSE) {
+my_format_nanosecond <- function(ns, sd, edtf = FALSE, blank = FALSE) {
     s <- character(length(ns))
     if (blank) return(s)
     idx <- which(!is.na(ns))
     if (length(idx > 0L)) {
-        s_ns <- formatC(ns[idx], format = "d", flag = "0", width = 9L)
-        stopifnot(all(nchar(s_ns) <= 9L))
-        s_ns <- gsub("0{1,}$", "", s_ns)
-        s_ns <- ifelse(s_ns == "", "0", s_ns)
-        s[idx] <- paste0(".", s_ns)
+        df <- data.frame(ns = ns[idx], sd = sd[idx], stringsAsFactors = FALSE)
+        s[idx] <- purrr::pmap_chr(df, my_format_ns_helper)
     }
     idx <- which(is.na(ns))
     if (edtf && length(idx))
@@ -88,12 +86,32 @@ my_format_nanosecond <- function(ns, edtf = FALSE, blank = FALSE) {
     s
 }
 
+my_format_ns_helper <- function(ns, sd) {
+    s_ns <- formatC(ns, format = "d", flag = "0", width = 9L)
+    if (is.na(sd)) {
+        s_ns <- gsub("0{1,}$", "", s_ns)
+        s_ns <- ifelse(s_ns == "", "0", s_ns)
+    } else {
+        s_ns <- substr(s_ns, 1L, sd)
+    }
+    paste0(".", s_ns)
+}
+
 #' @rdname format
 #' @param sep UTC offset separator.  Either ":" or "".
 #' @export
 format_iso8601 <- function(x, offsets = TRUE, precision = NULL, sep = ":", ...) {
-    precision <- precision %||% "nanosecond"
-    stopifnot(precision %in% c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
+    purrr::map_chr(x, format_iso8601_helper, offsets = offsets, precision = precision, sep = sep)
+}
+
+format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":", ...) {
+    if (is.na(x)) return(NA_character_)
+
+    precision <- precision %||% datetime_precision(x)
+    stopifnot(precision %in% c("year", "month", "day", "hour", "minute", "second",
+                               "decisecond", "centisecond", "millisecond",
+                               "hundred microseconds", "ten microseconds", "microsecond",
+                               "hundred nanoseconds", "ten nanoseconds", "nanosecond"))
     stopifnot(sep %in% c(":", ""))
     x <- datetime_narrow(x, precision)
     if (isFALSE(offsets)) {
@@ -108,12 +126,11 @@ format_iso8601 <- function(x, offsets = TRUE, precision = NULL, sep = ":", ...) 
     hour_str <- my_format(field(x, "hour"), prefix = "T")
     minute_str <- my_format(field(x, "minute"), prefix = ":")
     second_str <- my_format(field(x, "second"), prefix = ":")
-    nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"))
+    nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"), field(x, "subsecond_digits"))
     offset_str <- my_format_tz(x, sep = sep)
     s <- paste0(year_str, month_str, day_str,
                 hour_str, minute_str, second_str, nanosecond_str,
                 offset_str)
-    is.na(s) <- is.na(field(x, "year"))
     s
 }
 
@@ -175,7 +192,10 @@ format_edtf <- function(x, offsets = TRUE, precision = NULL, usetz = FALSE, ...)
 
 format_edtf_helper <- function(x, offsets, precision, usetz) {
     precision <- precision %||% datetime_precision(x, unspecified = TRUE)
-    stopifnot(precision %in% c("missing", "year", "month", "day", "hour", "minute", "second", "nanosecond"))
+    stopifnot(precision %in% c("missing", "year", "month", "day", "hour", "minute", "second",
+                               "decisecond", "centisecond", "millisecond",
+                               "hundred microseconds", "ten microseconds", "microsecond",
+                               "hundred nanoseconds", "ten nanoseconds", "nanosecond"))
     x <- datetime_narrow(x, precision)
     if (isFALSE(offsets)) {
         x <- set_hour_offset(x, NA_integer_)
@@ -189,7 +209,8 @@ format_edtf_helper <- function(x, offsets, precision, usetz) {
     hour_str <- my_format(field(x, "hour"), prefix = "T", edtf = TRUE, blank = precision < PRECISION_HOUR)
     minute_str <- my_format(field(x, "minute"), prefix = ":", edtf = TRUE, blank = precision < PRECISION_MINUTE)
     second_str <- my_format(field(x, "second"), prefix = ":", edtf = TRUE, blank = precision < PRECISION_SECOND)
-    nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"), edtf = TRUE, blank = precision < PRECISION_NANOSECOND)
+    nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"), field(x, "subsecond_digits"),
+                                           edtf = TRUE, blank = precision < PRECISION_NANOSECOND)
     offset_str <- my_format_tz(x, edtf = offsets, add_tz = usetz)
     paste0(year_str, month_str, day_str,
            hour_str, minute_str, second_str, nanosecond_str,

@@ -99,6 +99,11 @@ test_that("clock classes", {
     expect_equal(format(nt), "2020-03-23T04:04:04")
     expect_equal(format(as_datetimeoffset(nt)),
                  "2020-03-23T04:04:04")
+
+    dt <- as_datetimeoffset("2020-03-23T04:04:04.02Z")
+    nt <- as_naive_time(dt)
+    expect_equal(format(nt), "2020-03-23T04:04:04.020")
+
     ymd <- clock::year_month_day(c(1984L, NA_integer_), 10L, 10L)
     nt <- as_naive_time(ymd)
     expect_equal(is.na(as_datetimeoffset(nt)), c(FALSE, TRUE))
@@ -141,9 +146,9 @@ test_that("clock classes", {
     expect_equal(format(clock::as_sys_time(dts[7])),  "2000-01-02T03:04:05")
     expect_equal(format(clock::as_sys_time(dts[8])),  "2000-01-02T05:04:05")
     expect_equal(format(clock::as_sys_time(dts[9])),  "2000-01-02T05:04:05")
-    expect_equal(format(clock::as_sys_time(dts[10])), "2000-01-02T11:04:05.006000000")
-    expect_equal(format(clock::as_sys_time(dts[11])), "2000-01-02T05:04:05.006000000")
-    expect_equal(format(clock::as_sys_time(dts[12])), "2000-01-02T05:04:05.006000000")
+    expect_equal(format(clock::as_sys_time(dts[10])), "2000-01-02T11:04:05.006")
+    expect_equal(format(clock::as_sys_time(dts[11])), "2000-01-02T05:04:05.006")
+    expect_equal(format(clock::as_sys_time(dts[12])), "2000-01-02T05:04:05.006")
     expect_equal(is.na(clock::as_sys_time(dts[13:14])), c(TRUE, TRUE))
 
     st <- clock::as_sys_time(dts[3])
@@ -154,4 +159,11 @@ test_that("clock classes", {
     expect_equal(format(as_zoned_time(dts[3], "GMT")),
                  "2000-01-02T11:00:00+00:00[GMT]")
     expect_true(is.na(as_zoned_time(NA_datetimeoffset_, "GMT")))
+
+    dts <- as_datetimeoffset(c("2000-01-02T03:04:05.1234",
+                               "2000-01-02T03:04:05.1234[America/Los_Angeles]",
+                               "2000-01-02T03:04:05.1234-02:00"))
+    st <- clock::as_sys_time(dts)
+    expect_equal(format(st),
+                 c(NA_character_, "2000-01-02T11:04:05.123400", "2000-01-02T05:04:05.123400"))
 })

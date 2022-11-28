@@ -12,6 +12,7 @@ datetimeoffset(
   minute = NA_integer_,
   second = NA_integer_,
   nanosecond = NA_integer_,
+  subsecond_digits = NA_integer_,
   hour_offset = NA_integer_,
   minute_offset = NA_integer_,
   tz = NA_character_
@@ -31,6 +32,8 @@ datetimeoffset(
 \item{second}{Second (integer, optional)}
 
 \item{nanosecond}{Nanosecond (integer, optional)}
+
+\item{subsecond_digits}{Number of digits used by fractional seconds (integer, optional)}
 
 \item{hour_offset}{UTC offset in hours (integer, optional)}
 

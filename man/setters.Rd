@@ -9,6 +9,8 @@
 \alias{set_minute.datetimeoffset}
 \alias{set_second.datetimeoffset}
 \alias{set_nanosecond.datetimeoffset}
+\alias{set_subsecond_digits}
+\alias{set_subsecond_digits.datetimeoffset}
 \alias{set_hour_offset}
 \alias{set_hour_offset.datetimeoffset}
 \alias{set_minute_offset}
@@ -31,7 +33,11 @@
 
 \method{set_second}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
-\method{set_nanosecond}{datetimeoffset}(x, value, ..., na_set = FALSE)
+\method{set_nanosecond}{datetimeoffset}(x, value, ..., na_set = FALSE, digits = NULL)
+
+set_subsecond_digits(x, value, ...)
+
+\method{set_subsecond_digits}{datetimeoffset}(x, value, ..., na_set = FALSE)
 
 set_hour_offset(x, value, ...)
 
@@ -57,6 +63,10 @@ set_tz(x, value, ...)
 \item{...}{Currently ignored.}
 
 \item{na_set}{If \code{TRUE} set component for \code{NA} datetimes (making them no longer \code{NA})}
+
+\item{digits}{If \code{NULL} do not update the \code{subsecond_digits} field.
+Otherwise an integer vector (\code{1L} through \code{9L} or \code{NA_integer_})
+to update the \code{subsecond_digits} field with.}
 
 \item{nonexistent}{What to do when the "clock time" in the new time zone doesn't exist.
 See \code{\link[clock:as-zoned-time-naive-time]{clock::as_zoned_time.clock_naive_time()}}.}
@@ -109,7 +119,8 @@ dt <- set_day(dt, 11L)
 dt <- set_hour(dt, 11L)
 dt <- set_minute(dt, 11L)
 dt <- set_second(dt, 11L)
-dt <- set_nanosecond(dt, NA_integer_)
+dt <- set_nanosecond(dt, 123456789L)
+dt <- set_subsecond_digits(dt, 4L)
 dt <- set_hour_offset(dt, 0L)
 dt <- set_minute_offset(dt, 0L)
 dt <- set_tz(dt, "Europe/Paris")

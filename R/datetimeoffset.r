@@ -1,7 +1,8 @@
 new_datetimeoffset <- function(year = integer(), month = integer(), day = integer(),
                                 hour = integer(), minute = integer(), second = integer(),
-                                nanosecond = integer(),
-                                hour_offset = integer(), minute_offset = integer(), tz = character()) {
+                                nanosecond = integer(), subsecond_digits = integer(),
+                                hour_offset = integer(), minute_offset = integer(),
+                                tz = character()) {
     vec_assert(year, ptype = integer())
     vec_assert(month, ptype = integer())
     vec_assert(day, ptype = integer())
@@ -9,12 +10,14 @@ new_datetimeoffset <- function(year = integer(), month = integer(), day = intege
     vec_assert(minute, ptype = integer())
     vec_assert(second, ptype = integer())
     vec_assert(nanosecond, ptype = integer())
+    vec_assert(subsecond_digits, ptype = integer())
     vec_assert(hour_offset, ptype = integer())
     vec_assert(minute_offset, ptype = integer())
     vec_assert(tz, ptype = character())
 
     new_rcrd(list(year = year, month = month, day = day,
-                  hour = hour, minute = minute, second = second, nanosecond = nanosecond,
+                  hour = hour, minute = minute, second = second,
+                  nanosecond = nanosecond, subsecond_digits = subsecond_digits,
                   hour_offset = hour_offset, minute_offset = minute_offset, tz = tz),
              class = "datetimeoffset")
 }
@@ -31,6 +34,7 @@ new_datetimeoffset <- function(year = integer(), month = integer(), day = intege
 #' @param minute Minute (integer, optional)
 #' @param second Second (integer, optional)
 #' @param nanosecond Nanosecond (integer, optional)
+#' @param subsecond_digits Number of digits used by fractional seconds (integer, optional)
 #' @param hour_offset UTC offset in hours (integer, optional)
 #' @param minute_offset UTC offset in minutes (integer, optional).
 #'                      Will be coerced to a non-negative value.
@@ -51,11 +55,12 @@ new_datetimeoffset <- function(year = integer(), month = integer(), day = intege
 #' @export
 datetimeoffset <- function(year = NA_integer_, month = NA_integer_, day = NA_integer_,
                             hour = NA_integer_, minute = NA_integer_, second = NA_integer_,
-                            nanosecond = NA_integer_,
+                            nanosecond = NA_integer_, subsecond_digits = NA_integer_,
                             hour_offset = NA_integer_, minute_offset = NA_integer_, tz = NA_character_) {
     if (nargs() == 0L) {
         return(new_datetimeoffset(integer(0L), integer(0L), integer(0L),
-                                  integer(0L), integer(0L), integer(0L), integer(0L),
+                                  integer(0L), integer(0L), integer(0L),
+                                  integer(0L), integer(0L),
                                   integer(0L), integer(0L), character(0L)))
     }
     # cast
@@ -66,6 +71,7 @@ datetimeoffset <- function(year = NA_integer_, month = NA_integer_, day = NA_int
     minute <- vec_cast(minute, integer())
     second <- vec_cast(second, integer())
     nanosecond <- vec_cast(nanosecond, integer())
+    subsecond_digits <- vec_cast(subsecond_digits, integer())
     hour_offset <- vec_cast(hour_offset, integer())
     minute_offset <- vec_cast(minute_offset, integer())
     tz <- vec_cast(tz, character())
@@ -78,7 +84,8 @@ datetimeoffset <- function(year = NA_integer_, month = NA_integer_, day = NA_int
 
     # recycle
     rc <- vec_recycle_common(year, month, day,
-                             hour, minute, second, nanosecond,
+                             hour, minute, second,
+                             nanosecond, subsecond_digits,
                              hour_offset, minute_offset, tz)
     year <- rc[[1]]
     month <- rc[[2]]
@@ -87,12 +94,14 @@ datetimeoffset <- function(year = NA_integer_, month = NA_integer_, day = NA_int
     minute <- rc[[5]]
     second <- rc[[6]]
     nanosecond <- rc[[7]]
-    hour_offset <- rc[[8]]
-    minute_offset <- rc[[9]]
-    tz <- rc[[10]]
+    subsecond_digits <- rc[[8]]
+    hour_offset <- rc[[9]]
+    minute_offset <- rc[[10]]
+    tz <- rc[[11]]
 
     new_datetimeoffset(year, month, day,
-                        hour, minute, second, nanosecond,
+                        hour, minute, second,
+                        nanosecond, subsecond_digits,
                         hour_offset, minute_offset, tz)
 }
 
@@ -150,5 +159,6 @@ vec_proxy_equal.datetimeoffset <- function(x, ...) format_edtf(x, precision = "n
 
 #' @export
 is.na.datetimeoffset <- function(x) is.na(get_year(x)) & is.na(get_month(x)) & is.na(get_day(x)) &
-    is.na(get_hour(x)) & is.na(get_minute(x)) & is.na(get_second(x)) & is.na(get_nanosecond(x)) &
+    is.na(get_hour(x)) & is.na(get_minute(x)) & is.na(get_second(x)) &
+    is.na(get_nanosecond(x)) & is.na(get_subsecond_digits(x)) &
     is.na(get_hour_offset(x)) & is.na(get_minute_offset(x)) & is.na(get_tz(x))

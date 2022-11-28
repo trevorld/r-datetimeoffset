@@ -84,6 +84,7 @@ Initial features
 
 * New accessor S3 methods:
 
+  + `get_subsecond_digits()` and `set_subsecond_digits()`
   + `get_hour_offset()` and `set_hour_offset()`
   + `get_minute_offset()` and `set_minute_offset()`
   + `get_tz()` and `set_tz()` (changes system time, not clock time)
@@ -94,6 +95,12 @@ Initial features
   + `datetime_narrow()`
   + `datetime_precision()`
   + `datetime_widen()`
+
+* Additional subsecond accessors
+
+  + `get_millisecond()` and `set_millisecond()`
+  + `get_microsecond()` and `set_microsecond()`
+  + `get_subsecond()` and `set_subsecond()`
 
 * Other utilities:
 

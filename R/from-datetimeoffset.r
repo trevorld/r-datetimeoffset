@@ -120,9 +120,15 @@ as_year_month_day.datetimeoffset <- function(x) {
     hour <- if (precision >= PRECISION_HOUR) field(x, "hour") else NULL
     minute <- if (precision >= PRECISION_MINUTE) field(x, "minute") else NULL
     second <- if (precision >= PRECISION_SECOND) field(x, "second") else NULL
-    if (precision >= PRECISION_NANOSECOND) {
+    if (precision > PRECISION_MICROSECOND) {
         subsecond <- field(x, "nanosecond")
         subsecond_precision <- "nanosecond"
+    } else if (precision > PRECISION_MILLISECOND) {
+        subsecond <- get_microsecond(x)
+        subsecond_precision <- "microsecond"
+    } else if (precision > PRECISION_SECOND) {
+        subsecond <- get_millisecond(x)
+        subsecond_precision <- "millisecond"
     } else {
         subsecond <- NULL
         subsecond_precision <- NULL
@@ -173,7 +179,6 @@ as_naive_time.datetimeoffset <- function(x) {
     clock::as_naive_time(ymd)
 }
 
-
 as_sys_time_dto <- function(x, ...,
                             ambiguous = "error",
                             nonexistent = "error",
@@ -184,8 +189,18 @@ as_sys_time_dto <- function(x, ...,
     x <- fill_tz(x, fill)
     # {clock} doesn't allow mixed precision so standardize to widest precision
     precision <- datetime_precision(na_omit(x), range = TRUE)[2]
-    if (!is.na(precision))
+    precision_int <- precision_to_int(precision)
+    if (!is.na(precision)) {
+        # {clock} only supports "millisecond", "microsecond", "nanosecond" subsecond precisions
+        if (precision_int > PRECISION_MICROSECOND) {
+            precision <- "nanosecond"
+        } else if (precision_int > PRECISION_MILLISECOND) {
+            precision <- "microsecond"
+        } else if (precision_int > PRECISION_SECOND) {
+            precision <- "millisecond"
+        }
         x <- datetime_widen(x, precision)
+    }
     purrr::map_vec(x, as_sys_time_helper,
                    ambiguous = ambiguous, nonexistent = nonexistent)
 }

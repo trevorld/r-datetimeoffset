@@ -14,6 +14,7 @@
 #'
 #' We also implemented new S3 getter methods:
 #'
+#' * `get_subsecond_digits()`
 #' * `get_hour_offset()`
 #' * `get_minute_offset()`
 #' * `get_tz()`
@@ -35,9 +36,9 @@
 #' @examples
 #' library("clock")
 #' if ("Europe/Paris" %in% OlsonNames()) {
-#'   dt <- as_datetimeoffset("1918-11-11T11:11:11+00:00[Europe/Paris]")
+#'   dt <- as_datetimeoffset("1918-11-11T11:11:11.1234+00:00[Europe/Paris]")
 #' } else {
-#'   dt <- as_datetimeoffset("1918-11-11T11:11:11")
+#'   dt <- as_datetimeoffset("1918-11-11T11:11:11.1234")
 #' }
 #' get_year(dt)
 #' get_month(dt)
@@ -46,6 +47,7 @@
 #' get_minute(dt)
 #' get_second(dt)
 #' get_nanosecond(dt)
+#' get_subsecond_digits(dt)
 #' get_hour_offset(dt)
 #' get_minute_offset(dt)
 #' get_tz(dt)
@@ -100,7 +102,8 @@ NULL
 #' dt <- set_hour(dt, 11L)
 #' dt <- set_minute(dt, 11L)
 #' dt <- set_second(dt, 11L)
-#' dt <- set_nanosecond(dt, NA_integer_)
+#' dt <- set_nanosecond(dt, 123456789L)
+#' dt <- set_subsecond_digits(dt, 4L)
 #' dt <- set_hour_offset(dt, 0L)
 #' dt <- set_minute_offset(dt, 0L)
 #' dt <- set_tz(dt, "Europe/Paris")
@@ -231,14 +234,52 @@ get_nanosecond.datetimeoffset <- function(x) {
     field(x, "nanosecond")
 }
 
+#### Flag to not adjust `subsecond_digits` field?
+
 #' @importFrom clock set_nanosecond
 #' @rdname setters
+#' @param digits If `NULL` do not update the `subsecond_digits` field.
+#'               Otherwise an integer vector (`1L` through `9L` or `NA_integer_`)
+#'               to update the `subsecond_digits` field with.
 #' @export
-set_nanosecond.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
+set_nanosecond.datetimeoffset <- function(x, value, ...,
+                                          na_set = FALSE, digits = NULL) {
     value <- as.integer(value)
-    s <- formatC(value, format = "d", flag = "0", width = 9L)
-    stopifnot(isFALSE(any(nchar(s) > 9L)))
     field(x, "nanosecond") <- set_helper(x, value, na_set)
+    if (!is.null(digits))
+        field(x, "subsecond_digits") <- set_helper(x, as.integer(digits), na_set)
+    x
+}
+
+#' @rdname getters
+#' @export
+get_subsecond_digits <- function(x) {
+    UseMethod("get_subsecond_digits")
+}
+
+#' @rdname getters
+#' @export
+get_subsecond_digits.datetimeoffset <- function(x) {
+    field(x, "subsecond_digits")
+}
+
+#' @rdname getters
+#' @export
+get_subsecond_digits.default <- function(x) {
+    get_subsecond_digits.datetimeoffset(as_datetimeoffset(x))
+}
+
+#' @rdname setters
+#' @export
+set_subsecond_digits <- function(x, value, ...) {
+    UseMethod("set_subsecond_digits")
+}
+
+#' @rdname setters
+#' @export
+set_subsecond_digits.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
+    value <- as.integer(value)
+    field(x, "subsecond_digits") <- set_helper(x, value, na_set)
     x
 }
 

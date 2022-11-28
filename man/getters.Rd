@@ -9,6 +9,9 @@
 \alias{get_minute.datetimeoffset}
 \alias{get_second.datetimeoffset}
 \alias{get_nanosecond.datetimeoffset}
+\alias{get_subsecond_digits}
+\alias{get_subsecond_digits.datetimeoffset}
+\alias{get_subsecond_digits.default}
 \alias{get_hour_offset}
 \alias{get_hour_offset.datetimeoffset}
 \alias{get_hour_offset.default}
@@ -37,6 +40,12 @@
 \method{get_second}{datetimeoffset}(x)
 
 \method{get_nanosecond}{datetimeoffset}(x)
+
+get_subsecond_digits(x)
+
+\method{get_subsecond_digits}{datetimeoffset}(x)
+
+\method{get_subsecond_digits}{default}(x)
 
 get_hour_offset(x)
 
@@ -87,6 +96,7 @@ We implement \code{\link[=datetimeoffset]{datetimeoffset()}} support for the fol
 
 We also implemented new S3 getter methods:
 \itemize{
+\item \code{get_subsecond_digits()}
 \item \code{get_hour_offset()}
 \item \code{get_minute_offset()}
 \item \code{get_tz()}
@@ -107,9 +117,9 @@ We also implement \code{\link[=datetimeoffset]{datetimeoffset()}} support for th
 \examples{
 library("clock")
 if ("Europe/Paris" \%in\% OlsonNames()) {
-  dt <- as_datetimeoffset("1918-11-11T11:11:11+00:00[Europe/Paris]")
+  dt <- as_datetimeoffset("1918-11-11T11:11:11.1234+00:00[Europe/Paris]")
 } else {
-  dt <- as_datetimeoffset("1918-11-11T11:11:11")
+  dt <- as_datetimeoffset("1918-11-11T11:11:11.1234")
 }
 get_year(dt)
 get_month(dt)
@@ -118,6 +128,7 @@ get_hour(dt)
 get_minute(dt)
 get_second(dt)
 get_nanosecond(dt)
+get_subsecond_digits(dt)
 get_hour_offset(dt)
 get_minute_offset(dt)
 get_tz(dt)

@@ -261,10 +261,10 @@ datetimeoffset_now(c("America/Los_Angeles", "America/New_York",
 
 ```
 ## <datetimeoffset[4]>
-## [1] 2022-11-12T15:52:14.785139725-08:00[America/Los_Angeles]
-## [2] 2022-11-12T18:52:14.785139725-05:00[America/New_York]   
-## [3] 2022-11-12T23:52:14.785139725+00:00[Europe/London]      
-## [4] 2022-11-13T07:52:14.785139725+08:00[Asia/Shanghai]
+## [1] 2022-11-27T23:05:33.663086650-08:00[America/Los_Angeles]
+## [2] 2022-11-28T02:05:33.663086650-05:00[America/New_York]   
+## [3] 2022-11-28T07:05:33.663086650+00:00[Europe/London]      
+## [4] 2022-11-28T15:05:33.663086650+08:00[Asia/Shanghai]
 ```
 
 ### <a name="pdf">Augmenting pdf datetime metadata</a>
@@ -282,7 +282,7 @@ print(creation_date)
 
 ```
 ## <datetimeoffset[1]>
-## [1] 2022-11-12T15:52:14.893366195-08:00[America/Los_Angeles]
+## [1] 2022-11-27T23:05:33.785462396-08:00[America/Los_Angeles]
 ```
 
 ```r
@@ -301,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-12T15:52:14
+## CreationDate: 2022-11-27T23:05:33
 ## Creator: R
-## Producer: R 4.2.1
+## Producer: R 4.2.2
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-12T15:52:14
+## ModDate: 2022-11-27T23:05:33
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-12T15:52:14-08:00
+## CreationDate: 2022-11-27T23:05:33-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-12T15:52:20-08:00
+## ModDate: 2022-11-27T23:05:39-08:00
 ```
 
 ## <a name="features">Features</a>
@@ -417,6 +417,7 @@ print(di)
 
 * New accessor S3 methods:
 
+  + `get_subsecond_digits()` and `set_subsecond_digits()`
   + `get_hour_offset()` and `set_hour_offset()`
   + `get_minute_offset()` and `set_minute_offset()`
   + `get_tz()` and `set_tz()` (changes system time, not clock time)
@@ -427,6 +428,12 @@ print(di)
   + `datetime_narrow()`
   + `datetime_precision()`
   + `datetime_widen()`
+
+* Additional subsecond accessors
+
+  + `get_millisecond()` and `set_millisecond()`
+  + `get_microsecond()` and `set_microsecond()`
+  + `get_subsecond()` and `set_subsecond()`
 
 * Other utilities:
 
@@ -469,8 +476,6 @@ print(di)
   + `year_month_day()`
   + `year_month_weekday()`
   + `year_quarter_day()`
-
-* `{clock}` distinguishes between "millisecond", "microsecond", and "nanosecond" sub-second precisions while `{datetimeoffset}` does not distinguish such sub-second precisions (but default output formats omit trailing zeroes)
 
 * `{clock}` has a large, verbose, and explicit API that will force you to explicitly cast your datetimes into unambiguous formats to ensure correctness with respect to invalid dates and daylight saving time issues:
  
@@ -519,9 +524,9 @@ print(di)
   
   ```
   ## <datetimeoffset[3]>
-  ## [1] 2019-01-01T01:00:00.1-05:00[America/New_York]     
+  ## [1] 2019-01-01T01:00:00.100000-05:00[America/New_York]
   ## [2] 2019-01-01T01:00:00.123456-05:00[America/New_York]
-  ## [3] 2019-01-01T01:00:00.3-05:00[America/New_York]
+  ## [3] 2019-01-01T01:00:00.300000-05:00[America/New_York]
   ```
   
   ```r
@@ -532,6 +537,46 @@ print(di)
   ## <zoned_time<second><America/New_York>[3]>
   ## [1] "2019-01-01T01:00:00-05:00" "2019-01-01T01:00:00-05:00"
   ## [3] "2019-01-01T01:00:00-05:00"
+  ```
+
+* `{clock}` only distinguishes between "millisecond", "microsecond", and "nanosecond" sub-second precisions while `{datetimeoffset}` distinguishes all sub-second precisions up to "nanosecond".  For example a "SQL Server Datetime2" datetime supports exactly seven digits of subsecond precision (uses a hundred nanoseconds unit):
+
+  
+  ```r
+  dt <- as_datetimeoffset("2020-05-10 20:10:15.1234567")
+  print(dt)
+  ```
+  
+  ```
+  ## <datetimeoffset[1]>
+  ## [1] 2020-05-10T20:10:15.1234567
+  ```
+  
+  ```r
+  datetime_precision(dt)
+  ```
+  
+  ```
+  ## [1] "hundred nanoseconds"
+  ```
+  
+  ```r
+  nt <- clock::naive_time_parse("2020-05-10 20:10:15.1234567", 
+                                format = "%F %T", precision = "nanosecond")
+  print(nt)
+  ```
+  
+  ```
+  ## <clock_naive_time[1]>
+  ## [1] "2020-05-10T20:10:15.123456700"
+  ```
+  
+  ```r
+  datetime_precision(nt)
+  ```
+  
+  ```
+  ## [1] "nanosecond"
   ```
 
 * `{datetimeoffset}` vectors allow lower precision elements to be missing:
@@ -631,35 +676,18 @@ format_edtf(dts)
 ```
 
 ```r
-# serialize via character vector
-ch <- format_edtf(dts, precision = "nanosecond", usetz = TRUE)
-print(ch)
-```
-
-```
-## [1] "2020-XX-15TXX:XX:XX.XXXXXXXXX+XX:XX[X]"
-## [2] "1980-10-XXTXX:XX:XX.XXXXXXXXX+XX:XX[X]"
-```
-
-```r
-dts_ch <- as_datetimeoffset(ch)
-all.equal(dts, dts_ch)
-```
-
-```
-## [1] TRUE
-```
-
-```r
 # serialize via data frame
 df <- vctrs::vec_data(dts)
 print(df)
 ```
 
 ```
-##   year month day hour minute second nanosecond hour_offset minute_offset   tz
-## 1 2020    NA  15   NA     NA     NA         NA          NA            NA <NA>
-## 2 1980    10  NA   NA     NA     NA         NA          NA            NA <NA>
+##   year month day hour minute second nanosecond subsecond_digits hour_offset
+## 1 2020    NA  15   NA     NA     NA         NA               NA          NA
+## 2 1980    10  NA   NA     NA     NA         NA               NA          NA
+##   minute_offset   tz
+## 1            NA <NA>
+## 2            NA <NA>
 ```
 
 ```r

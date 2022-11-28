@@ -254,6 +254,7 @@ print(di)
 
 * New accessor S3 methods:
 
+  + `get_subsecond_digits()` and `set_subsecond_digits()`
   + `get_hour_offset()` and `set_hour_offset()`
   + `get_minute_offset()` and `set_minute_offset()`
   + `get_tz()` and `set_tz()` (changes system time, not clock time)
@@ -264,6 +265,12 @@ print(di)
   + `datetime_narrow()`
   + `datetime_precision()`
   + `datetime_widen()`
+
+* Additional subsecond accessors
+
+  + `get_millisecond()` and `set_millisecond()`
+  + `get_microsecond()` and `set_microsecond()`
+  + `get_subsecond()` and `set_subsecond()`
 
 * Other utilities:
 
@@ -307,8 +314,6 @@ print(di)
   + `year_month_weekday()`
   + `year_quarter_day()`
 
-* `{clock}` distinguishes between "millisecond", "microsecond", and "nanosecond" sub-second precisions while `{datetimeoffset}` does not distinguish such sub-second precisions (but default output formats omit trailing zeroes)
-
 * `{clock}` has a large, verbose, and explicit API that will force you to explicitly cast your datetimes into unambiguous formats to ensure correctness with respect to invalid dates and daylight saving time issues:
  
   + Datetimes must either be "naive" datetime (roughly local time without UTC offsets or time zones), "sys" datetime (UTC time), and "zoned" datetime (roughly local time with time zone)
@@ -337,6 +342,19 @@ print(di)
                     tz = "America/New_York")
   as_datetimeoffset(dts)
   clock::as_zoned_time(dts)
+  ```
+
+* `{clock}` only distinguishes between "millisecond", "microsecond", and "nanosecond" sub-second precisions while `{datetimeoffset}` distinguishes all sub-second precisions up to "nanosecond".  For example a "SQL Server Datetime2" datetime supports exactly seven digits of subsecond precision (uses a hundred nanoseconds unit):
+
+  ```{r subsecond}
+  dt <- as_datetimeoffset("2020-05-10 20:10:15.1234567")
+  print(dt)
+  datetime_precision(dt)
+
+  nt <- clock::naive_time_parse("2020-05-10 20:10:15.1234567", 
+                                format = "%F %T", precision = "nanosecond")
+  print(nt)
+  datetime_precision(nt)
   ```
 
 * `{datetimeoffset}` vectors allow lower precision elements to be missing:
@@ -376,12 +394,6 @@ print(di)
 ```{r}
 dts <- datetimeoffset(year = c(2020, 1980), month = c(NA, 10), day = c(15, NA))
 format_edtf(dts)
-
-# serialize via character vector
-ch <- format_edtf(dts, precision = "nanosecond", usetz = TRUE)
-print(ch)
-dts_ch <- as_datetimeoffset(ch)
-all.equal(dts, dts_ch)
 
 # serialize via data frame
 df <- vctrs::vec_data(dts)

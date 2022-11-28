@@ -189,28 +189,28 @@ test_that("base R classes", {
     # POSIXct
     dt <- as.POSIXct(c("2022-10-10 10:00:00", NA_character_), tz = "America/New_York")
     expect_equal(format(as_datetimeoffset(dt)),
-                 c("2022-10-10T10:00:00.0-04:00[America/New_York]", NA_character_))
+                 c("2022-10-10T10:00:00.000000-04:00[America/New_York]", NA_character_))
 
     dt <- as.POSIXct(c("2022-10-10 10:00:00.123456", NA_character_), tz = "America/New_York")
     expect_equal(format(as_datetimeoffset(dt)),
                  c("2022-10-10T10:00:00.123456-04:00[America/New_York]", NA_character_))
     dt <- as.POSIXct(c("2019-01-01 01:00:00.1", "2019-01-01 01:00:00.3"), tz = "America/New_York")
     expect_equal(format(as_datetimeoffset(dt)),
-                 c("2019-01-01T01:00:00.1-05:00[America/New_York]",
-                   "2019-01-01T01:00:00.3-05:00[America/New_York]"))
+                 c("2019-01-01T01:00:00.100000-05:00[America/New_York]",
+                   "2019-01-01T01:00:00.300000-05:00[America/New_York]"))
 
     # POSIXlt
     dt <- as.POSIXlt(c("2022-10-10 10:00:00", NA_character_), tz = "America/New_York")
     expect_equal(format(as_datetimeoffset(dt)),
-                 c("2022-10-10T10:00:00.0-04:00[America/New_York]", NA_character_))
+                 c("2022-10-10T10:00:00.000000-04:00[America/New_York]", NA_character_))
 
     dt <- as.POSIXlt(c("2022-10-10 10:00:00.123456", NA_character_), tz = "America/New_York")
     expect_equal(format(as_datetimeoffset(dt)),
                  c("2022-10-10T10:00:00.123456-04:00[America/New_York]", NA_character_))
     dt <- as.POSIXlt(c("2019-01-01 01:00:00.1", "2019-01-01 01:00:00.3"), tz = "America/New_York")
     expect_equal(format(as_datetimeoffset(dt)),
-                 c("2019-01-01T01:00:00.1-05:00[America/New_York]",
-                   "2019-01-01T01:00:00.3-05:00[America/New_York]"))
+                 c("2019-01-01T01:00:00.100000-05:00[America/New_York]",
+                   "2019-01-01T01:00:00.300000-05:00[America/New_York]"))
     # potentially ambiguous time
     dt <- as.POSIXlt(as_datetimeoffset("2020-11-01T01:30:00.123456-04:00[America/New_York]"))
     expect_equal(format(as_datetimeoffset(dt)),
@@ -278,11 +278,11 @@ test_that("{clock} classes", {
 test_that("as_datetimeoffset.nanotime()", {
     skip_if_not_installed("nanotime")
     dt <- as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16.03Z"))
-    expect_equal(format(dt), "2020-05-15T08:23:16.03Z")
+    expect_equal(format(dt), "2020-05-15T08:23:16.030000000Z")
     dt <- as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16Z"))
     expect_equal(get_nanosecond(dt), 0L)
     dt <- as_datetimeoffset(nanotime::as.nanotime(c(NA_integer_, 2000L)))
-    expect_equal(format(dt), c(NA_character_, "1970-01-01T00:00:00.000002Z"))
+    expect_equal(format(dt), c(NA_character_, "1970-01-01T00:00:00.000002000Z"))
     expect_equal(is.na(dt), c(TRUE, FALSE))
 
     skip_if_not("America/New_York" %in% OlsonNames())
@@ -290,6 +290,72 @@ test_that("as_datetimeoffset.nanotime()", {
     dt <- as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16Z"),
                             tz = c("GMT", "America/New_York"))
     expect_equal(format(dt),
-                 c("2020-05-15T08:23:16.0Z",
-                   "2020-05-15T04:23:16.0-04:00[America/New_York]"))
+                 c("2020-05-15T08:23:16.000000000Z",
+                   "2020-05-15T04:23:16.000000000-04:00[America/New_York]"))
+})
+
+test_that("improved subsecond precision", {
+    expect_equal(format(as_datetimeoffset.character("2020-02-02T10:10:10.0")),
+                 "2020-02-02T10:10:10.0")
+    expect_equal(format(as_datetimeoffset.character("2020-02-02T10:10:10.1")),
+                 "2020-02-02T10:10:10.1")
+    expect_equal(format(as_datetimeoffset.character("2020-02-02T10:10:10.12")),
+                 "2020-02-02T10:10:10.12")
+    expect_equal(format(as_datetimeoffset.character("2020-02-02T10:10:10.123")),
+                 "2020-02-02T10:10:10.123")
+    expect_equal(format(as_datetimeoffset.character("2020-02-02T10:10:10.1234")),
+                 "2020-02-02T10:10:10.1234")
+    expect_equal(format(as_datetimeoffset.character("2020-02-02T10:10:10.12345")),
+                 "2020-02-02T10:10:10.12345")
+    expect_equal(format(as_datetimeoffset.character("2020-02-02T10:10:10.123456")),
+                 "2020-02-02T10:10:10.123456")
+    expect_equal(format(as_datetimeoffset.character("2020-02-02T10:10:10.1234567")),
+                 "2020-02-02T10:10:10.1234567")
+    expect_equal(format(as_datetimeoffset.character("2020-02-02T10:10:10.12345678")),
+                 "2020-02-02T10:10:10.12345678")
+    expect_equal(format(as_datetimeoffset.character("2020-02-02T10:10:10.123456789")),
+                 "2020-02-02T10:10:10.123456789")
+
+    # max nanotime precision
+    expect_equal(format(as_datetimeoffset.character("2020-02-02T10:10:10.1234567890")),
+                 "2020-02-02T10:10:10.123456789")
+    expect_equal(format(as_datetimeoffset.character("2020-02-02T10:10:10.12345678901")),
+                 "2020-02-02T10:10:10.123456789")
+
+    # precision strings
+    dts <- c("2020-02-02T10:10:10",
+             "2020-02-02T10:10:10.1",
+             "2020-02-02T10:10:10.12",
+             "2020-02-02T10:10:10.123",
+             "2020-02-02T10:10:10.1234",
+             "2020-02-02T10:10:10.12345",
+             "2020-02-02T10:10:10.123456",
+             "2020-02-02T10:10:10.1234567",
+             "2020-02-02T10:10:10.12345678",
+             "2020-02-02T10:10:10.123456789")
+    dto <- as_datetimeoffset.character(dts)
+    expect_equal(format(dto), dts)
+    expect_equal(datetime_precision(dto),
+                 c("second", "decisecond", "centisecond", "millisecond",
+                   "hundred microseconds", "ten microseconds", "microsecond",
+                   "hundred nanoseconds", "ten nanoseconds", "nanosecond"))
+
+    # leap second
+    dt <- as_datetimeoffset.character("2005-12-31 23:59:60Z")
+
+    # keep precision of explicit zeroes
+    dt <- as_datetimeoffset.character("2020-02-02T10:10:10.10")
+    expect_equal(get_subsecond_digits(dt), 2L)
+    expect_equal(datetime_precision(dt), "centisecond")
+    expect_equal(format(dt), "2020-02-02T10:10:10.10")
+
+    dt <- datetime_widen(dt, "ten nanoseconds")
+    expect_equal(format(dt), "2020-02-02T10:10:10.10000000")
+    dt <- datetime_narrow(dt, "hundred microseconds")
+    expect_equal(format(dt), "2020-02-02T10:10:10.1000")
+
+    dt <- as_datetimeoffset.character("2020-02-02T10:10:10.1000")
+    expect_equal(get_subsecond_digits(dt), 4L)
+    expect_equal(datetime_precision(dt), "hundred microseconds")
+    expect_equal(format(dt), "2020-02-02T10:10:10.1000")
 })
