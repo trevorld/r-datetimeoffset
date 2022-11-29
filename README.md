@@ -261,10 +261,10 @@ datetimeoffset_now(c("America/Los_Angeles", "America/New_York",
 
 ```
 ## <datetimeoffset[4]>
-## [1] 2022-11-27T23:05:33.663086650-08:00[America/Los_Angeles]
-## [2] 2022-11-28T02:05:33.663086650-05:00[America/New_York]   
-## [3] 2022-11-28T07:05:33.663086650+00:00[Europe/London]      
-## [4] 2022-11-28T15:05:33.663086650+08:00[Asia/Shanghai]
+## [1] 2022-11-29T13:03:34.253419245-08:00[America/Los_Angeles]
+## [2] 2022-11-29T16:03:34.253419245-05:00[America/New_York]   
+## [3] 2022-11-29T21:03:34.253419245+00:00[Europe/London]      
+## [4] 2022-11-30T05:03:34.253419245+08:00[Asia/Shanghai]
 ```
 
 ### <a name="pdf">Augmenting pdf datetime metadata</a>
@@ -282,7 +282,7 @@ print(creation_date)
 
 ```
 ## <datetimeoffset[1]>
-## [1] 2022-11-27T23:05:33.785462396-08:00[America/Los_Angeles]
+## [1] 2022-11-29T13:03:34.320973389-08:00[America/Los_Angeles]
 ```
 
 ```r
@@ -301,13 +301,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-27T23:05:33
+## CreationDate: 2022-11-29T13:03:34
 ## Creator: R
 ## Producer: R 4.2.2
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-11-27T23:05:33
+## ModDate: 2022-11-29T13:03:34
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -327,13 +327,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-11-27T23:05:33-08:00
+## CreationDate: 2022-11-29T13:03:34-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-11-27T23:05:39-08:00
+## ModDate: 2022-11-29T13:03:39-08:00
 ```
 
 ## <a name="features">Features</a>
@@ -662,6 +662,50 @@ print(di)
   ## [4] 1970-01-01T00:00:00-08:00[America/Los_Angeles]
   ## [5] 1970-01-01T00:00:00-08:00[America/Los_Angeles]
   ```
+
+* `{datetimeoffset}` can import/export [leap seconds](https://en.wikipedia.org/wiki/Leap_second):
+
+  
+  ```r
+  dt <- as_datetimeoffset("2005-12-31T23:59:60Z")
+  format(dt)
+  ```
+  
+  ```
+  ## [1] "2005-12-31T23:59:60Z"
+  ```
+  
+  ```r
+  as.POSIXlt(dt) |> format()
+  ```
+  
+  ```
+  ## [1] "2005-12-31 23:59:60"
+  ```
+  
+  ```r
+  clock::sys_time_parse("2005-12-31T23:59:60")
+  ```
+  
+  ```
+  ## Warning: Failed to parse 1 string at location 1. Returning `NA` at that
+  ## location.
+  ```
+  
+  ```
+  ## <clock_sys_time[1]>
+  ## [1] NA
+  ```
+  
+  ```r
+  clock::year_month_day(2005, 12, 31, 23, 59, 60)
+  ```
+  
+  ```
+  ## Error:
+  ## ! `second` must be within the range of [0, 59], not 60.
+  ```
+
 
 ## <a name="serializing">Serializing</a>
 

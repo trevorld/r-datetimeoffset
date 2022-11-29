@@ -52,6 +52,8 @@ invalid_detect.datetimeoffset <- function(x) {
 }
 
 invalid_detect_helper <- function(x) {
+    if (get_second(x) == 60L) # {clock} doesn't handle leap seconds
+        x <- set_second(x, 59L)
     invalid_detect_calendar(x) ||
         invalid_detect_utc_offsets(x) ||
         invalid_detect_nonexistent(x)
@@ -62,11 +64,16 @@ invalid_detect_calendar <- function(x) {
 }
 
 invalid_detect_utc_offsets <- function(x) {
-    if (!is.na(get_hour_offset(x)) && !is.na(get_tz(x))) {
+    tz <- get_tz(x)
+    if (!is.na(get_hour_offset(x)) && !is.na(tz)) {
         x <- fill_utc_offsets(x)
         x <- datetime_cast(x, "second")
-        isTRUE(tryCatch(clock::zoned_time_parse_complete(format(x)),
-                        warning = function(w) TRUE))
+        if (is_utc(tz)) {
+            get_hour_offset(x) != 0L || isFALSE(get_minute_offset(x) == 0L)
+        } else {
+            isTRUE(tryCatch(clock::zoned_time_parse_complete(format(x)),
+                            warning = function(w) TRUE))
+        }
     } else {
         FALSE
     }

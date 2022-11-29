@@ -78,11 +78,37 @@ as_date.datetimeoffset <- function(x) {
 #' @rdname from_datetimeoffset
 #' @export
 as.POSIXct.datetimeoffset <- function(x, tz = mode_tz(x), ..., fill = "") {
-    x <- datetime_widen.datetimeoffset(x, "nanosecond")
+    x <- datetime_widen.datetimeoffset(x, "microsecond")
     x <- fill_tz(x, fill)
-    zt <- as_zoned_time.datetimeoffset(x)
-    as.POSIXct(format(zt, format = "%FT%H:%M:%S%z"),
-               tz = tz, format = "%FT%H:%M:%OS%z")
+    purrr::map_vec(x, as_posixt_helper, tz = tz, f = as.POSIXct)
+}
+
+as_posixt_helper <- function(x, tz, f) {
+    if (is.na(x)) return (f(NA_character_))
+    secs <- get_second.datetimeoffset(x)
+    if (secs < 60L) { # {clock} doesn't handle leap seconds
+        zt <- as_zoned_time.datetimeoffset(x)
+        f(format(zt, format = "%FT%H:%M:%S%z"),
+          tz = tz, format = "%FT%H:%M:%OS%z")
+    } else {
+        x_tz <- get_tz(x)
+        if (!is.na(x_tz)) {
+            s <- format_iso8601(x, offsets = FALSE)
+            dt <- f(s, tz = x_tz, format = "%FT%H:%M:%OS")
+            if (tz != x_tz) {
+                if (!inherits(dt, "POSIXct"))
+                    dt <- as.POSIXct(dt)
+                attr(dt, "tzone") <- tz
+                f(dt)
+            } else {
+                dt
+            }
+        } else {
+            utc_offsets <- get_utc_offsets(x, sep = "")
+            s <- paste0(format_iso8601(x, offsets = FALSE), utc_offsets)
+            f(s, tz = tz, format = "%FT%H:%M:%OS%z")
+        }
+    }
 }
 
 #' @rdname from_datetimeoffset
@@ -95,11 +121,9 @@ as_date_time.datetimeoffset <- function(x, zone = mode_tz(x), ..., fill = NA_cha
 #' @rdname from_datetimeoffset
 #' @export
 as.POSIXlt.datetimeoffset <- function(x, tz = mode_tz(x), ..., fill = "") {
-    x <- datetime_widen.datetimeoffset(x, "nanosecond")
+    x <- datetime_widen.datetimeoffset(x, "microsecond")
     x <- fill_tz(x, fill)
-    zt <- as_zoned_time.datetimeoffset(x)
-    as.POSIXlt(format(zt, format = "%FT%H:%M:%S%z"),
-               tz = tz, format = "%FT%H:%M:%OS%z")
+    purrr::map_vec(x, as_posixt_helper, tz = tz, f = as.POSIXlt)
 }
 
 as.nanotime.datetimeoffset <- function(from, fill = NA_character_) {
@@ -133,8 +157,16 @@ as_year_month_day.datetimeoffset <- function(x) {
         subsecond <- NULL
         subsecond_precision <- NULL
     }
-    clock::year_month_day(year, month, day, hour, minute, second, subsecond,
-                          subsecond_precision = subsecond_precision)
+    # {clock} doesn't handle leap seconds, use next second like `POSIXct` or `nanotime`
+    idx <- which(second == 60L)
+    if (length(idx) > 0L)
+        second[idx] <- 59L
+    ymd <- clock::year_month_day(year, month, day, hour, minute, second, subsecond,
+                                 subsecond_precision = subsecond_precision)
+    if (length(idx) > 0L) {
+        ymd[idx] <- clock::as_year_month_day(clock::add_seconds(clock::as_naive_time(ymd[idx]), 1L))
+    }
+    ymd
 }
 
 #' @rdname from_datetimeoffset
@@ -219,9 +251,16 @@ as_sys_time_helper <- function(x, ambiguous = "error", nonexistent = "error") {
         ft <- set_tz(ft, NA_character_)
         if (is.na(get_minute_offset(x)))
             ft <- set_minute_offset(ft, 0L)
+        # {clock} doesn't handle leap seconds, use next second like `POSIXct` or `nanotime`
+        idx <- which(get_second(ft) == 60L)
+        if (length(idx) > 0L)
+            ft[idx] <- set_second(ft[idx], 59L)
         st <- clock::sys_time_parse(format(ft),
                                     format = "%Y-%m-%dT%H:%M:%S%Ez",
                                     precision = "nanosecond")
+        if (length(idx) > 0L) {
+            st[idx] <- clock::add_seconds(st[idx], 1L)
+        }
     } else if (!is.na(get_tz(x))) {
         nt <- as_naive_time.datetimeoffset(x)
         zt <- clock::as_zoned_time(nt, get_tz(x),

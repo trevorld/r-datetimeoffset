@@ -389,6 +389,17 @@ print(di)
                       "1970-01-01T00:00:00[America/Los_Angeles]"))
   ```
 
+* `{datetimeoffset}` can import/export [leap seconds](https://en.wikipedia.org/wiki/Leap_second):
+
+  ```{r leap}
+  dt <- as_datetimeoffset("2005-12-31T23:59:60Z")
+  format(dt)
+  as.POSIXlt(dt) |> format()
+  clock::sys_time_parse("2005-12-31T23:59:60")
+  clock::year_month_day(2005, 12, 31, 23, 59, 60)
+  ```
+
+
 ## <a name="serializing">Serializing</a>
 
 ```{r}

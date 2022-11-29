@@ -122,6 +122,12 @@ test_that("clock classes", {
                  "2020-061")
     expect_equal(format(as_weekday(dt)), "Sun")
 
+    dt <- as_datetimeoffset("2020-03-23T04:04:04.123456789Z")
+    ymd <- clock::as_year_month_day(dt)
+    expect_equal(format(ymd), "2020-03-23T04:04:04.123456789")
+    st <- clock::as_sys_time(dt)
+    expect_equal(format(st), "2020-03-23T04:04:04.123456789")
+
     skip_if_not(all(c("America/Los_Angeles") %in% OlsonNames()))
     dts <- as_datetimeoffset(c("2000-01-02",
                                "2000-01-02T03",
