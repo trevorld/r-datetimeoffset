@@ -43,6 +43,7 @@ test_that("convert to/from POSIXt classes", {
     expect_equal(format(dt_lt, format = "%F %T"),
                  "2006-01-01 08:00:00")
 
+    dt <- as_datetimeoffset.character(lsz)
     dt_ct <- as.POSIXct(dt)
     expect_equal(format(dt_ct, format = "%F %T"),
                  "2006-01-01 00:00:00")
