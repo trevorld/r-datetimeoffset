@@ -41,6 +41,13 @@ test_that("as.POSIXct()", {
     expect_equal(format(as.POSIXct(dt), tz = "America/New_York", digits = 6L),  "2019-01-01 01:00:00.123456")
     dt <- as_datetimeoffset("2020-11-01T01:30:00.123456-04:00[America/New_York]")
     expect_equal(format(as.POSIXct(dt), tz = "America/New_York", digits = 6L),  "2020-11-01 01:30:00.123456")
+
+    # Negative or large years
+    dt <- datetimeoffset(-7971, 5, 31, 10, tz = "GMT")
+    expect_equal(format(as.POSIXct(dt)), "-7971-05-31 10:00:00")
+
+    dt <- datetimeoffset(12016, 2, 19, 10, tz = "GMT")
+    expect_equal(format(as.POSIXct(dt)), "12016-02-19 10:00:00")
 })
 
 test_that("as.POSIXlt()", {
@@ -62,15 +69,26 @@ test_that("as.POSIXlt()", {
     expect_equal(format(as.POSIXlt(dt), tz = "America/New_York", digits = 6L),  "2019-01-01 01:00:00.123456")
     dt <- as_datetimeoffset("2020-11-01T01:30:00.123456-04:00[America/New_York]")
     expect_equal(format(as.POSIXlt(dt), tz = "America/New_York", digits = 6L),  "2020-11-01 01:30:00.123456")
+
+    # Negative or large years
+    dtn <- datetimeoffset(-7971, 5, 31, 10, tz = "GMT")
+    expect_equal(format(as.POSIXlt(dtn)), "-7971-05-31 10:00:00")
+
+    dtl <- datetimeoffset(12016, 2, 19, 10, 10, 10, 123456000L, tz = "GMT")
+    expect_equal(format(as.POSIXlt(dtl), digits = 6L), "12016-02-19 10:10:10.123456")
 })
 
 test_that("clock classes", {
     dt <- as_datetimeoffset("2020-03-23T04:04:04Z")
+    dtn <- datetimeoffset(-7971, 5, 31, 10, tz = "GMT")
+    dtl <- datetimeoffset(12016, 2, 19, 10, tz = "GMT")
 
     ymd <- as_year_month_day(dt)
     expect_equal(format(ymd), "2020-03-23T04:04:04")
     expect_equal(format(as_datetimeoffset(ymd)),
                  "2020-03-23T04:04:04")
+    expect_equal(format(as_year_month_day(dtn)), "-7971-05-31T10")
+    expect_equal(format(as_year_month_day(dtl)), "12016-02-19T10")
     ymd <- clock::year_month_day(c(1984L, NA_integer_))
     expect_equal(is.na(as_datetimeoffset(ymd)), c(FALSE, TRUE))
     expect_equal(format(as_datetimeoffset(ymd)), c("1984", NA_character_))
@@ -99,6 +117,8 @@ test_that("clock classes", {
     expect_equal(format(nt), "2020-03-23T04:04:04")
     expect_equal(format(as_datetimeoffset(nt)),
                  "2020-03-23T04:04:04")
+    expect_equal(format(as_naive_time(dtn)), "-7971-05-31T10")
+    expect_equal(format(as_naive_time(dtl)), "12016-02-19T10")
 
     dt <- as_datetimeoffset("2020-03-23T04:04:04.02Z")
     nt <- as_naive_time(dt)
@@ -159,12 +179,16 @@ test_that("clock classes", {
 
     st <- clock::as_sys_time(dts[3])
     expect_equal(format(as_datetimeoffset(st)), "2000-01-02T11Z")
+    expect_equal(format(as_sys_time(dtn)), "-7971-05-31T10")
+    expect_equal(format(as_sys_time(dtl)), "12016-02-19T10")
 
     expect_equal(format(as_zoned_time(dts[3])),
                  "2000-01-02T03:00:00-08:00[America/Los_Angeles]")
     expect_equal(format(as_zoned_time(dts[3], "GMT")),
                  "2000-01-02T11:00:00+00:00[GMT]")
     expect_true(is.na(as_zoned_time(NA_datetimeoffset_, "GMT")))
+    expect_equal(format(as_zoned_time(dtn)), "-7971-05-31T10:00:00+00:00[GMT]")
+    expect_equal(format(as_zoned_time(dtl)), "12016-02-19T10:00:00+00:00[GMT]")
 
     dts <- as_datetimeoffset(c("2000-01-02T03:04:05.1234",
                                "2000-01-02T03:04:05.1234[America/Los_Angeles]",

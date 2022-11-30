@@ -197,3 +197,14 @@ test_that("format_edtf()", {
     expect_equal(format_edtf(as_datetimeoffset("2020-05"), precision = "nanosecond", usetz = TRUE),
                  "2020-05-XXTXX:XX:XX.XXXXXXXXX+XX:XX[X]")
 })
+
+test_that("negative/large years", {
+    dts <- datetimeoffset(c(-123456L, -10000L, -1L, 0, 10000L, 123456L), 10L, 10L)
+    es <- c("-123456-10-10", "-10000-10-10", "-0001-10-10",
+            "0000-10-10", "+10000-10-10", "+123456-10-10")
+    expect_equal(format(dts), es)
+    expect_equal(format_iso8601(dts), es)
+    expect_equal(format_edtf(dts), es)
+    expect_equal(format_pdfmark(dts), c(NA_character_, NA_character_, NA_character_,
+                                       "D:00001010", NA_character_, NA_character_))
+})

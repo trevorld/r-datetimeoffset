@@ -5,7 +5,6 @@ test_that("leap seconds work", {
     dt <- as_datetimeoffset.character(lsz)
     expect_equal(format(dt), "2005-12-31T23:59:60Z")
 
-    # skip("leap second validation doesn't work (yet)")
     expect_false(clock::invalid_detect(dt))
 })
 
@@ -26,7 +25,6 @@ test_that("convert to/from POSIXt classes", {
     dt <- as_datetimeoffset(dt_lt)
     expect_equal(format(dt), "2005-12-31T23:59:60.000000-08:00[America/Los_Angeles]")
 
-    # skip("leap second conversion doesn't work (yet)")
     # to POSIXt classes
     dt <- as_datetimeoffset.character(lsz)
     dt_lt <- as.POSIXlt(dt)

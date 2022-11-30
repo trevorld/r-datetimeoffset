@@ -12,11 +12,21 @@ test_that("as_datetimeoffset.character()", {
     # Y
     expect_equal(format(as_datetimeoffset("D:2020")), # Y
                  "2020")
+
+    expect_equal(format(as_datetimeoffset("-2020")),
+                 "-2020")
+    expect_equal(format(as_datetimeoffset("+12020")),
+                 "+12020")
+
     # YM
     expect_equal(format(as_datetimeoffset("D:202005")),
                  "2020-05")
     expect_equal(format(as_datetimeoffset("2020-05")),
                  "2020-05")
+    expect_equal(format(as_datetimeoffset("-2020-05")),
+                 "-2020-05")
+    expect_equal(format(as_datetimeoffset("+12020-05")),
+                 "+12020-05")
     # YMD
     expect_equal(format(as_datetimeoffset("D:20200515")),
                  "2020-05-15")
@@ -24,6 +34,7 @@ test_that("as_datetimeoffset.character()", {
                  "2020-05-15")
     expect_equal(format(as_datetimeoffset(as.Date("2020-05-15"))),
                  "2020-05-15")
+
     # YMDh
     expect_equal(format(as_datetimeoffset("D:2020051508")),
                  "2020-05-15T08")
@@ -173,6 +184,13 @@ test_that("as_datetimeoffset.character()", {
     expect_equal(get_minute_offset(dt), 10L)
     expect_equal(get_tz(dt), NA_character_)
 
+    expect_equal(format_edtf(as_datetimeoffset("--10-19")),
+                 "XXXX-10-19")
+    expect_equal(format_edtf(as_datetimeoffset("--1019")),
+                 "XXXX-10-19")
+    expect_equal(format_edtf(as_datetimeoffset("--1019101010")),
+                 "XXXX-10-19T10:10:10")
+
     # YMDhmsz
     skip_if_not("America/Los_Angeles" %in% OlsonNames())
     expect_equal(format(as_datetimeoffset("2020-05-15T08:23:16[America/Los_Angeles]")),
@@ -199,7 +217,19 @@ test_that("base R classes", {
                  c("2019-01-01T01:00:00.100000-05:00[America/New_York]",
                    "2019-01-01T01:00:00.300000-05:00[America/New_York]"))
 
+    dtn <- as.POSIXct("2022-10-10 10:00:00", tz = "GMT") - as.difftime(10000 * 365 * 24, units = "hours")
+    dtn1 <- as_datetimeoffset(dtn)
+    expect_equal(format(dtn1), "-7971-05-31T10:00:00.000000Z")
+    dtl <- as.POSIXct("2022-10-10 10:00:00", tz = "GMT") + as.difftime(10000 * 365 * 24, units = "hours")
+    dtl1 <- as_datetimeoffset(dtl)
+    expect_equal(format(dtl1), "+12016-02-19T10:00:00.000000Z")
+
     # POSIXlt
+    dtn2 <- as_datetimeoffset(as.POSIXlt(dtn))
+    expect_equal(format(dtn2), "-7971-05-31T10:00:00.000000Z")
+    dtl2 <- as_datetimeoffset(as.POSIXlt(dtl))
+    expect_equal(format(dtl2), "+12016-02-19T10:00:00.000000Z")
+
     dt <- as.POSIXlt(c("2022-10-10 10:00:00", NA_character_), tz = "America/New_York")
     expect_equal(format(as_datetimeoffset(dt)),
                  c("2022-10-10T10:00:00.000000-04:00[America/New_York]", NA_character_))
@@ -246,6 +276,28 @@ test_that("{clock} classes", {
     dto <- as_datetimeoffset(clock::as_zoned_time(clock::as_sys_time(ymd), Sys.timezone()))
     expect_equal(format(dto)[1], c(NA_character_))
     expect_equal(is.na(dto), c(TRUE, FALSE))
+
+    # year less than zero
+    ymd <- clock::year_month_day(-73, 10, 10)
+    dto <- as_datetimeoffset(ymd)
+    expect_equal(format(dto), "-0073-10-10")
+    nt <- clock::as_naive_time(ymd)
+    dto <- as_datetimeoffset(nt)
+    expect_equal(format(dto), "-0073-10-10")
+    st <- clock::as_sys_time(ymd)
+    dto <- as_datetimeoffset(st)
+    expect_equal(format(dto), "-0073-10-10")
+
+    # year more than 9999
+    ymd <- clock::year_month_day(11234, 10, 10)
+    dto <- as_datetimeoffset(ymd)
+    expect_equal(format(dto), "+11234-10-10")
+    nt <- clock::as_naive_time(ymd)
+    dto <- as_datetimeoffset(nt)
+    expect_equal(format(dto), "+11234-10-10")
+    st <- clock::as_sys_time(ymd)
+    dto <- as_datetimeoffset(st)
+    expect_equal(format(dto), "+11234-10-10")
 
     # ambiguous times
     dts <- c("2020-11-01T01:30:00[America/New_York]", # ambiguous sys time

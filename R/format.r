@@ -57,7 +57,13 @@ NULL
 #' @export
 format.datetimeoffset <- function(x, ...) {
     x <- update_nas(x)
-    year_str <- my_format(field(x, "year"), width = 4L)
+    s <- purrr::map_chr(x, format_helper)
+    is.na(s) <- is.na(field(x, "year"))
+    s
+}
+
+format_helper <- function(x) {
+    year_str <- my_format_year(field(x, "year"))
     month_str <- my_format(field(x, "month"), prefix = "-")
     day_str <- my_format(field(x, "day"), prefix = "-")
     hour_str <- my_format(field(x, "hour"), prefix = "T")
@@ -65,11 +71,23 @@ format.datetimeoffset <- function(x, ...) {
     second_str <- my_format(field(x, "second"), prefix = ":")
     nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"), field(x, "subsecond_digits"))
     offset_str <- my_format_tz(x, add_tz = TRUE)
-    s <- paste0(year_str, month_str, day_str,
-                hour_str, minute_str, second_str, nanosecond_str,
-                offset_str)
-    is.na(s) <- is.na(field(x, "year"))
-    s
+    paste0(year_str, month_str, day_str,
+           hour_str, minute_str, second_str, nanosecond_str,
+           offset_str)
+}
+
+my_format_year <- function(year, ...) {
+    if (isTRUE(year < 0L)) {
+        width <- 5L
+    } else {
+        width <- 4L
+    }
+    if (isTRUE(year > 9999L)) {
+        flag <- "0+"
+    } else {
+        flag <- "0"
+    }
+    my_format(year, width = width, flag = flag, ...)
 }
 
 my_format_nanosecond <- function(ns, sd, edtf = FALSE, blank = FALSE) {
@@ -120,7 +138,7 @@ format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":"
         x <- set_tz(x, NA_character_)
     }
     x <- update_nas(x)
-    year_str <- my_format(field(x, "year"), width = 4L)
+    year_str <- my_format_year(field(x, "year"))
     month_str <- my_format(field(x, "month"), prefix = "-")
     day_str <- my_format(field(x, "day"), prefix = "-")
     hour_str <- my_format(field(x, "hour"), prefix = "T")
@@ -148,7 +166,13 @@ format_ISO8601.datetimeoffset <- function(x, usetz = FALSE, precision = NULL, ..
 format_pdfmark <- function(x) {
     x <- as_datetimeoffset(x)
     x <- update_nas(x, pdfmark = TRUE)
-    year_str <- my_format(field(x, "year"), width = 4L)
+    s <- purrr::map_chr(x, format_pdfmark_helper)
+    is.na(s) <- is.na(field(x, "year"))
+    s
+}
+
+format_pdfmark_helper <- function(x) {
+    year_str <- my_format_year(field(x, "year"))
     month_str <- my_format(field(x, "month"), prefix = "")
     day_str <- my_format(field(x, "day"), prefix = "")
     hour_str <- my_format(field(x, "hour"), prefix = "")
@@ -156,9 +180,7 @@ format_pdfmark <- function(x) {
     second_str <- my_format(field(x, "second"), prefix = "")
     offset_str <- my_format_tz(x, sep = "'", no_zulu = TRUE)
     offset_str <- ifelse(offset_str == "", "", paste0(offset_str, "'"))
-    s <- paste0("D:", year_str, month_str, day_str, hour_str, minute_str, second_str, offset_str)
-    is.na(s) <- is.na(field(x, "year"))
-    s
+    paste0("D:", year_str, month_str, day_str, hour_str, minute_str, second_str, offset_str)
 }
 
 #' @rdname format
@@ -203,7 +225,7 @@ format_edtf_helper <- function(x, offsets, precision, usetz) {
         x <- set_tz(x, NA_character_)
     }
     precision <- precision_to_int(precision)
-    year_str <- my_format(field(x, "year"), width = 4L, edtf = TRUE, blank = precision < PRECISION_YEAR)
+    year_str <- my_format_year(field(x, "year"), edtf = TRUE, blank = precision < PRECISION_YEAR)
     month_str <- my_format(field(x, "month"), prefix = "-", edtf = TRUE, blank = precision < PRECISION_MONTH)
     day_str <- my_format(field(x, "day"), prefix = "-", edtf = TRUE, blank = precision < PRECISION_DAY)
     hour_str <- my_format(field(x, "hour"), prefix = "T", edtf = TRUE, blank = precision < PRECISION_HOUR)
@@ -218,6 +240,10 @@ format_edtf_helper <- function(x, offsets, precision, usetz) {
 }
 
 update_nas <- function(x, pdfmark = FALSE) {
+    if (pdfmark) { # pdfmark years in between 0 and 9999
+        year <- get_year(x)
+        is.na(x) <- is.na(x) | (year < 0L) | (year > 9999L)
+    }
     # No smaller time units if missing bigger time units
     x <- set_day(x, ifelse(is.na(get_month(x)), NA_integer_, get_day(x)))
     x <- set_hour(x, ifelse(is.na(get_day(x)), NA_integer_, get_hour(x)))

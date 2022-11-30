@@ -121,43 +121,43 @@ as_datetimeoffset.nanotime <- function(x, tz = "GMT", ...) {
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.clock_year_month_day <- function(x, ...) {
-    as_datetimeoffset(format(x))
+    as_datetimeoffset(plus_format(x))
 }
 
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.clock_year_month_weekday <- function(x, ...) {
-    as_datetimeoffset(format(as_year_month_day(x)))
+    as_datetimeoffset(plus_format(as_year_month_day(x)))
 }
 
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.clock_iso_year_week_day <- function(x, ...) {
-    as_datetimeoffset(format(as_year_month_day(x)))
+    as_datetimeoffset(plus_format(as_year_month_day(x)))
 }
 
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.clock_year_quarter_day <- function(x, ...) {
-    as_datetimeoffset(format(as_year_month_day(x)))
+    as_datetimeoffset(plus_format(as_year_month_day(x)))
 }
 
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.clock_year_day <- function(x, ...) {
-    as_datetimeoffset(format(as_year_month_day(x)))
+    as_datetimeoffset(plus_format(as_year_month_day(x)))
 }
 
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.clock_naive_time <- function(x, ...) {
-    as_datetimeoffset(format(x))
+    as_datetimeoffset(plus_format(x))
 }
 
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.clock_sys_time <- function(x, ...) {
-    s <- paste0(format(x), "Z")
+    s <- paste0(plus_format(x), "Z")
     is.na(s) <- is.na(x)
     as_datetimeoffset(s)
 }
@@ -165,7 +165,16 @@ as_datetimeoffset.clock_sys_time <- function(x, ...) {
 #' @rdname as_datetimeoffset
 #' @export
 as_datetimeoffset.clock_zoned_time <- function(x, ...) {
-    as_datetimeoffset(format(x))
+    as_datetimeoffset(plus_format(x))
+}
+
+# 12345-10-10 to +12345-10-10
+plus_format <- function(x) {
+    s <- format(x)
+    idx <- which(substr(x, 1L, 1L) != "-")
+    if (length(idx) > 0)
+        s[idx] <- paste0("+", s[idx])
+    s
 }
 
 parse_nanoseconds <- function(x) {
@@ -187,20 +196,30 @@ as_dtos_character <- function(x) {
 }
 
 as_dtos_character_helper <- function(x) {
-    if (grepl("^D:[[:digit:]+-\\']{4,}$", x)) { # pdfmark prefix
-        s <- gsub("'", "", x)
-        s <- substr(s, 3L, nchar(s))
-    } else {
-        s <- x
-    }
-    s <- sub("^([[:digit:]X]{4})[-/]([[:digit:]X]{2})", "\\1\\2", s)
-    s <- sub("^([[:digit:]X]{6})[-/]([[:digit:]X]{2})", "\\1\\2", s)
-    s <- gsub("([[:digit:]X])[Tt ]([[:digit:]+-X])", "\\1\\2", s)
-    s <- gsub(":", "", s)
     l <- list(year = NA_integer_, month = NA_integer_, day = NA_integer_,
               hour = NA_integer_, minute = NA_integer_, second = NA_integer_,
               nanosecond = NA_integer_, subsecond_digits = NA_integer_,
               hour_offset = NA_integer_, minute_offset = NA_integer_, tz = NA_character_)
+    if (grepl("^D:[[:digit:]+-\\']{4,}$", x)) { # pdfmark prefix
+        s <- gsub("'", "", x)
+        s <- substr(s, 3L, nchar(s))
+    } else if (grepl("^[+-][[:digit:]]{4,}$", x)) {
+        l$year <- dto_as_integer(x)
+        return(as.data.frame(l))
+    } else if (grepl("^[+-][[:digit:]]{4,}", x)) {
+        year <- sub("^([+-][[:digit:]]+)(.*)", "\\1", x)
+        s <- sub("^([+-][[:digit:]]+)(.*)", "0000\\2", x)
+        l <- as_dtos_character_helper(s)
+        l$year <- dto_as_integer(year)
+        return(as.data.frame(l))
+    } else {
+        s <- x
+    }
+    s <- sub("^--", "XXXX", s)
+    s <- sub("^([[:digit:]X]{4})[-/]([[:digit:]X]{2})", "\\1\\2", s)
+    s <- sub("^([[:digit:]X]{6})[-/]([[:digit:]X]{2})", "\\1\\2", s)
+    s <- gsub("([[:digit:]X])[Tt ]([[:digit:]+-X])", "\\1\\2", s)
+    s <- gsub(":", "", s)
     # "2020-05-15T08:23:16-07:00"
     if (is.na(s) || s == "") {
         invisible(NULL)

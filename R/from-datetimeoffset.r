@@ -85,8 +85,14 @@ as.POSIXct.datetimeoffset <- function(x, tz = mode_tz(x), ..., fill = "") {
 
 as_posixt_helper <- function(x, tz, f) {
     if (is.na(x)) return (f(NA_character_))
+    years <- get_year.datetimeoffset(x)
     secs <- get_second.datetimeoffset(x)
-    if (secs < 60L) { # {clock} doesn't handle leap seconds
+    if (years < 0L || years > 9999L) { # Can't use `as.POSIXt.character()` for small/large years
+        zt <- as_zoned_time.datetimeoffset(x)
+        lt <- as.POSIXlt(zt, tz = tz)
+        lt[, "sec"] <- lt[, "sec"] + get_microsecond.datetimeoffset(x) / 1e6
+        f(lt)
+    } else if (secs < 60L) { # {clock} doesn't handle leap seconds
         zt <- as_zoned_time.datetimeoffset(x)
         f(format(zt, format = "%FT%H:%M:%S%z"),
           tz = tz, format = "%FT%H:%M:%OS%z")
