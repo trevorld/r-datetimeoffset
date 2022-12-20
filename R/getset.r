@@ -154,8 +154,13 @@ get_month.datetimeoffset <- function(x) {
 #' @export
 set_month.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
+    assert_bounds(value, 1L, 12L)
     field(x, "month") <- set_helper(x, value, na_set)
     x
+}
+
+assert_bounds <- function(value, min, max) {
+    stopifnot(all(is.na(value) | (max >= value) & (value >= min)))
 }
 
 #' @importFrom clock get_day
@@ -175,6 +180,7 @@ set_day.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
         value <- get_day(set_day(ym, "last"))
     }
     value <- as.integer(value)
+    assert_bounds(value, 1L, 31L)
     field(x, "day") <- set_helper(x, value, na_set)
     x
 }
@@ -191,6 +197,7 @@ get_hour.datetimeoffset <- function(x) {
 #' @export
 set_hour.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
+    assert_bounds(value, 0L, 24L)
     field(x, "hour") <- set_helper(x, value, na_set)
     x
 }
@@ -207,6 +214,7 @@ get_minute.datetimeoffset <- function(x) {
 #' @export
 set_minute.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
+    assert_bounds(value, 0L, 60L)
     field(x, "minute") <- set_helper(x, value, na_set)
     x
 }
@@ -223,6 +231,7 @@ get_second.datetimeoffset <- function(x) {
 #' @export
 set_second.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
+    assert_bounds(value, 0L, 61L) # leap seconds
     field(x, "second") <- set_helper(x, value, na_set)
     x
 }
@@ -245,9 +254,10 @@ get_nanosecond.datetimeoffset <- function(x) {
 set_nanosecond.datetimeoffset <- function(x, value, ...,
                                           na_set = FALSE, digits = NULL) {
     value <- as.integer(value)
+    assert_bounds(value, 0L, .Machine$integer.max)
     field(x, "nanosecond") <- set_helper(x, value, na_set)
     if (!is.null(digits))
-        field(x, "subsecond_digits") <- set_helper(x, as.integer(digits), na_set)
+        x <- set_subsecond_digits(x, digits, na_set = na_set)
     x
 }
 
@@ -279,6 +289,7 @@ set_subsecond_digits <- function(x, value, ...) {
 #' @export
 set_subsecond_digits.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
+    assert_bounds(value, 0L, 9L)
     field(x, "subsecond_digits") <- set_helper(x, value, na_set)
     x
 }
@@ -317,6 +328,7 @@ set_hour_offset <- function(x, value, ...) {
 #' @export
 set_hour_offset.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
     value <- as.integer(value)
+    assert_bounds(value, -12L, 14L)
     field(x, "hour_offset") <- set_helper(x, value, na_set)
     x
 }
@@ -354,7 +366,8 @@ set_minute_offset <- function(x, value, ...) {
 #' @rdname setters
 #' @export
 set_minute_offset.datetimeoffset <- function(x, value, ..., na_set = FALSE) {
-    value <- as.integer(value)
+    value <- as.integer(abs(value))
+    assert_bounds(value, 0L, 60L)
     field(x, "minute_offset") <- set_helper(x, value, na_set)
     x
 }

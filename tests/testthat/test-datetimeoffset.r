@@ -1,3 +1,14 @@
+test_that("enforce limits on ranges", {
+    expect_equal(get_year(datetimeoffset(-50)),  -50L)
+    expect_equal(get_year(datetimeoffset(99999)),  99999L)
+    expect_error(get_month(datetimeoffset(1900, 0)))
+    expect_error(get_month(datetimeoffset(1900, -5)))
+    expect_error(get_month(datetimeoffset(1900, 13)))
+    expect_error(get_month(datetimeoffset(1900, 10, 0)))
+    expect_error(get_month(datetimeoffset(1900, 10, -05)))
+    expect_error(get_month(datetimeoffset(1900, 10, 32)))
+})
+
 test_that("format.datetimeoffset()", {
     expect_length(NA_datetimeoffset_, 1L)
     expect_length(datetimeoffset(2020), 1L)

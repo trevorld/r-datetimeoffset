@@ -82,6 +82,17 @@ datetimeoffset <- function(year = NA_integer_, month = NA_integer_, day = NA_int
     stopifnot(all(na_omit(tz) %in% OlsonNames()))
     minute_offset <- abs(minute_offset)
 
+    # assert bounds
+    assert_bounds(month, 1L, 12L)
+    assert_bounds(day, 1L, 31L)
+    assert_bounds(hour, 0L, 24L)
+    assert_bounds(minute, 0L, 60L)
+    assert_bounds(second, 0L, 61L) # leap seconds
+    assert_bounds(nanosecond, 0L, .Machine$integer.max)
+    assert_bounds(subsecond_digits, 0L, 9L)
+    assert_bounds(hour_offset, -12L, 14L)
+    assert_bounds(minute_offset, 0L, 60L)
+
     # recycle
     rc <- vec_recycle_common(year, month, day,
                              hour, minute, second,
@@ -136,7 +147,10 @@ is_datetimeoffset <- function(x) inherits(x, "datetimeoffset")
 
 #' @rdname datetimeoffset_utilities
 #' @export
-NA_datetimeoffset_ <- datetimeoffset(NA_integer_)
+NA_datetimeoffset_ <- new_datetimeoffset(NA_integer_, NA_integer_, NA_integer_,
+                                         NA_integer_, NA_integer_, NA_integer_,
+                                         NA_integer_, NA_integer_,
+                                         NA_integer_, NA_integer_, NA_character_)
 
 #' @rdname datetimeoffset_utilities
 #' @export
