@@ -1,7 +1,7 @@
 Package: datetimeoffset
 Type: Package
 Title: Datetimes with optional UTC offsets and/or heterogeneous time zones
-Version: 0.1.0-31
+Version: 0.1.0-32
 Authors@R: c(
         person("Trevor L", "Davis", role=c("aut", "cre"), email="trevor.l.davis@gmail.com",
                comment = c(ORCID = "0000-0001-6341-4639")))
@@ -20,9 +20,8 @@ Depends:
 Imports:
     clock,
     methods,
-    purrr (>= 0.9000.0.9000),
-    vctrs (>= 0.5.0),
-Remotes: tidyverse/purrr
+    purrr (>= 1.0.0),
+    vctrs (>= 0.5.0)
 Suggests:
     lubridate (>= 1.9.0),
     nanotime (>= 0.3.7),
