@@ -3,7 +3,6 @@
 [![CRAN Status Badge](https://www.r-pkg.org/badges/version/datetimeoffset)](https://cran.r-project.org/package=datetimeoffset)
 [![R-CMD-check](https://github.com/trevorld/r-datetimeoffset/workflows/R-CMD-check/badge.svg)](https://github.com/trevorld/r-datetimeoffset/actions)
 [![codecov](https://codecov.io/github/trevorld/r-datetimeoffset/branch/main/graph/badge.svg)](https://codecov.io/github/trevorld/r-datetimeoffset)
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
 ### Table of Contents
 
@@ -181,8 +180,8 @@ print(di)
 
     - Suitable for use as a column in data frames and tibbles
     - Separate `{vctrs}` accessible record "fields" for year, month, day, hour, 
-      minute, second, nanosecond, hour\_offset, minute\_offset, and time zone all of which 
-      can all be accessed by `{clock}` (style) 
+      minute, second, nanosecond, subsecond\_digits, hour\_offset, minute\_offset, and time zone 
+      all of which can all be accessed by `{clock}` (style) 
       accessor functions (and the `{vctrs}` accessor functions).  
     - Non-missing time zones need not all be the same value 
 
@@ -200,7 +199,8 @@ print(di)
   + `Date()` objects
   + `POSIXct()` objects
   + `POSIXlt()` objects
-  + `nanotime()` objects
+  + `nanotime::nanotime()` objects
+  + `parttime::parttime()` objects
   + five `{clock}` calendars and three `{clock}` times
   + Any other R datetime objects with an `as.POSIXct()` method
 
@@ -226,6 +226,7 @@ print(di)
   + `as.POSIXct()` and `as_date_time()` converts the datetime to a `base::POSIXct()` object
   + `as.POSIXlt()` converts the datetime to a `base::POSIXlt()` object
   + `as.nanotime()` converts the datetime to a `nanotime::nanotime()` object
+  + `as.parttime()` converts the datetime to a `parttime::parttime()` object
   + `{clock}` calendars, times, and weekdays:
 
     - `as_iso_year_week_day()`, `as_year_day()`, `as_year_month_day()`, `as_year_month_weekday()`, `as_year_quarter_day()`
@@ -399,6 +400,26 @@ print(di)
   clock::year_month_day(2005, 12, 31, 23, 59, 60)
   ```
 
+## <a name="parttime">Comparison with {parttime}</a>
+
+**Note**: Please feel free to [open a pull request to fix any {parttime} mis-understandings or statements that are now out-of-date](https://github.com/trevorld/r-datetimeoffset/edit/main/README.Rmd).
+
+A `{datetimeoffset}` is also similar to the excellent [{parttime}](https://dgkf.github.io/parttime/):
+
+* Both are `{vctrs}` datetime objects that allow mixed precision datetimes including support for UTC offsets
+* `{parttime}` supports more advanced [mixed precision comparisons](https://dgkf.github.io/parttime/#partial-datetime-comparisons)
+* `{parttime}` uses 64-bit floating point numbers instead of 32-bit integers to store various fields so
+  can theoretically support years greater than 2,147,483,647 as well as subseconds at greater than 
+  nanosecond precision
+  (although there are known issues with using floating point numbers such as [representation error](https://docs.python.org/3/tutorial/floatingpoint.html#representation-error) avoided by representing subseconds as an integer)
+* `{datetimeoffset}` uses more fields to store UTC offsets and fractional seconds
+  so there are cases where
+  `{datetimeoffset}` will be more lossless importing/exporting certain datetime strings compared to `{parttime}`:
+
+  ```{r}
+  as_datetimeoffset("2020-01-02T03:04:05.10000+05")
+  parttime::as.parttime("2020-01-02T03:04:05.10000+05")
+  ```
 
 ## <a name="serializing">Serializing</a>
 
@@ -436,6 +457,7 @@ Please feel free to [open a pull request to add any missing relevant links](http
 
 * [clock](https://clock.r-lib.org/index.html)
 * [lubridate](https://lubridate.tidyverse.org/index.html)
-* [nanotime](https://eddelbuettel.github.io/nanotime)
+* [nanotime](https://eddelbuettel.github.io/nanotime/)
+* [parttime](https://github.com/dgkf/parttime/)
 * [timechange](https://github.com/vspinu/timechange/)
 * [vctrs](https://vctrs.r-lib.org/index.html)

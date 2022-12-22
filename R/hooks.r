@@ -12,6 +12,7 @@
     vctrs::s3_register("lubridate::wday", "datetimeoffset", wday.datetimeoffset)
     vctrs::s3_register("lubridate::qday", "datetimeoffset", qday.datetimeoffset)
     vctrs::s3_register("lubridate::yday", "datetimeoffset", yday.datetimeoffset)
+    vctrs::s3_register("parttime::vec_cast.partial_time", "datetimeoffset", vec_cast.partial_time.datetimeoffset)
     vctrs::s3_register("stats::update", "datetimeoffset", update.datetimeoffset)
 
     if (requireNamespace("lubridate", quietly = TRUE)) {

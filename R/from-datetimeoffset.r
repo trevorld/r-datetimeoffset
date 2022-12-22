@@ -9,6 +9,7 @@
 #' * `as.POSIXct()` and `as_date_time()` returns the "local" datetime as a [base::POSIXct()] object
 #' * `as.POSIXlt()` returns the "local" datetime as a [base::POSIXlt()] object
 #' * `as.nanotime()` returns the "global" datetime as a [nanotime::nanotime()] object
+#' * `as.parttime()` returns the "local" datetime as a [parttime::parttime()] object
 #' * `as_year_month_day()` returns a [clock::year_month_day()] calendar
 #' * `as_year_month_weekday()` returns a [clock::year_month_weekday()] calendar
 #' * `as_iso_year_week_day()` returns a [clock::iso_year_week_day()] calendar
@@ -51,6 +52,10 @@
 #'
 #'   if (require("nanotime")) {
 #'     nanotime::as.nanotime(now)
+#'   }
+#'
+#'   if (require("parttime")) {
+#'     parttime::as.parttime(now)
 #'   }
 NULL
 
@@ -137,6 +142,21 @@ as.nanotime.datetimeoffset <- function(from, fill = NA_character_) {
     x <- fill_tz(x, fill)
     s <- ifelse(is.na(from), NA_character_, format_iso8601(x))
     nanotime::as.nanotime(s)
+}
+
+# Supports `parttime::as.parttime()`
+vec_cast.partial_time.datetimeoffset <- function(x, to, ...) {
+    x <- fill_utc_offsets(x)
+    year <- as.numeric(field(x, "year"))
+    month <- as.numeric(field(x, "month"))
+    day <- as.numeric(field(x, "day"))
+    hour <- as.numeric(field(x, "hour"))
+    min <- as.numeric(field(x, "minute"))
+    ns <- 1e-9 * ifelse(is.na(field(x, "nanosecond")), 0, field(x, "nanosecond"))
+    sec <- as.numeric(field(x, "second")) + ns
+    mo <- sign(field(x, "hour_offset")) * field(x, "minute_offset") / 60.0
+    tz <- as.numeric(field(x, "hour_offset")) + mo
+    parttime::parttime(year, month, day, hour, min, sec, tz)
 }
 
 #' @rdname from_datetimeoffset

@@ -1,13 +1,15 @@
-# r-datetimeoffset <img src="man/figures/logo.png" align="right" width="200px" alt="datetimeoffset hex sticker">
-
-[![CRAN Status Badge](https://www.r-pkg.org/badges/version/datetimeoffset)](https://cran.r-project.org/package=datetimeoffset)
-[![R-CMD-check](https://github.com/trevorld/r-datetimeoffset/workflows/R-CMD-check/badge.svg)](https://github.com/trevorld/r-datetimeoffset/actions)
-[![codecov](https://codecov.io/github/trevorld/r-datetimeoffset/branch/main/graph/badge.svg)](https://codecov.io/github/trevorld/r-datetimeoffset)
+---
+title: "Introduction to datetimeoffset"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to datetimeoffset}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
 ### Table of Contents
 
 * [Overview](#overview)
-* [Installation](#installation)
 * [Examples](#examples)
 
   + [Importing/exporting datetime string formats](#formats)
@@ -40,13 +42,6 @@ are local times with a wide range of legal precisions but with unknown time zone
 but a possibly known UTC offset.  Generally pre-existing R datetime classes either assume
 knowledge of a (usually single) time zone or alternatively assumed it was acceptable to fully
 convert to UTC time.
-
-## <a name="installation">Installation</a>
-
-
-```r
-remotes::install_github("trevorld/r-datetimeoffset")
-```
 
 ## <a name="examples">Examples</a>
 
@@ -260,10 +255,10 @@ datetimeoffset_now(c("America/Los_Angeles", "America/New_York",
 
 ```
 ## <datetimeoffset[4]>
-## [1] 2022-12-21T18:42:38.737931859-08:00[America/Los_Angeles]
-## [2] 2022-12-21T21:42:38.737931859-05:00[America/New_York]   
-## [3] 2022-12-22T02:42:38.737931859+00:00[Europe/London]      
-## [4] 2022-12-22T10:42:38.737931859+08:00[Asia/Shanghai]
+## [1] 2022-12-21T18:09:02.748841822-08:00[America/Los_Angeles]
+## [2] 2022-12-21T21:09:02.748841822-05:00[America/New_York]   
+## [3] 2022-12-22T02:09:02.748841822+00:00[Europe/London]      
+## [4] 2022-12-22T10:09:02.748841822+08:00[Asia/Shanghai]
 ```
 
 ### <a name="pdf">Augmenting pdf datetime metadata</a>
@@ -281,7 +276,7 @@ print(creation_date)
 
 ```
 ## <datetimeoffset[1]>
-## [1] 2022-12-21T18:42:38.886338373-08:00[America/Los_Angeles]
+## [1] 2022-12-21T18:09:02.855085140-08:00[America/Los_Angeles]
 ```
 
 ```r
@@ -300,13 +295,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-12-21T18:42:38
+## CreationDate: 2022-12-21T18:09:02
 ## Creator: R
 ## Producer: R 4.2.2
 ## Title: R Graphics Output
 ## Subject: NULL
 ## Keywords: NULL
-## ModDate: 2022-12-21T18:42:38
+## ModDate: 2022-12-21T18:09:02
 ```
 
 We can use `{datetimeoffset}` with `{xmpdf}` to augment the embedded datetime metadata to also include the UTC offset information:
@@ -326,13 +321,13 @@ print(di)
 
 ```
 ## Author: NULL
-## CreationDate: 2022-12-21T18:42:38-08:00
+## CreationDate: 2022-12-21T18:09:02-08:00
 ## Creator: R
 ## Producer: GPL Ghostscript 9.55.0
 ## Title: R Graphics Output
 ## Subject: Augmenting pdf metadata with UTC offsets
 ## Keywords: NULL
-## ModDate: 2022-12-21T18:42:44-08:00
+## ModDate: 2022-12-21T18:09:08-08:00
 ```
 
 ## <a name="features">Features</a>

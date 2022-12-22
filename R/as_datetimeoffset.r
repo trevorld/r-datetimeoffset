@@ -120,6 +120,19 @@ as_datetimeoffset.nanotime <- function(x, tz = "GMT", ...) {
 
 #' @rdname as_datetimeoffset
 #' @export
+as_datetimeoffset.partial_time <- function(x, ...) {
+    sec <- trunc(x[, "sec"])
+    ns <- trunc(1e9 * (x[, "sec"] - sec))
+    ho <- trunc(x[, "tzhour"])
+    mo <- as.integer(60 * abs(x[, "tzhour"] - ho))
+    datetimeoffset(x[, "year"], x[, "month"], x[, "day"],
+                   x[, "hour"], x[, "min"], sec,
+                   ns, NA_integer_,
+                   ho, mo, NA_character_)
+}
+
+#' @rdname as_datetimeoffset
+#' @export
 as_datetimeoffset.clock_year_month_day <- function(x, ...) {
     as_datetimeoffset(plus_format(x))
 }

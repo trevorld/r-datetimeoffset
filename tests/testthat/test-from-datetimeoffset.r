@@ -18,6 +18,44 @@ test_that("as.nanotime()", {
                  as.nanotime(c("2020-03-23T04:04:04Z", NA_character_)))
 })
 
+test_that("`as.parttime.datetimeoffset()` and `as_datetimeoffset.parttime()`", {
+    skip_if_not_installed("lubridate")
+    skip_if_not_installed("parttime")
+    dto <- as_datetimeoffset("2020-02-04T01:01:05Z")
+    pt <- parttime::as.parttime(dto)
+    expect_equal(lubridate::year(pt), 2020)
+    expect_equal(lubridate::month(pt), 2)
+    expect_equal(lubridate::mday(pt), 4)
+    expect_equal(lubridate::hour(pt), 1)
+    expect_equal(lubridate::minute(pt), 1)
+    expect_equal(lubridate::second(pt), 5)
+    expect_equal(lubridate::tz(pt), 0 * 60)
+
+    dt <- as_datetimeoffset(pt)
+    expect_equal(get_year(dt), 2020L)
+    expect_equal(get_month(dt), 2L)
+    expect_equal(get_day(dt), 4L)
+    expect_equal(get_hour(dt), 1L)
+    expect_equal(get_minute(dt), 1L)
+    expect_equal(get_second(dt), 5L)
+    expect_equal(get_nanosecond(dt), 0L)
+    expect_equal(get_hour_offset(dt), 0L)
+    expect_equal(get_minute_offset(dt), 0L)
+    expect_equal(get_tz(dt), NA_character_)
+
+    dto <- as_datetimeoffset("2020-02-04T01:01:05.1234-05:30")
+    pt <- parttime::as.parttime(dto)
+    expect_equal(lubridate::second(pt), 5.1234)
+    expect_equal(lubridate::tz(pt), -5.5 * 60)
+
+    dt <- as_datetimeoffset(pt)
+    expect_equal(get_second(dt), 5L)
+    expect_equal(get_nanosecond(dt), 123400000)
+    expect_equal(get_hour_offset(dt), -5L)
+    expect_equal(get_minute_offset(dt), 30L)
+    expect_equal(get_tz(dt), NA_character_)
+})
+
 test_that("as.POSIXct()", {
     expect_equal(format(as.POSIXct("2020-03-23 04:04:04")),
                  format(as.POSIXct(as_datetimeoffset("2020-03-23 04:04:04", tz=""))))

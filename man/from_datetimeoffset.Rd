@@ -83,6 +83,7 @@ We provide the following methods:
 \item \code{as.POSIXct()} and \code{as_date_time()} returns the "local" datetime as a \code{\link[base:DateTimeClasses]{base::POSIXct()}} object
 \item \code{as.POSIXlt()} returns the "local" datetime as a \code{\link[base:DateTimeClasses]{base::POSIXlt()}} object
 \item \code{as.nanotime()} returns the "global" datetime as a \code{\link[nanotime:nanotime]{nanotime::nanotime()}} object
+\item \code{as.parttime()} returns the "local" datetime as a \code{\link[parttime:parttime]{parttime::parttime()}} object
 \item \code{as_year_month_day()} returns a \code{\link[clock:year_month_day]{clock::year_month_day()}} calendar
 \item \code{as_year_month_weekday()} returns a \code{\link[clock:year_month_weekday]{clock::year_month_weekday()}} calendar
 \item \code{as_iso_year_week_day()} returns a \code{\link[clock:iso_year_week_day]{clock::iso_year_week_day()}} calendar
@@ -122,5 +123,9 @@ We provide the following methods:
 
   if (require("nanotime")) {
     nanotime::as.nanotime(now)
+  }
+
+  if (require("parttime")) {
+    parttime::as.parttime(now)
   }
 }

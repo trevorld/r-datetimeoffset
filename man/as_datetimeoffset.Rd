@@ -8,6 +8,7 @@
 \alias{as_datetimeoffset.POSIXt}
 \alias{as_datetimeoffset.character}
 \alias{as_datetimeoffset.nanotime}
+\alias{as_datetimeoffset.partial_time}
 \alias{as_datetimeoffset.clock_year_month_day}
 \alias{as_datetimeoffset.clock_year_month_weekday}
 \alias{as_datetimeoffset.clock_iso_year_week_day}
@@ -31,6 +32,8 @@ as_datetimeoffset(x, ...)
 \method{as_datetimeoffset}{character}(x, tz = NA_character_, ...)
 
 \method{as_datetimeoffset}{nanotime}(x, tz = "GMT", ...)
+
+\method{as_datetimeoffset}{partial_time}(x, ...)
 
 \method{as_datetimeoffset}{clock_year_month_day}(x, ...)
 

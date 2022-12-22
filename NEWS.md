@@ -30,7 +30,8 @@ Initial features
   + `Date()` objects
   + `POSIXct()` objects
   + `POSIXlt()` objects
-  + `nanotime()` objects
+  + `nanotime::nanotime()` objects
+  + `parttime::parttime()` objects
   + five `{clock}` calendars and three `{clock}` times
   + Any other datetime objects with an `as.POSIXct()` method
 
