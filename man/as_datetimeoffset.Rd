@@ -62,6 +62,9 @@ or something with an \code{\link[=as.POSIXct]{as.POSIXct()}} method.}
 Ignored by \code{as_datetimeoffset.Date()}.
 Generally need not be a single value.}
 }
+\value{
+A \code{\link[=datetimeoffset]{datetimeoffset()}} vector
+}
 \description{
 \code{as_datetimeoffset()} coerces to \code{\link[=datetimeoffset]{datetimeoffset()}} objects.
 }

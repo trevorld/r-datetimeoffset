@@ -72,6 +72,9 @@ See \code{\link[clock:as-zoned-time-naive-time]{clock::as_zoned_time.clock_naive
 \item{nonexistent}{What to do when the "clock time" in the new time zone doesn't exist.
 See \code{\link[clock:as-zoned-time-naive-time]{clock::as_zoned_time.clock_naive_time()}}.}
 }
+\value{
+A datetime object vector
+}
 \description{
 We provide methods to convert \code{\link[=datetimeoffset]{datetimeoffset()}} objects to
 other R datetime objects:

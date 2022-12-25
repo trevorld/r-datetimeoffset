@@ -23,6 +23,7 @@
 #' @param x A [datetimeoffset()] object
 #' @param tz,zone   What time zone to assume
 #' @param ... Ignored
+#' @return A datetime object vector
 #' @name from_datetimeoffset
 #' @examples
 #'   # {base}

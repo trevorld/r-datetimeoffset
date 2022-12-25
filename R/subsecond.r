@@ -24,6 +24,8 @@
 #' * `get_subsecond()`
 #' * `set_subsecond()`
 #'
+#' @return `get_millisecond()`, `get_microsecond()`, and `get_subsecond()` returns an integer vector.
+#'         `set_millisecond()`, `set_microsecond()`, and `set_subsecond()` returns a datetime vector.
 #' @examples
 #' library("clock")
 #' dt <- as_datetimeoffset("2020-01-01T10:10:10.123456789")

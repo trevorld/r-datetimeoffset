@@ -23,13 +23,13 @@ test_that("`as.parttime.datetimeoffset()` and `as_datetimeoffset.parttime()`", {
     skip_if_not_installed("parttime")
     dto <- as_datetimeoffset("2020-02-04T01:01:05Z")
     pt <- parttime::as.parttime(dto)
-    expect_equal(lubridate::year(pt), 2020)
-    expect_equal(lubridate::month(pt), 2)
-    expect_equal(lubridate::mday(pt), 4)
-    expect_equal(lubridate::hour(pt), 1)
-    expect_equal(lubridate::minute(pt), 1)
-    expect_equal(lubridate::second(pt), 5)
-    expect_equal(lubridate::tz(pt), 0 * 60)
+    expect_equal(pt[, "year"], 2020)
+    expect_equal(pt[, "month"], 2)
+    expect_equal(pt[, "day"], 4)
+    expect_equal(pt[, "hour"], 1)
+    expect_equal(pt[, "min"], 1)
+    expect_equal(pt[, "sec"], 5)
+    expect_equal(pt[, "tzhour"], 0)
 
     dt <- as_datetimeoffset(pt)
     expect_equal(get_year(dt), 2020L)
@@ -45,8 +45,8 @@ test_that("`as.parttime.datetimeoffset()` and `as_datetimeoffset.parttime()`", {
 
     dto <- as_datetimeoffset("2020-02-04T01:01:05.1234-05:30")
     pt <- parttime::as.parttime(dto)
-    expect_equal(lubridate::second(pt), 5.1234)
-    expect_equal(lubridate::tz(pt), -5.5 * 60)
+    expect_equal(pt[, "sec"], 5.1234)
+    expect_equal(pt[, "tzhour"], -5.5)
 
     dt <- as_datetimeoffset(pt)
     expect_equal(get_second(dt), 5L)
@@ -54,6 +54,16 @@ test_that("`as.parttime.datetimeoffset()` and `as_datetimeoffset.parttime()`", {
     expect_equal(get_hour_offset(dt), -5L)
     expect_equal(get_minute_offset(dt), 30L)
     expect_equal(get_tz(dt), NA_character_)
+
+    dto <- as_datetimeoffset("2020-02-04T01:01:05[America/Los_Angeles]")
+    pt <- parttime::as.parttime(dto)
+    expect_equal(pt[, "year"], 2020)
+    expect_equal(pt[, "month"], 2)
+    expect_equal(pt[, "day"], 4)
+    expect_equal(pt[, "hour"], 1)
+    expect_equal(pt[, "min"], 1)
+    expect_equal(pt[, "sec"], 5)
+    expect_equal(pt[, "tzhour"], -8)
 })
 
 test_that("as.POSIXct()", {

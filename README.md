@@ -20,6 +20,7 @@
   + [Things {clock} can do that {datetimeoffset} can't do](#clock-advantages)
   + [Things {datetimeoffset} can do that {clock} can't do](#datetimeoffset-advantages)
 
+* [Comparison with {parttime}](#parttime)
 * [Serializing](#serializing)
 * [External links](#links)
 

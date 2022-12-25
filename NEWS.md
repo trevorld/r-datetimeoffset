@@ -57,6 +57,7 @@ Initial features
   + `as.POSIXct()` and `as_date_time()` converts the datetime to a `base::POSIXct()` object
   + `as.POSIXlt()` converts the datetime to a `base::POSIXlt()` object
   + `as.nanotime()` converts the datetime to a `nanotime::nanotime()` object
+  + `as.parttime()` converts the datetime to a `parttime::parttime()` object
   + `{clock}` calendars, times, and weekdays:
 
     - `as_iso_year_week_day()`, `as_year_day()`, `as_year_month_day()`, `as_year_month_weekday()`, `as_year_quarter_day()`

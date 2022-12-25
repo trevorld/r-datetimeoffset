@@ -41,6 +41,10 @@ set_subsecond(x, value, digits = 1L, ...)
 Otherwise an integer vector (\code{1L} through \code{9L} or \code{NA_integer_})
 to update the \code{subsecond_digits} field with.}
 }
+\value{
+\code{get_millisecond()}, \code{get_microsecond()}, and \code{get_subsecond()} returns an integer vector.
+\code{set_millisecond()}, \code{set_microsecond()}, and \code{set_subsecond()} returns a datetime vector.
+}
 \description{
 Helper getter/setter methods for the subseconds (aka fractional seconds) of \code{\link[=datetimeoffset]{datetimeoffset()}} objects.
 }

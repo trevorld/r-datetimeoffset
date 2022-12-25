@@ -7,5 +7,5 @@
 ^raw-data$
 ^tmp$
 ^\.github$
-^cran_comments\.md$
+^cran-comments\.md$
 ^codecov\.yml$

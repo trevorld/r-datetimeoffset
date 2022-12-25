@@ -120,6 +120,8 @@ test_that("as_datetimeoffset.character()", {
 
     expect_equal(format(as_datetimeoffset("D:20060926213913+02'00'")),
                  "2006-09-26T21:39:13+02:00")
+    expect_equal(format(as_datetimeoffset("20060926213913+02'00'")),
+                 "2006-09-26T21:39:13+02:00")
 
     # lower-case "t" and "z"
     expect_equal(format(as_datetimeoffset("2020-05-15t08:23:16z")),
@@ -196,6 +198,30 @@ test_that("as_datetimeoffset.character()", {
     expect_equal(format(as_datetimeoffset("2020-05-15T08:23:16[America/Los_Angeles]")),
                  "2020-05-15T08:23:16-07:00[America/Los_Angeles]")
 
+})
+
+test_that("ordinal dates", {
+    expect_equal(format(as_datetimeoffset("2020-150")), "2020-05-29")
+    expect_equal(format(as_datetimeoffset("2020150")), "2020-05-29")
+    expect_equal(format(as_datetimeoffset("2020-150T10:10")), "2020-05-29T10:10")
+    expect_equal(format(as_datetimeoffset("2020150 04:04")), "2020-05-29T04:04")
+})
+
+test_that("ISO week dates", {
+    expect_equal(format(as_datetimeoffset("2009-W01-1")), "2008-12-29")
+    expect_equal(format(as_datetimeoffset("2009W011")), "2008-12-29")
+    dt <- as_datetimeoffset("2009-W01")
+    expect_true(is.na(get_year(dt)))
+    dt <- as_datetimeoffset("2009W01")
+    expect_true(is.na(get_year(dt)))
+    dt <- as_datetimeoffset("2009-W02")
+    expect_equal(get_year(dt), 2009)
+    expect_equal(get_month(dt), 1)
+    expect_equal(format(as_datetimeoffset("2009-W53-7")), "2010-01-03")
+    expect_equal(format(as_datetimeoffset("2009-W53-7T10:10")), "2010-01-03T10:10")
+    expect_equal(format(as_datetimeoffset("2009-W53-7T10:11:12+05:30")), "2010-01-03T10:11:12+05:30")
+    expect_equal(format(as_datetimeoffset("2009W537")), "2010-01-03")
+    expect_equal(format(as_datetimeoffset("2009W537T1010")), "2010-01-03T10:10")
 })
 
 test_that("base R classes", {

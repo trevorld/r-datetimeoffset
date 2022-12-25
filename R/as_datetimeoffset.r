@@ -9,6 +9,7 @@
 #'           Ignored by `as_datetimeoffset.Date()`.
 #'           Generally need not be a single value.
 #' @param ... Further arguments to certain methods.
+#' @return A [datetimeoffset()] vector
 #' @examples
 #' # ISO 8601 examples
 #' as_datetimeoffset("2020-05-15")
@@ -208,14 +209,45 @@ as_dtos_character <- function(x) {
              )
 }
 
+as_ymd_weekdate <- function(x, l) {
+    x <- gsub("[W-]", "", x)
+    year <- as.integer(substr(x, 1, 4))
+    week <- as.integer(substr(x, 5, 6))
+    if (nchar(x) > 6) {
+        day <- as.integer(substr(x, 7, 7))
+        ywd <- clock::as_year_month_day(clock::iso_year_week_day(year, week, day))
+        l$year <- clock::get_year(ywd)
+        l$month <- clock::get_month(ywd)
+        l$day <- clock::get_day(ywd)
+    } else {
+        first <- clock::as_year_month_day(clock::iso_year_week_day(year, week, 1L))
+        last <- clock::as_year_month_day(clock::iso_year_week_day(year, week, 7L))
+        l$year <- ifelse(clock::get_year(first) == clock::get_year(last),
+                         get_year(first), NA_integer_)
+        l$month <- ifelse(clock::get_month(first) == clock::get_month(last),
+                          get_month(first), NA_integer_)
+    }
+    l
+}
+
+as_ymd_ordinal <- function(x, l) {
+    year <- substr(x, 1, 4)
+    day <- substr(x, nchar(x) - 2L, nchar(x))
+    yd <- clock::year_day(dto_as_integer(year), dto_as_integer(day))
+    ymd <- clock::as_year_month_day(yd)
+    l$year <- clock::get_year(ymd)
+    l$month <- clock::get_month(ymd)
+    l$day <- clock::get_day(ymd)
+    l
+}
+
 as_dtos_character_helper <- function(x) {
     l <- list(year = NA_integer_, month = NA_integer_, day = NA_integer_,
               hour = NA_integer_, minute = NA_integer_, second = NA_integer_,
               nanosecond = NA_integer_, subsecond_digits = NA_integer_,
               hour_offset = NA_integer_, minute_offset = NA_integer_, tz = NA_character_)
     if (grepl("^D:[[:digit:]+-\\']{4,}$", x)) { # pdfmark prefix
-        s <- gsub("'", "", x)
-        s <- substr(s, 3L, nchar(s))
+        s <- substr(x, 3L, nchar(x))
     } else if (grepl("^[+-][[:digit:]]{4,}$", x)) {
         l$year <- dto_as_integer(x)
         return(as.data.frame(l))
@@ -225,9 +257,28 @@ as_dtos_character_helper <- function(x) {
         l <- as_dtos_character_helper(s)
         l$year <- dto_as_integer(year)
         return(as.data.frame(l))
+    } else if (grepl("^[[:digit:]]{4}[-]*[[:digit:]]{3}$", x)) {
+        l <- as_ymd_ordinal(x, l)
+        return(as.data.frame(l))
+    } else if (grepl("^[[:digit:]]{4}[-]*[[:digit:]]{3}[Tt ]", x)) {
+        s <- sub("^([[:digit:]]{4}[-]*[[:digit:]]{3})[Tt ](.*)", "0000-01-01T\\2", x)
+        x <- sub("^([[:digit:]]{4}[-]*[[:digit:]]{3})[Tt ](.*)", "\\1", x)
+        l <- as_dtos_character_helper(s)
+        l <- as_ymd_ordinal(x, l)
+        return(as.data.frame(l))
+    } else if (grepl("^[[:digit:]]{4}[-]*W[[:digit:]]{2}[-]*[[:digit:]]", x)) {
+        s <- sub("^([[:digit:]]{4}[-]*W[[:digit:]]{2}[-]*[[:digit:]])(.*)", "0000-01-01\\2", x)
+        x <- sub("^([[:digit:]]{4}[-]*W[[:digit:]]{2}[-]*[[:digit:]])(.*)", "\\1", x)
+        l <- as_dtos_character_helper(s)
+        l <- as_ymd_weekdate(x, l)
+        return(as.data.frame(l))
+    } else if (grepl("^[[:digit:]]{4}[-]*W[[:digit:]]{2}", x)) {
+        l <- as_ymd_weekdate(x, l)
+        return(as.data.frame(l))
     } else {
         s <- x
     }
+    s <- gsub("'", "", s)
     s <- sub("^--", "XXXX", s)
     s <- sub("^([[:digit:]X]{4})[-/]([[:digit:]X]{2})", "\\1\\2", s)
     s <- sub("^([[:digit:]X]{6})[-/]([[:digit:]X]{2})", "\\1\\2", s)
