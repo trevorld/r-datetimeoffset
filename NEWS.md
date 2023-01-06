@@ -1,5 +1,5 @@
-datetimeoffset 0.1.0 (development)
-==================================
+datetimeoffset 0.1.1
+====================
 
 Initial features
 ----------------
