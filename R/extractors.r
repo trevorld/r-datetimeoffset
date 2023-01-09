@@ -22,6 +22,8 @@
 #' * `dst()`
 #' * `leap_year()`
 #'
+#' @return `weekdays()`, `months()`, `quarters()`, `julian()` return character vectors.
+#'         See [base::weekdays()] for more information.
 #' @examples
 #' dto <- datetimeoffset_now()
 #' print(dto)

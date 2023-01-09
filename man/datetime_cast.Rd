@@ -128,7 +128,7 @@ any more precise elements missing.
   datetime_widen(ymd, "day") # already wider than "day"
 
   \dontrun{
-    # these equivalent {clock} calendar methods throw an error
+    # comparable {clock} calendar methods throw an error in certain cases
     clock::calendar_narrow(ymd, "second") # already narrower than "second"
     clock::calendar_widen(ymd, "day") # already wider than "day"
   }

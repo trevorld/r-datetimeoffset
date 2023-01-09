@@ -24,6 +24,10 @@
 
 \item{origin}{Length one datetime of origin}
 }
+\value{
+\code{weekdays()}, \code{months()}, \code{quarters()}, \code{julian()} return character vectors.
+See \code{\link[base:weekday.POSIXt]{base::weekdays()}} for more information.
+}
 \description{
 Additional datetime extractors for \code{\link[=datetimeoffset]{datetimeoffset()}} objects.
 }
