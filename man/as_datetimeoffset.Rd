@@ -5,6 +5,8 @@
 \alias{as_datetimeoffset.datetimeoffset}
 \alias{as_datetimeoffset.Date}
 \alias{as_datetimeoffset.default}
+\alias{as_datetimeoffset.integer}
+\alias{as_datetimeoffset.numeric}
 \alias{as_datetimeoffset.POSIXt}
 \alias{as_datetimeoffset.character}
 \alias{as_datetimeoffset.nanotime}
@@ -26,6 +28,10 @@ as_datetimeoffset(x, ...)
 \method{as_datetimeoffset}{Date}(x, tz = NA_character_, ...)
 
 \method{as_datetimeoffset}{default}(x, ...)
+
+\method{as_datetimeoffset}{integer}(x, ...)
+
+\method{as_datetimeoffset}{numeric}(x, ...)
 
 \method{as_datetimeoffset}{POSIXt}(x, ...)
 

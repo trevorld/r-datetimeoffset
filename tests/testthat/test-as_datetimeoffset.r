@@ -1,3 +1,12 @@
+test_that("as_datetimeoffset.integer()", {
+    expect_equal(format(as_datetimeoffset(2020L)), "2020")
+    expect_equal(format(as_datetimeoffset(-2020L)), "-2020")
+    expect_equal(format(as_datetimeoffset(20200L)), "+20200")
+    expect_equal(format(as_datetimeoffset(2020)), "2020")
+    expect_equal(format(as_datetimeoffset(-2020)), "-2020")
+    expect_equal(format(as_datetimeoffset(20200)), "+20200")
+})
+
 test_that("as_datetimeoffset.character()", {
 
     expect_error(as_datetimeoffset("This is obviously not a date"))

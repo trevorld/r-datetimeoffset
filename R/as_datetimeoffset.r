@@ -55,6 +55,18 @@ as_datetimeoffset.default <- function(x, ...) {
 
 #' @rdname as_datetimeoffset
 #' @export
+as_datetimeoffset.integer <- function(x, ...) {
+    datetimeoffset(x)
+}
+
+#' @rdname as_datetimeoffset
+#' @export
+as_datetimeoffset.numeric <- function(x, ...) {
+    datetimeoffset(trunc(x))
+}
+
+#' @rdname as_datetimeoffset
+#' @export
 as_datetimeoffset.POSIXt <- function(x, ...) {
     purrr::map_vec(x, as_dto_posix, .ptype = datetimeoffset(0))
 }
