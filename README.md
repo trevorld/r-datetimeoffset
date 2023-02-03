@@ -360,6 +360,7 @@ print(di)
     - Also supports the de facto RFC 3339 extension of [specifying a named time zone at the end surrounded in brackets.](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/#cypher-temporal-specify-time-zone)
 
   + The datetime strings understood by the default `tryFormats` of `as.POSIXlt()`
+  + The datetime strings output by the command-line tool `exiftool`
   + `Date()` objects
   + `POSIXct()` objects
   + `POSIXlt()` objects
@@ -376,6 +377,7 @@ print(di)
     - Supports unofficial extensions of "Unspecified Digit" feature to time components and time zones
     - `format_edtf(x, precision = "nanosecond", usetz = TRUE)` prints out all information
 
+  + `format_exiftool()` formats datetime strings as expected by the command-line tool `exiftool`
   + `format_iso8601()` and `lubridate::format_ISO8601()` returns [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) strings
   + `format_pdfmark()` returns [pdfmark datetime](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
   + `format_nanotime()` allows [CCTZ style formatting](https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197)
