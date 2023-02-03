@@ -199,6 +199,29 @@ test_that("format_edtf()", {
                  "2020-05-XXTXX:XX:XX.XXXXXXXXX+XX:XX[X]")
 })
 
+test_that("format_exiftool()", {
+expect_equal(format_exiftool(as_datetimeoffset("2020")),
+             "2020")
+expect_equal(format_exiftool(as_datetimeoffset("2020:05")),
+             "2020:05")
+expect_equal(format_exiftool(as_datetimeoffset("2020:05:10")),
+             "2020:05:10")
+expect_equal(format_exiftool(as_datetimeoffset("2020:05:10 20")),
+             "2020:05:10 20")
+expect_equal(format_exiftool(as_datetimeoffset("2020:05:10 20:15")),
+             "2020:05:10 20:15")
+expect_equal(format_exiftool(as_datetimeoffset("2020:05:10 20:15:05")),
+             "2020:05:10 20:15:05")
+expect_equal(format_exiftool(as_datetimeoffset("2020:05:10 20:15:05.123")),
+             "2020:05:10 20:15:05.123")
+expect_equal(format_exiftool(as_datetimeoffset("2020:05:10 20:15:05-07")),
+             "2020:05:10 20:15:05-07:00")
+expect_equal(format_exiftool(as_datetimeoffset("2020:05:10 20:15:05.123-07")),
+             "2020:05:10 20:15:05.123-07:00")
+expect_equal(format_exiftool(as_datetimeoffset("2020:05:10 20:15:05-07:00")),
+             "2020:05:10 20:15:05-07:00")
+})
+
 test_that("negative/large years", {
     dts <- datetimeoffset(c(-123456L, -10000L, -1L, 0, 10000L, 123456L), 10L, 10L)
     es <- c("-123456-10-10", "-10000-10-10", "-0001-10-10",

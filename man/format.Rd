@@ -5,9 +5,10 @@
 \alias{format.datetimeoffset}
 \alias{format_iso8601}
 \alias{format_pdfmark}
+\alias{format_edtf}
+\alias{format_exiftool}
 \alias{format_strftime}
 \alias{format_nanotime}
-\alias{format_edtf}
 \title{Convert datetime objects to character}
 \usage{
 \method{format}{datetimeoffset}(x, ...)
@@ -15,6 +16,10 @@
 format_iso8601(x, offsets = TRUE, precision = NULL, sep = ":", ...)
 
 format_pdfmark(x)
+
+format_edtf(x, offsets = TRUE, precision = NULL, usetz = FALSE, ...)
+
+format_exiftool(x, ...)
 
 format_strftime(
   x,
@@ -30,8 +35,6 @@ format_nanotime(
   tz = get_tz(x),
   fill = ""
 )
-
-format_edtf(x, offsets = TRUE, precision = NULL, usetz = FALSE, ...)
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object.}
@@ -48,13 +51,13 @@ If \code{NULL} then full precision for the object is shown.}
 
 \item{sep}{UTC offset separator.  Either ":" or "".}
 
+\item{usetz}{Include the time zone in the formatting}
+
 \item{format}{For \code{format_strftime()} see \code{\link[base:strptime]{base::strftime()}}.
 For \code{format_nanotime()} see \url{https://github.com/google/cctz/blob/6e09ceb/include/time_zone.h#L197}.}
 
 \item{tz}{A character string specifying the time zone to be used for the conversion.
 Can be a length greater than one.}
-
-\item{usetz}{Include the time zone in the formatting}
 
 \item{fill}{If timezone and UTC offset info is missing what
 timezone to assume.  See \code{\link[=fill_tz]{fill_tz()}}.}
@@ -70,13 +73,14 @@ with as much \strong{known} information possible (RFC 3339 with de facto standar
 \code{format_strftime()} allows \code{\link[base:strptime]{base::strftime()}} style formatting.
 \code{format_nanotime()} allows CCTZ style formatting.
 \code{format_edtf()} returns an Extended Date Time Format (EDTF) string.
+\code{format_exiftool()} returns the date/time string expected by \code{exiftool}.
 }
 \examples{
   # ISO 8601 datetimes
   format_iso8601(as_datetimeoffset("2020-05"))
   format_iso8601(as_datetimeoffset("2020-05-10 20:15"))
   format_iso8601(as_datetimeoffset("2020-05-10 20:15:05-07"))
-  if (require("lubridate"))
+  if (requireNamespace("lubridate"))
     lubridate::format_ISO8601(as_datetimeoffset("2020-05-10 20:15:05-07"))
 
   # pdfmark datetimes
@@ -90,7 +94,7 @@ with as much \strong{known} information possible (RFC 3339 with de facto standar
   format_strftime(dt, format = "\%c")
 
   # CCTZ style formatting
-  if (require("nanotime")) {
+  if (requireNamespace("nanotime")) {
     dt <- as_datetimeoffset(Sys.time())
     format_nanotime(dt, format = "\%F \%H:\%M:\%E7S \%Ez") # SQL Server datetimeoffset
   }
@@ -100,4 +104,9 @@ with as much \strong{known} information possible (RFC 3339 with de facto standar
   format_edtf(as_datetimeoffset("2020-05-10T20:15:05-07"))
   dt <- datetimeoffset(2020, NA_integer_, 10)
   format_edtf(dt)
+
+  # `exiftool` formatting
+  format_exiftool(as_datetimeoffset("2020:05:10"))
+  format_exiftool(as_datetimeoffset("2020:05:10 20:15"))
+  format_exiftool(as_datetimeoffset("2020:05:10 20:15:05-07:00"))
 }

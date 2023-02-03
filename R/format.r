@@ -7,6 +7,7 @@
 #' `format_strftime()` allows [base::strftime()] style formatting.
 #' `format_nanotime()` allows CCTZ style formatting.
 #' `format_edtf()` returns an Extended Date Time Format (EDTF) string.
+#' `format_exiftool()` returns the date/time string expected by `exiftool`.
 #' @name format
 #' @param x A [datetimeoffset()] object.
 #' @param format For `format_strftime()` see [base::strftime()].
@@ -27,7 +28,7 @@
 #'   format_iso8601(as_datetimeoffset("2020-05"))
 #'   format_iso8601(as_datetimeoffset("2020-05-10 20:15"))
 #'   format_iso8601(as_datetimeoffset("2020-05-10 20:15:05-07"))
-#'   if (require("lubridate"))
+#'   if (requireNamespace("lubridate"))
 #'     lubridate::format_ISO8601(as_datetimeoffset("2020-05-10 20:15:05-07"))
 #'
 #'   # pdfmark datetimes
@@ -41,7 +42,7 @@
 #'   format_strftime(dt, format = "%c")
 #'
 #'   # CCTZ style formatting
-#'   if (require("nanotime")) {
+#'   if (requireNamespace("nanotime")) {
 #'     dt <- as_datetimeoffset(Sys.time())
 #'     format_nanotime(dt, format = "%F %H:%M:%E7S %Ez") # SQL Server datetimeoffset
 #'   }
@@ -51,6 +52,11 @@
 #'   format_edtf(as_datetimeoffset("2020-05-10T20:15:05-07"))
 #'   dt <- datetimeoffset(2020, NA_integer_, 10)
 #'   format_edtf(dt)
+#'
+#'   # `exiftool` formatting
+#'   format_exiftool(as_datetimeoffset("2020:05:10"))
+#'   format_exiftool(as_datetimeoffset("2020:05:10 20:15"))
+#'   format_exiftool(as_datetimeoffset("2020:05:10 20:15:05-07:00"))
 NULL
 
 #' @rdname format
@@ -60,6 +66,68 @@ format.datetimeoffset <- function(x, ...) {
     s <- purrr::map_chr(x, format_helper)
     is.na(s) <- is.na(field(x, "year"))
     s
+}
+
+#' @rdname format
+#' @param sep UTC offset separator.  Either ":" or "".
+#' @export
+format_iso8601 <- function(x, offsets = TRUE, precision = NULL, sep = ":", ...) {
+    purrr::map_chr(x, format_iso8601_helper, offsets = offsets, precision = precision, sep = sep)
+}
+
+format_ISO8601.datetimeoffset <- function(x, usetz = FALSE, precision = NULL, ...) {
+   if (!is.null(precision))
+       precision <- switch(precision,
+                           y = "year", ym = "month", ymd = "day",
+                           ymdh = "hour", ymdhm = "minute", ymdhms = "second",
+                           stop(paste("Don't recognize precision", sQuote(precision))))
+   format_iso8601(x, offsets = usetz, precision = precision, sep = "")
+}
+
+
+#' @rdname format
+#' @export
+format_pdfmark <- function(x) {
+    x <- as_datetimeoffset(x)
+    x <- update_nas(x, pdfmark = TRUE)
+    s <- purrr::map_chr(x, format_pdfmark_helper)
+    is.na(s) <- is.na(field(x, "year"))
+    s
+}
+
+#' @rdname format
+#' @export
+format_edtf <- function(x, offsets = TRUE, precision = NULL, usetz = FALSE, ...) {
+    purrr::map_chr(x, format_edtf_helper, offsets = offsets, precision = precision, usetz = usetz)
+}
+
+#' @rdname format
+#' @export
+format_exiftool <- function(x, ...) {
+    purrr::map_chr(x, format_exiftool_helper)
+}
+
+#' @rdname format
+#' @inheritParams as_sys_time.datetimeoffset
+#' @export
+format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = get_tz(x),
+                            usetz = FALSE, fill = mode_tz(x)) {
+    tz <- clean_tz(tz, na = Sys.timezone())
+    fill <- clean_tz(fill, na = NA_character_)
+    x <- fill_tz(x, fill)
+    x <- as.POSIXct(x)
+    df <- data.frame(x = x, format = format, tz = tz, usetz = usetz, stringsAsFactors = FALSE)
+    purrr::pmap_chr(df, strftime)
+}
+
+#' @rdname format
+#' @export
+format_nanotime <- function(x, format = "%Y-%m-%dT%H:%M:%E9S%Ez", tz = get_tz(x), fill = "") {
+    assert_suggested("nanotime")
+    tz <- clean_tz(tz, na = Sys.timezone())
+    x <- as.nanotime.datetimeoffset(x, fill = fill)
+    df <- data.frame(x = x, format = format, tz = tz, stringsAsFactors = FALSE)
+    purrr::pmap_chr(df, base::format)
 }
 
 format_helper <- function(x) {
@@ -115,12 +183,6 @@ my_format_ns_helper <- function(ns, sd) {
     paste0(".", s_ns)
 }
 
-#' @rdname format
-#' @param sep UTC offset separator.  Either ":" or "".
-#' @export
-format_iso8601 <- function(x, offsets = TRUE, precision = NULL, sep = ":", ...) {
-    purrr::map_chr(x, format_iso8601_helper, offsets = offsets, precision = precision, sep = sep)
-}
 
 format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":", ...) {
     if (is.na(x)) return(NA_character_)
@@ -152,24 +214,6 @@ format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":"
     s
 }
 
-format_ISO8601.datetimeoffset <- function(x, usetz = FALSE, precision = NULL, ...) {
-   if (!is.null(precision))
-       precision <- switch(precision,
-                           y = "year", ym = "month", ymd = "day",
-                           ymdh = "hour", ymdhm = "minute", ymdhms = "second",
-                           stop(paste("Don't recognize precision", sQuote(precision))))
-   format_iso8601(x, offsets = usetz, precision = precision, sep = "")
-}
-
-#' @rdname format
-#' @export
-format_pdfmark <- function(x) {
-    x <- as_datetimeoffset(x)
-    x <- update_nas(x, pdfmark = TRUE)
-    s <- purrr::map_chr(x, format_pdfmark_helper)
-    is.na(s) <- is.na(field(x, "year"))
-    s
-}
 
 format_pdfmark_helper <- function(x) {
     year_str <- my_format_year(field(x, "year"))
@@ -183,34 +227,27 @@ format_pdfmark_helper <- function(x) {
     paste0("D:", year_str, month_str, day_str, hour_str, minute_str, second_str, offset_str)
 }
 
-#' @rdname format
-#' @inheritParams as_sys_time.datetimeoffset
-#' @export
-format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = get_tz(x),
-                            usetz = FALSE, fill = mode_tz(x)) {
-    tz <- clean_tz(tz, na = Sys.timezone())
-    fill <- clean_tz(fill, na = NA_character_)
-    x <- fill_tz(x, fill)
-    x <- as.POSIXct(x)
-    df <- data.frame(x = x, format = format, tz = tz, usetz = usetz, stringsAsFactors = FALSE)
-    purrr::pmap_chr(df, strftime)
+
+format_exiftool_helper <- function(x, ...) {
+    if (is.na(x)) return(NA_character_)
+
+    x <- update_nas(x)
+    if (is.na(field(x, "minute_offset")) && !is.na(field(x, "hour_offset")))
+        field(x, "minute_offset") <- 0L
+    year_str <- my_format_year(field(x, "year"))
+    month_str <- my_format(field(x, "month"), prefix = ":")
+    day_str <- my_format(field(x, "day"), prefix = ":")
+    hour_str <- my_format(field(x, "hour"), prefix = " ")
+    minute_str <- my_format(field(x, "minute"), prefix = ":")
+    second_str <- my_format(field(x, "second"), prefix = ":")
+    nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"), field(x, "subsecond_digits"))
+    offset_str <- my_format_tz(x, sep = ":")
+    s <- paste0(year_str, month_str, day_str,
+                hour_str, minute_str, second_str, nanosecond_str,
+                offset_str)
+    s
 }
 
-#' @rdname format
-#' @export
-format_nanotime <- function(x, format = "%Y-%m-%dT%H:%M:%E9S%Ez", tz = get_tz(x), fill = "") {
-    assert_suggested("nanotime")
-    tz <- clean_tz(tz, na = Sys.timezone())
-    x <- as.nanotime.datetimeoffset(x, fill = fill)
-    df <- data.frame(x = x, format = format, tz = tz, stringsAsFactors = FALSE)
-    purrr::pmap_chr(df, base::format)
-}
-
-#' @rdname format
-#' @export
-format_edtf <- function(x, offsets = TRUE, precision = NULL, usetz = FALSE, ...) {
-    purrr::map_chr(x, format_edtf_helper, offsets = offsets, precision = precision, usetz = usetz)
-}
 
 format_edtf_helper <- function(x, offsets, precision, usetz) {
     precision <- precision %||% datetime_precision(x, unspecified = TRUE)

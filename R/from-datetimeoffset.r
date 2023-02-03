@@ -51,11 +51,11 @@
 #'
 #'   clock::as_weekday(now)
 #'
-#'   if (require("nanotime")) {
+#'   if (requireNamespace("nanotime")) {
 #'     nanotime::as.nanotime(now)
 #'   }
 #'
-#'   if (require("parttime")) {
+#'   if (requireNamespace("parttime")) {
 #'     parttime::as.parttime(now)
 #'   }
 NULL

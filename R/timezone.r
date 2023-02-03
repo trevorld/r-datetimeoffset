@@ -203,7 +203,7 @@ clean_tz <- function(tz, na = NA_character_) {
 #'   print(dt)
 #'
 #'   # Can also use `lubridate::with_tz()`
-#'   if (require("lubridate")) {
+#'   if (requireNamespace("lubridate")) {
 #'     dt <- lubridate::with_tz(dt0, "America/New_York")
 #'     print(dt)
 #'   }

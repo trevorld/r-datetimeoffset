@@ -1,12 +1,17 @@
-datetimeoffset 0.1.3
+datetimeoffset 0.2.0
 ====================
+
+New features
+------------
+
+* `format_exiftool()` formats datetime strings as expected by the command-line tool `exiftool` (#54).
+* `as_datetimeoffset.integer()` and `as_datetimeoffset.numeric()`
+  coerce numeric values as the new `datetimeoffset()` objects `year` field (#53).
 
 Bug fixes and minor improvements
 --------------------------------
 
 * Skip a test on CRAN which was failing on `r-oldrel-windows-ix86+x86_64` (#52)
-* New `as_datetimeoffset.integer()` and `as_datetimeoffset.numeric()`
-  coerce numeric values as the new `datetimeoffset()` objects `year` field (#53).
 
 datetimeoffset 0.1.2
 ====================

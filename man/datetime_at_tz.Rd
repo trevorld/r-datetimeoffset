@@ -58,7 +58,7 @@ if(all(c("America/Los_Angeles", "America/New_York") \%in\% OlsonNames())) {
   print(dt)
 
   # Can also use `lubridate::with_tz()`
-  if (require("lubridate")) {
+  if (requireNamespace("lubridate")) {
     dt <- lubridate::with_tz(dt0, "America/New_York")
     print(dt)
   }
