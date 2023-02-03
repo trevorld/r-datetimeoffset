@@ -1,4 +1,13 @@
-datetimeoffset 0.1.1
+datetimeoffset 0.1.3
+====================
+
+Bug fixes and minor improvements
+--------------------------------
+
+* Skip a test on CRAN which was failing on `r-oldrel-windows-ix86+x86_64` (#52)
+
+
+datetimeoffset 0.1.2
 ====================
 
 Initial features

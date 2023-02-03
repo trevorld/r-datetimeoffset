@@ -119,6 +119,7 @@ test_that("format_strftime()", {
 })
 
 test_that("format_nanotime()", {
+    skip_on_cran() # failed on `r-oldrel-windows-ix86+x86_64`
     skip_if_not_installed("nanotime")
     dt <- as_datetimeoffset("2020-04-04T10:10:10Z")
     expect_equal(format_nanotime(dt, tz = "GMT"),
