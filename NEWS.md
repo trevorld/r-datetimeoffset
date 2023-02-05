@@ -11,6 +11,10 @@ New features
 Bug fixes and minor improvements
 --------------------------------
 
+* `format_iso8601()` has new argument `mode` which supports "normal" and "xmp".
+
+  - XMP metadata datetimes are a strict subset of ISO 8601 datetimes
+
 * Skip a test on CRAN which was failing on `r-oldrel-windows-ix86+x86_64` (#52)
 
 datetimeoffset 0.1.2
