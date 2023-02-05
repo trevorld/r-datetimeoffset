@@ -18,7 +18,7 @@ format_iso8601(
   offsets = TRUE,
   precision = NULL,
   sep = ":",
-  xmp = FALSE,
+  mode = c("normal", "xmp"),
   ...
 )
 
@@ -26,7 +26,7 @@ format_pdfmark(x)
 
 format_edtf(x, offsets = TRUE, precision = NULL, usetz = FALSE, ...)
 
-format_exiftool(x, ...)
+format_exiftool(x, mode = c("normal", "xmp", "pdf"), ...)
 
 format_strftime(
   x,
@@ -58,7 +58,8 @@ If \code{NULL} then full precision for the object is shown.}
 
 \item{sep}{UTC offset separator.  Either ":" or "".}
 
-\item{xmp}{Only output valid XMP metadata datetime values (a subset of valid ISO 8601 datetimes).}
+\item{mode}{If \code{mode = "xmp"} only output valid XMP metadata datetime values.
+If \code{mode = "pdf"} only output supported PDF docinfo datetime values.}
 
 \item{usetz}{Include the time zone in the formatting}
 

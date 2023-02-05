@@ -70,10 +70,13 @@ format.datetimeoffset <- function(x, ...) {
 
 #' @rdname format
 #' @param sep UTC offset separator.  Either ":" or "".
-#' @param xmp Only output valid XMP metadata datetime values (a subset of valid ISO 8601 datetimes).
+#' @param mode  If `mode = "xmp"` only output valid XMP metadata datetime values.
+#'              If `mode = "pdf"` only output supported PDF docinfo datetime values.
 #' @export
-format_iso8601 <- function(x, offsets = TRUE, precision = NULL, sep = ":", xmp = FALSE, ...) {
-    purrr::map_chr(x, format_iso8601_helper, offsets = offsets, precision = precision, sep = sep, xmp = xmp)
+format_iso8601 <- function(x, offsets = TRUE, precision = NULL, sep = ":",
+                           mode = c("normal", "xmp"), ...) {
+    mode <- match.arg(mode)
+    purrr::map_chr(x, format_iso8601_helper, offsets = offsets, precision = precision, sep = sep, mode = mode)
 }
 
 format_ISO8601.datetimeoffset <- function(x, usetz = FALSE, precision = NULL, ...) {
@@ -104,8 +107,9 @@ format_edtf <- function(x, offsets = TRUE, precision = NULL, usetz = FALSE, ...)
 
 #' @rdname format
 #' @export
-format_exiftool <- function(x, ...) {
-    purrr::map_chr(x, format_exiftool_helper)
+format_exiftool <- function(x, mode = c("normal", "xmp", "pdf"), ...) {
+    mode <- match.arg(mode)
+    purrr::map_chr(x, format_exiftool_helper, mode = mode)
 }
 
 #' @rdname format
@@ -185,7 +189,8 @@ my_format_ns_helper <- function(ns, sd) {
 }
 
 
-format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":", xmp = FALSE, ...) {
+format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":",
+                                  mode = "normal", ...) {
     if (is.na(x)) return(NA_character_)
 
     precision <- precision %||% datetime_precision(x)
@@ -201,7 +206,7 @@ format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":"
         x <- set_tz(x, NA_character_)
     }
     x <- update_nas(x)
-    if (xmp) {
+    if (mode == "xmp") {
         if (is.na(field(x, "minute")) && !is.na(field(x, "hour")))
             field(x, "minute") <- 0L
         if (is.na(field(x, "minute_offset")) && !is.na(field(x, "hour_offset")))
@@ -235,9 +240,13 @@ format_pdfmark_helper <- function(x) {
 }
 
 
-format_exiftool_helper <- function(x, ...) {
+format_exiftool_helper <- function(x, mode = "normal", ...) {
     if (is.na(x)) return(NA_character_)
 
+    if (mode == "pdf")
+        field(x, "nanosecond") <- NA_integer_
+    if (mode != "xmp")
+        x <- datetime_widen(x, "second")
     x <- update_nas(x)
     if (is.na(field(x, "minute")) && !is.na(field(x, "hour")))
         field(x, "minute") <- 0L
