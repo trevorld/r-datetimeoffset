@@ -70,9 +70,10 @@ format.datetimeoffset <- function(x, ...) {
 
 #' @rdname format
 #' @param sep UTC offset separator.  Either ":" or "".
+#' @param xmp Only output valid XMP metadata datetime values (a subset of valid ISO 8601 datetimes).
 #' @export
-format_iso8601 <- function(x, offsets = TRUE, precision = NULL, sep = ":", ...) {
-    purrr::map_chr(x, format_iso8601_helper, offsets = offsets, precision = precision, sep = sep)
+format_iso8601 <- function(x, offsets = TRUE, precision = NULL, sep = ":", xmp = FALSE, ...) {
+    purrr::map_chr(x, format_iso8601_helper, offsets = offsets, precision = precision, sep = sep, xmp = xmp)
 }
 
 format_ISO8601.datetimeoffset <- function(x, usetz = FALSE, precision = NULL, ...) {
@@ -184,7 +185,7 @@ my_format_ns_helper <- function(ns, sd) {
 }
 
 
-format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":", ...) {
+format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":", xmp = FALSE, ...) {
     if (is.na(x)) return(NA_character_)
 
     precision <- precision %||% datetime_precision(x)
@@ -200,6 +201,12 @@ format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":"
         x <- set_tz(x, NA_character_)
     }
     x <- update_nas(x)
+    if (xmp) {
+        if (is.na(field(x, "minute")) && !is.na(field(x, "hour")))
+            field(x, "minute") <- 0L
+        if (is.na(field(x, "minute_offset")) && !is.na(field(x, "hour_offset")))
+            field(x, "minute_offset") <- 0L
+    }
     year_str <- my_format_year(field(x, "year"))
     month_str <- my_format(field(x, "month"), prefix = "-")
     day_str <- my_format(field(x, "day"), prefix = "-")
@@ -232,6 +239,8 @@ format_exiftool_helper <- function(x, ...) {
     if (is.na(x)) return(NA_character_)
 
     x <- update_nas(x)
+    if (is.na(field(x, "minute")) && !is.na(field(x, "hour")))
+        field(x, "minute") <- 0L
     if (is.na(field(x, "minute_offset")) && !is.na(field(x, "hour_offset")))
         field(x, "minute_offset") <- 0L
     year_str <- my_format_year(field(x, "year"))

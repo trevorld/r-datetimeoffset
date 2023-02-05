@@ -13,7 +13,14 @@
 \usage{
 \method{format}{datetimeoffset}(x, ...)
 
-format_iso8601(x, offsets = TRUE, precision = NULL, sep = ":", ...)
+format_iso8601(
+  x,
+  offsets = TRUE,
+  precision = NULL,
+  sep = ":",
+  xmp = FALSE,
+  ...
+)
 
 format_pdfmark(x)
 
@@ -50,6 +57,8 @@ format_nanotime(
 If \code{NULL} then full precision for the object is shown.}
 
 \item{sep}{UTC offset separator.  Either ":" or "".}
+
+\item{xmp}{Only output valid XMP metadata datetime values (a subset of valid ISO 8601 datetimes).}
 
 \item{usetz}{Include the time zone in the formatting}
 

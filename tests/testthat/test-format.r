@@ -207,7 +207,11 @@ expect_equal(format_exiftool(as_datetimeoffset("2020:05")),
 expect_equal(format_exiftool(as_datetimeoffset("2020:05:10")),
              "2020:05:10")
 expect_equal(format_exiftool(as_datetimeoffset("2020:05:10 20")),
-             "2020:05:10 20")
+             "2020:05:10 20:00")
+expect_equal(format_iso8601(as_datetimeoffset("2020:05:10 20")),
+             "2020-05-10T20")
+expect_equal(format_iso8601(as_datetimeoffset("2020:05:10 20"), xmp = TRUE),
+             "2020-05-10T20:00")
 expect_equal(format_exiftool(as_datetimeoffset("2020:05:10 20:15")),
              "2020:05:10 20:15")
 expect_equal(format_exiftool(as_datetimeoffset("2020:05:10 20:15:05")),
@@ -220,6 +224,10 @@ expect_equal(format_exiftool(as_datetimeoffset("2020:05:10 20:15:05.123-07")),
              "2020:05:10 20:15:05.123-07:00")
 expect_equal(format_exiftool(as_datetimeoffset("2020:05:10 20:15:05-07:00")),
              "2020:05:10 20:15:05-07:00")
+expect_equal(format_iso8601(as_datetimeoffset("2020:05:10 20:15:05-07")),
+             "2020-05-10T20:15:05-07")
+expect_equal(format_iso8601(as_datetimeoffset("2020:05:10 20:15:05-07"), xmp = TRUE),
+             "2020-05-10T20:15:05-07:00")
 })
 
 test_that("negative/large years", {
