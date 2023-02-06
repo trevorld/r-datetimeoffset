@@ -299,8 +299,11 @@ as_dtos_character_helper <- function(x) {
     # "2020-05-15T08:23:16-07:00"
     if (is.na(s) || s == "") {
         invisible(NULL)
-    } else if (grepl("^.+[Zz]$", s)) { # ends in Z or z means "GMT" time
-        l <- as_dtos_character_helper(substr(s, 1L, nchar(s) - 1L))
+    } else if (grepl("^.+[Zz](00){0,2}$", s)) { # ends in Z or z means "GMT" time
+        if (substr(s, nchar(s) - 1L, nchar(s)) == "00") # observed pdfmark ending in Z00'00'
+            l <- as_dtos_character_helper(substr(s, 1, nchar(s) - 2L))
+        else
+            l <- as_dtos_character_helper(substr(s, 1, nchar(s) - 1L))
         l$hour_offset <- 0
         l$minute_offset <- 0
         l$tz <- "GMT"

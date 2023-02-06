@@ -132,6 +132,10 @@ test_that("as_datetimeoffset.character()", {
     expect_equal(format(as_datetimeoffset("20060926213913+02'00'")),
                  "2006-09-26T21:39:13+02:00")
 
+    # Weird pdfmark ending found in `ghostscript` output in UTC time locale
+    expect_equal(format(as_datetimeoffset("D:20060926213913Z00'00'")),
+                 "2006-09-26T21:39:13Z")
+
     # lower-case "t" and "z"
     expect_equal(format(as_datetimeoffset("2020-05-15t08:23:16z")),
                  "2020-05-15T08:23:16Z")

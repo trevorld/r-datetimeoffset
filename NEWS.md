@@ -15,6 +15,7 @@ Bug fixes and minor improvements
 
   - XMP metadata datetimes are a strict subset of ISO 8601 datetimes
 
+* `as_datetimeoffset.character()` now parses pdfmark datetimes of the form `D:YYYYmmddHHMMSSZ00'00'` (#56)
 * Skip a test on CRAN which was failing on `r-oldrel-windows-ix86+x86_64` (#52)
 
 datetimeoffset 0.1.2
