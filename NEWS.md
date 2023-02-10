@@ -1,4 +1,4 @@
-datetimeoffset 0.2.0
+datetimeoffset 0.2.1
 ====================
 
 New features
