@@ -1,3 +1,8 @@
+datetimeoffset 0.3.0 (development)
+==================================
+
+* `format_pdfmark()` has new argument `prefix` that supports `"D:"` or `""` (#57).
+
 datetimeoffset 0.2.1
 ====================
 

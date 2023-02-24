@@ -81,12 +81,15 @@ test_that("format_iso8601()", {
 test_that("format_pdfmark()", {
     # "2020-05-15T08:23:16-07:00"
     expect_equal(format_pdfmark(NA_datetimeoffset_), NA_character_)
+    expect_equal(format_pdfmark(NA_datetimeoffset_), NA_character_)
     expect_equal(format_pdfmark(as.Date("2020-05-15")),
                  "D:20200515")
     expect_equal(format_pdfmark(as_datetimeoffset("D:2020")),
                  "D:2020")
     expect_equal(format_pdfmark(as_datetimeoffset("D:202005")),
                  "D:202005")
+    expect_equal(format_pdfmark(as_datetimeoffset("D:202005"), prefix = ""),
+                 "202005")
     expect_equal(format_pdfmark(as_datetimeoffset("D:20200515")),
                  "D:20200515")
     expect_equal(format_pdfmark(as_datetimeoffset("D:2020051508")),

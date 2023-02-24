@@ -21,6 +21,7 @@
 #'                  "hundred microseconds", "ten microseconds", "microsecond",
 #'                  "hundred nanoseconds", "ten nanoseconds", or "nanosecond".
 #'        If `NULL` then full precision for the object is shown.
+#' @param prefix Prefix to use.  Either `"D:"` (default) or `""`.
 #' @param ... Ignored
 #' @return A character vector
 #' @examples
@@ -91,10 +92,10 @@ format_ISO8601.datetimeoffset <- function(x, usetz = FALSE, precision = NULL, ..
 
 #' @rdname format
 #' @export
-format_pdfmark <- function(x) {
+format_pdfmark <- function(x, prefix = "D:") {
     x <- as_datetimeoffset(x)
     x <- update_nas(x, pdfmark = TRUE)
-    s <- purrr::map_chr(x, format_pdfmark_helper)
+    s <- purrr::map_chr(x, format_pdfmark_helper, prefix = prefix)
     is.na(s) <- is.na(field(x, "year"))
     s
 }
@@ -226,8 +227,8 @@ format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":"
     s
 }
 
-
-format_pdfmark_helper <- function(x) {
+format_pdfmark_helper <- function(x, prefix = "D:") {
+    stopifnot(prefix %in% c("D:", ""))
     year_str <- my_format_year(field(x, "year"))
     month_str <- my_format(field(x, "month"), prefix = "")
     day_str <- my_format(field(x, "day"), prefix = "")
@@ -236,9 +237,8 @@ format_pdfmark_helper <- function(x) {
     second_str <- my_format(field(x, "second"), prefix = "")
     offset_str <- my_format_tz(x, sep = "'", no_zulu = TRUE)
     offset_str <- ifelse(offset_str == "", "", paste0(offset_str, "'"))
-    paste0("D:", year_str, month_str, day_str, hour_str, minute_str, second_str, offset_str)
+    paste0(prefix, year_str, month_str, day_str, hour_str, minute_str, second_str, offset_str)
 }
-
 
 format_exiftool_helper <- function(x, mode = "normal", ...) {
     if (is.na(x)) return(NA_character_)

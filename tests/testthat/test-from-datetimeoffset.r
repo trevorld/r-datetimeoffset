@@ -20,7 +20,7 @@ test_that("as.nanotime()", {
 
 test_that("`as.parttime.datetimeoffset()` and `as_datetimeoffset.parttime()`", {
     skip_if_not_installed("lubridate")
-    skip_if_not_installed("parttime")
+    suppressPackageStartupMessages(skip_if_not_installed("parttime"))
     dto <- as_datetimeoffset("2020-02-04T01:01:05Z")
     pt <- parttime::as.parttime(dto)
     expect_equal(pt[, "year"], 2020)
