@@ -22,7 +22,7 @@ format_iso8601(
   ...
 )
 
-format_pdfmark(x)
+format_pdfmark(x, prefix = "D:")
 
 format_edtf(x, offsets = TRUE, precision = NULL, usetz = FALSE, ...)
 
@@ -60,6 +60,8 @@ If \code{NULL} then full precision for the object is shown.}
 
 \item{mode}{If \code{mode = "xmp"} only output valid XMP metadata datetime values.
 If \code{mode = "pdf"} only output supported PDF docinfo datetime values.}
+
+\item{prefix}{Prefix to use.  Either \code{"D:"} (default) or \code{""}.}
 
 \item{usetz}{Include the time zone in the formatting}
 
