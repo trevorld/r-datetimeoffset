@@ -1,7 +1,13 @@
-datetimeoffset 0.3.0 (development)
-==================================
+datetimeoffset 0.3.1
+====================
+
+New features
+------------
 
 * `format_pdfmark()` has new argument `prefix` that supports `"D:"` or `""` (#57).
+* If you have a version of `{clock}` whose `as_sys_time()` method has an `...` argument
+  then the registered S3 method for `datetimeoffset()` objects now supports
+  arguments `ambiguous`, `nonexistent`, and `fill` (#33).
 
 datetimeoffset 0.2.1
 ====================
