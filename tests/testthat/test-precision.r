@@ -23,7 +23,7 @@ test_that("precision methods", {
     dtc <- datetime_cast(NA_datetimeoffset_, "day", month = 6L)
     expect_equal(format(dtc), NA_character_)
 
-    ymd <- as_year_month_day(as_datetimeoffset("2020-04-10"))
+    ymd <- clock::as_year_month_day(as_datetimeoffset("2020-04-10"))
     expect_equal(format(datetime_narrow(ymd, "year")), "2020")
     expect_equal(format(datetime_widen(ymd, "hour")), "2020-04-10T00")
 
@@ -70,7 +70,7 @@ test_that("precision methods for {clock}", {
     expect_equal(format(datetime_widen(ymd, "second")), "1918-11-11T11:11:00")
     expect_equal(format(datetime_widen(ymd, "month")), "1918-11-11T11:11")
 
-    nt <- as_naive_time(ymd)
+    nt <- clock::as_naive_time(ymd)
     expect_equal(format(datetime_narrow(nt, "day")), "1918-11-11")
     expect_equal(format(datetime_cast(nt, "day")), "1918-11-11")
     expect_equal(format(datetime_narrow(nt, "hour")), "1918-11-11T11")

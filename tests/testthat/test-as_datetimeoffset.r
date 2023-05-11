@@ -344,11 +344,11 @@ test_that("{clock} classes", {
              "2020-11-01T01:30:00-04:00")
     dto <- as_datetimeoffset(dts)
     expect_error(clock::as_sys_time(dto))
-    expect_equal(format(as_sys_time_dto(dto, ambiguous = "NA")),
+    expect_equal(format(as_sys_time.datetimeoffset(dto, ambiguous = "NA")),
                  c(NA_character_, "2020-11-01T06:30:00", "2020-11-01T05:30:00"))
-    expect_equal(format(as_sys_time_dto(dto, ambiguous = "earliest")),
+    expect_equal(format(as_sys_time.datetimeoffset(dto, ambiguous = "earliest")),
                  c("2020-11-01T05:30:00", "2020-11-01T06:30:00", "2020-11-01T05:30:00"))
-    expect_equal(format(as_sys_time_dto(dto, ambiguous = "latest")),
+    expect_equal(format(as_sys_time.datetimeoffset(dto, ambiguous = "latest")),
                  c("2020-11-01T06:30:00", "2020-11-01T06:30:00", "2020-11-01T05:30:00"))
     expect_error(clock::as_zoned_time(dto))
     skip_if_not("UTC" %in% OlsonNames())

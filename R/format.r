@@ -114,7 +114,7 @@ format_exiftool <- function(x, mode = c("normal", "xmp", "pdf"), ...) {
 }
 
 #' @rdname format
-#' @inheritParams as_sys_time.datetimeoffset
+#' @inheritParams as_zoned_time.datetimeoffset
 #' @export
 format_strftime <- function(x, format = "%Y-%m-%d %H:%M:%S", tz = get_tz(x),
                             usetz = FALSE, fill = mode_tz(x)) {

@@ -3,24 +3,14 @@
 \name{from_datetimeoffset}
 \alias{from_datetimeoffset}
 \alias{as.Date.datetimeoffset}
-\alias{as_date.datetimeoffset}
 \alias{as.POSIXct.datetimeoffset}
 \alias{as_date_time.datetimeoffset}
 \alias{as.POSIXlt.datetimeoffset}
-\alias{as_year_month_day.datetimeoffset}
-\alias{as_year_month_weekday.datetimeoffset}
-\alias{as_iso_year_week_day.datetimeoffset}
 \alias{as_year_quarter_day.datetimeoffset}
-\alias{as_year_day.datetimeoffset}
-\alias{as_naive_time.datetimeoffset}
-\alias{as_sys_time.datetimeoffset}
 \alias{as_zoned_time.datetimeoffset}
-\alias{as_weekday.datetimeoffset}
 \title{Convert to other datetime objects}
 \usage{
 \method{as.Date}{datetimeoffset}(x, ...)
-
-\method{as_date}{datetimeoffset}(x)
 
 \method{as.POSIXct}{datetimeoffset}(x, tz = mode_tz(x), ..., fill = "")
 
@@ -28,19 +18,7 @@
 
 \method{as.POSIXlt}{datetimeoffset}(x, tz = mode_tz(x), ..., fill = "")
 
-\method{as_year_month_day}{datetimeoffset}(x)
-
-\method{as_year_month_weekday}{datetimeoffset}(x)
-
-\method{as_iso_year_week_day}{datetimeoffset}(x)
-
 \method{as_year_quarter_day}{datetimeoffset}(x, ..., start = NULL)
-
-\method{as_year_day}{datetimeoffset}(x)
-
-\method{as_naive_time}{datetimeoffset}(x)
-
-\method{as_sys_time}{datetimeoffset}(x)
 
 \method{as_zoned_time}{datetimeoffset}(
   x,
@@ -50,8 +28,6 @@
   nonexistent = "error",
   fill = NA_character_
 )
-
-\method{as_weekday}{datetimeoffset}(x)
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object}
@@ -76,26 +52,26 @@ See \code{\link[clock:as-zoned-time-naive-time]{clock::as_zoned_time.clock_naive
 A datetime object vector
 }
 \description{
-We provide methods to convert \code{\link[=datetimeoffset]{datetimeoffset()}} objects to
+We register S3 methods to convert \code{\link[=datetimeoffset]{datetimeoffset()}} objects to
 other R datetime objects:
 }
 \details{
-We provide the following methods:
+We register S3 methods for the following:
 \itemize{
-\item \code{as.Date()} and \code{as_date()} returns the "local" date as a \code{\link[base:Dates]{base::Date()}} object
-\item \code{as.POSIXct()} and \code{as_date_time()} returns the "local" datetime as a \code{\link[base:DateTimeClasses]{base::POSIXct()}} object
-\item \code{as.POSIXlt()} returns the "local" datetime as a \code{\link[base:DateTimeClasses]{base::POSIXlt()}} object
-\item \code{as.nanotime()} returns the "global" datetime as a \code{\link[nanotime:nanotime]{nanotime::nanotime()}} object
-\item \code{as.parttime()} returns the "local" datetime as a \code{\link[parttime:parttime]{parttime::parttime()}} object
-\item \code{as_year_month_day()} returns a \code{\link[clock:year_month_day]{clock::year_month_day()}} calendar
-\item \code{as_year_month_weekday()} returns a \code{\link[clock:year_month_weekday]{clock::year_month_weekday()}} calendar
-\item \code{as_iso_year_week_day()} returns a \code{\link[clock:iso_year_week_day]{clock::iso_year_week_day()}} calendar
-\item \code{as_year_quarter_day()} returns a \code{\link[clock:year_quarter_day]{clock::year_quarter_day()}} calendar
-\item \code{as_year_day()} returns a \code{\link[clock:year_day]{clock::year_day()}} calendar
-\item \code{as_naive_time()} returns a "clock" naive-time
-\item \code{as_sys_time()} returns a "clock" sys-time
-\item \code{as_zoned_time()} returns a "clock" zoned-time
-\item \code{as_weekday()} returns a \code{\link[clock:weekday]{clock::weekday()}} object
+\item \code{\link[=as.Date]{as.Date()}} and \code{\link[clock:as_date]{clock::as_date()}} returns the "local" date as a \code{\link[base:Dates]{base::Date()}} object
+\item \code{\link[=as.POSIXct]{as.POSIXct()}} and \code{\link[clock:as_date_time]{clock::as_date_time()}} returns the "local" datetime as a \code{\link[base:DateTimeClasses]{base::POSIXct()}} object
+\item \code{\link[=as.POSIXlt]{as.POSIXlt()}} returns the "local" datetime as a \code{\link[base:DateTimeClasses]{base::POSIXlt()}} object
+\item \code{\link[nanotime:nanotime]{nanotime::as.nanotime()}} returns the "global" datetime as a \code{\link[nanotime:nanotime]{nanotime::nanotime()}} object
+\item \code{\link[parttime:as.parttime]{parttime::as.parttime()}} returns the "local" datetime as a \code{\link[parttime:parttime]{parttime::parttime()}} object
+\item \code{\link[clock:as_year_month_day]{clock::as_year_month_day()}} returns a \code{\link[clock:year_month_day]{clock::year_month_day()}} calendar
+\item \code{\link[clock:as_year_month_weekday]{clock::as_year_month_weekday()}} returns a \code{\link[clock:year_month_weekday]{clock::year_month_weekday()}} calendar
+\item \code{\link[clock:as_iso_year_week_day]{clock::as_iso_year_week_day()}} returns a \code{\link[clock:iso_year_week_day]{clock::iso_year_week_day()}} calendar
+\item \code{\link[clock:as_year_quarter_day]{clock::as_year_quarter_day()}} returns a \code{\link[clock:year_quarter_day]{clock::year_quarter_day()}} calendar
+\item \code{\link[clock:as_year_day]{clock::as_year_day()}} returns a \code{\link[clock:year_day]{clock::year_day()}} calendar
+\item \code{\link[clock:as_naive_time]{clock::as_naive_time()}} returns a "clock" naive-time
+\item \code{\link[clock:as_sys_time]{clock::as_sys_time()}} returns a "clock" sys-time
+\item \code{\link[clock:as_zoned_time]{clock::as_zoned_time()}} returns a "clock" zoned-time
+\item \code{\link[clock:as_weekday]{clock::as_weekday()}} returns a \code{\link[clock:weekday]{clock::weekday()}} object
 }
 }
 \examples{

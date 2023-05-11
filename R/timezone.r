@@ -150,7 +150,7 @@ fill_tz <- function(x, tz = "") {
 }
 
 #' @rdname fill_tz
-#' @inheritParams as_sys_time.datetimeoffset
+#' @inheritParams as_zoned_time.datetimeoffset
 #' @export
 fill_utc_offsets <- function(x, ambiguous = "NA") {
     # Fill missing minute offset to zero if hour offset is not missing
@@ -191,7 +191,7 @@ clean_tz <- function(tz, na = NA_character_) {
 #'
 #' @param x A datetime object.
 #' @param tz The target timezone to change to.
-#' @inheritParams as_sys_time.datetimeoffset
+#' @inheritParams as_zoned_time.datetimeoffset
 #' @examples
 #' if(all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames())) {
 #'   dt0 <- as_datetimeoffset("2020-01-01T01:01[America/Los_Angeles]")
@@ -252,7 +252,7 @@ datetime_at_tz.default <- function(x, tz = "", ...) {
 }
 
 with_tz_helper <- function(dt, tz, ambiguous = "error", nonexistent = "error", fill = NA_character_) {
-    st <- as_sys_time_dto(dt, ambiguous = ambiguous, nonexistent = nonexistent, fill = fill)
+    st <- as_sys_time.datetimeoffset(dt, ambiguous = ambiguous, nonexistent = nonexistent, fill = fill)
     dto <- as_datetimeoffset.clock_zoned_time(clock::as_zoned_time(st, tz))
     datetime_narrow.datetimeoffset(dto, datetime_precision.datetimeoffset(dt))
 }

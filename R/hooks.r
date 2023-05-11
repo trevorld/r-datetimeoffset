@@ -1,4 +1,12 @@
 .onLoad <- function(libname, pkgname) {
+    vctrs::s3_register("clock::as_date", "datetimeoffset", as_date.datetimeoffset)
+    vctrs::s3_register("clock::as_year_month_day", "datetimeoffset", as_year_month_day.datetimeoffset)
+    vctrs::s3_register("clock::as_year_month_weekday", "datetimeoffset", as_year_month_weekday.datetimeoffset)
+    vctrs::s3_register("clock::as_iso_year_week_day", "datetimeoffset", as_iso_year_week_day.datetimeoffset)
+    vctrs::s3_register("clock::as_year_day", "datetimeoffset", as_year_day.datetimeoffset)
+    vctrs::s3_register("clock::as_naive_time", "datetimeoffset", as_naive_time.datetimeoffset)
+    vctrs::s3_register("clock::as_sys_time", "datetimeoffset", as_sys_time.datetimeoffset)
+    vctrs::s3_register("clock::as_weekday", "datetimeoffset", as_weekday.datetimeoffset)
     vctrs::s3_register("lubridate::year", "datetimeoffset", get_year.datetimeoffset)
     vctrs::s3_register("lubridate::month", "datetimeoffset", month.datetimeoffset)
     vctrs::s3_register("lubridate::mday", "datetimeoffset", get_day.datetimeoffset)
