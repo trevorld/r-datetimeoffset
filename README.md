@@ -2,7 +2,7 @@
 
 [![CRAN Status Badge](https://www.r-pkg.org/badges/version/datetimeoffset)](https://cran.r-project.org/package=datetimeoffset)
 [![R-CMD-check](https://github.com/trevorld/r-datetimeoffset/workflows/R-CMD-check/badge.svg)](https://github.com/trevorld/r-datetimeoffset/actions)
-[![codecov](https://codecov.io/github/trevorld/r-datetimeoffset/branch/main/graph/badge.svg)](https://codecov.io/github/trevorld/r-datetimeoffset)
+[![codecov](https://codecov.io/github/trevorld/r-datetimeoffset/branch/main/graph/badge.svg)](https://app.codecov.io/github/trevorld/r-datetimeoffset)
 
 ### Table of Contents
 
@@ -357,7 +357,7 @@ print(di)
   + All [pdfmark datetime](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo) strings
   + Decent subset of [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) datetime strings
 
-    - Also supports the de facto RFC 3339 extension of [specifying a named time zone at the end surrounded in brackets.](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/#cypher-temporal-specify-time-zone)
+    - Also supports the de facto RFC 3339 extension of specifying a named time zone at the end surrounded in brackets.
 
   + The datetime strings understood by the default `tryFormats` of `as.POSIXlt()`
   + The datetime strings output by the command-line tool `exiftool`
@@ -371,7 +371,7 @@ print(di)
 
 * Support for formatting output datetime strings:
 
-  + `format()` returns [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/) strings
+  + `format()` returns RFC 3339 with de facto time zone extension strings
   + `format_edtf()` returns [Extended Date Time Format (EDTF)](https://www.loc.gov/standards/datetime/) strings
 
     - Supports unofficial extensions of "Unspecified Digit" feature to time components and time zones
@@ -810,7 +810,7 @@ Please feel free to [open a pull request to add any missing relevant links](http
   + [XMP datetimes](https://github.com/adobe/xmp-docs/blob/master/XMPNamespaces/XMPDataTypes/CoreProperties.md#date)
 
 * [pdfmark datetimes](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Basic.html#document-info-dictionary-docinfo)
-* [RFC 3339 with de facto time zone extension](https://neo4j.com/docs/cypher-manual/current/syntax/temporal/)
+* RFC 3339 with de facto time zone extension
 * [SQL Server / ODBC datetime literals](https://learn.microsoft.com/en-us/sql/relational-databases/native-client-odbc-date-time/data-type-support-for-odbc-date-and-time-improvements?source=recommendations&view=sql-server-ver16)
 * [Extended Date Time Format (EDTF)](https://www.loc.gov/standards/datetime/)
 
