@@ -74,9 +74,9 @@ as.Date.datetimeoffset <- function(x, ...) {
     as.Date(s, format = format)
 }
 
-# #' @rdname from_datetimeoffset
-# #' @importFrom clock as_date
-# #' @export
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_date
+#' @export
 as_date.datetimeoffset <- function(x, ...) {
     as.Date.datetimeoffset(x)
 }
@@ -160,9 +160,9 @@ vec_cast.partial_time.datetimeoffset <- function(x, to, ...) {
     parttime::parttime(year, month, day, hour, min, sec, tz)
 }
 
-# #' @rdname from_datetimeoffset
-# #' @importFrom clock as_year_month_day
-# #' @export
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_year_month_day
+#' @export
 as_year_month_day.datetimeoffset <- function(x, ...) {
     precision <- precision_to_int(datetime_precision(x, range = TRUE)[1])
     year <- ifelse(is.na(x), NA_integer_, field(x, "year"))
@@ -196,17 +196,17 @@ as_year_month_day.datetimeoffset <- function(x, ...) {
     ymd
 }
 
-# #' @rdname from_datetimeoffset
-# #' @importFrom clock as_year_month_weekday
-# #' @export
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_year_month_weekday
+#' @export
 as_year_month_weekday.datetimeoffset <- function(x, ...) {
     ymd <- as_year_month_day.datetimeoffset(x)
     clock::as_year_month_weekday(ymd)
 }
 
-# #' @rdname from_datetimeoffset
-# #' @importFrom clock as_iso_year_week_day
-# #' @export
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_iso_year_week_day
+#' @export
 as_iso_year_week_day.datetimeoffset <- function(x, ...) {
     ymd <- as_year_month_day.datetimeoffset(x)
     clock::as_iso_year_week_day(ymd)
@@ -222,25 +222,25 @@ as_year_quarter_day.datetimeoffset <- function(x, ..., start = NULL) {
     clock::as_year_quarter_day(ymd, start = start)
 }
 
-# #' @rdname from_datetimeoffset
-# #' @importFrom clock as_year_day
-# #' @export
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_year_day
+#' @export
 as_year_day.datetimeoffset <- function(x, ...) {
     ymd <- as_year_month_day.datetimeoffset(x)
     clock::as_year_day(ymd)
 }
 
-# #' @rdname from_datetimeoffset
-# #' @importFrom clock as_naive_time
-# #' @export
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_naive_time
+#' @export
 as_naive_time.datetimeoffset <- function(x, ...) {
     ymd <- as_year_month_day.datetimeoffset(x)
     clock::as_naive_time(ymd)
 }
 
-# #' @rdname from_datetimeoffset
-# #' @importFrom clock as_sys_time
-# #' @export
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_sys_time
+#' @export
 as_sys_time.datetimeoffset <- function(x, ...,
                             ambiguous = "error",
                             nonexistent = "error",
@@ -314,9 +314,9 @@ as_zoned_time.datetimeoffset <- function(x, zone = mode_tz(x), ...,
     clock::as_zoned_time(st, zone)
 }
 
-# #' @rdname from_datetimeoffset
-# #' @importFrom clock as_weekday
-# #' @export
+#' @rdname from_datetimeoffset
+#' @importFrom clock as_weekday
+#' @export
 as_weekday.datetimeoffset <- function(x, ...) {
     clock::as_weekday(as_naive_time.datetimeoffset(x))
 }

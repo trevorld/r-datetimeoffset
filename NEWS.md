@@ -1,3 +1,8 @@
+datetimeoffset 0.3.2 (development)
+==================================
+
+* No user facing changes (stops using functions deprecated in `{clock}` v0.7.0).
+
 datetimeoffset 0.3.1
 ====================
 

@@ -1,7 +1,7 @@
 Package: datetimeoffset
 Type: Package
 Title: Datetimes with Optional UTC Offsets and/or Heterogeneous Time Zones
-Version: 0.3.1
+Version: 0.3.2-0
 Authors@R: c(
         person("Trevor L", "Davis", role=c("aut", "cre"), email="trevor.l.davis@gmail.com",
                comment = c(ORCID = "0000-0001-6341-4639")))
@@ -21,7 +21,7 @@ RoxygenNote: 7.2.3
 Depends:
     R (>= 3.4.0)
 Imports:
-    clock,
+    clock (>= 0.7.0),
     methods,
     purrr (>= 1.0.0),
     vctrs (>= 0.5.0)

@@ -241,7 +241,7 @@ datetime_at_tz.clock_zoned_time <- function(x, tz = "", ...) {
 #' @rdname datetime_at_tz
 #' @export
 datetime_at_tz.POSIXt <- function(x, tz = "", ...) {
-    clock::date_set_zone(x, tz)
+    clock::date_time_set_zone(x, tz)
 }
 
 #' @rdname datetime_at_tz

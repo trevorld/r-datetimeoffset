@@ -65,7 +65,7 @@ test_that("convert to {clock}", {
     nt <- as_naive_time.datetimeoffset(dt)
     expect_equal(format(nt), "2006-01-01T00:00:00")
 
-    st <- as_sys_time.datetimeoffset(dt)
+    st <- as_sys_time(dt)
     expect_equal(format(st), "2006-01-01T00:00:00")
 
     zt <- as_zoned_time.datetimeoffset(dt)

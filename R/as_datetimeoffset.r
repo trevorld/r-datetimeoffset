@@ -91,7 +91,7 @@ as_dto_posix <- function(x) {
         ymd <- clock::as_year_month_day(clock::as_sys_time(x))
         ymd <- clock::set_microsecond(ymd, dto_as_integer(microseconds))
         as_datetimeoffset(clock::as_zoned_time(clock::as_sys_time(ymd),
-                                               zone = clock::date_zone(x)))
+                                               zone = clock::date_time_zone(x)))
     }
 }
 

@@ -3,14 +3,24 @@
 \name{from_datetimeoffset}
 \alias{from_datetimeoffset}
 \alias{as.Date.datetimeoffset}
+\alias{as_date.datetimeoffset}
 \alias{as.POSIXct.datetimeoffset}
 \alias{as_date_time.datetimeoffset}
 \alias{as.POSIXlt.datetimeoffset}
+\alias{as_year_month_day.datetimeoffset}
+\alias{as_year_month_weekday.datetimeoffset}
+\alias{as_iso_year_week_day.datetimeoffset}
 \alias{as_year_quarter_day.datetimeoffset}
+\alias{as_year_day.datetimeoffset}
+\alias{as_naive_time.datetimeoffset}
+\alias{as_sys_time.datetimeoffset}
 \alias{as_zoned_time.datetimeoffset}
+\alias{as_weekday.datetimeoffset}
 \title{Convert to other datetime objects}
 \usage{
 \method{as.Date}{datetimeoffset}(x, ...)
+
+\method{as_date}{datetimeoffset}(x, ...)
 
 \method{as.POSIXct}{datetimeoffset}(x, tz = mode_tz(x), ..., fill = "")
 
@@ -18,7 +28,25 @@
 
 \method{as.POSIXlt}{datetimeoffset}(x, tz = mode_tz(x), ..., fill = "")
 
+\method{as_year_month_day}{datetimeoffset}(x, ...)
+
+\method{as_year_month_weekday}{datetimeoffset}(x, ...)
+
+\method{as_iso_year_week_day}{datetimeoffset}(x, ...)
+
 \method{as_year_quarter_day}{datetimeoffset}(x, ..., start = NULL)
+
+\method{as_year_day}{datetimeoffset}(x, ...)
+
+\method{as_naive_time}{datetimeoffset}(x, ...)
+
+\method{as_sys_time}{datetimeoffset}(
+  x,
+  ...,
+  ambiguous = "error",
+  nonexistent = "error",
+  fill = NA_character_
+)
 
 \method{as_zoned_time}{datetimeoffset}(
   x,
@@ -28,6 +56,8 @@
   nonexistent = "error",
   fill = NA_character_
 )
+
+\method{as_weekday}{datetimeoffset}(x, ...)
 }
 \arguments{
 \item{x}{A \code{\link[=datetimeoffset]{datetimeoffset()}} object}
