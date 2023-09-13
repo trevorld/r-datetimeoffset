@@ -1,7 +1,14 @@
 datetimeoffset 0.3.2 (development)
 ==================================
 
-* No user facing changes (stops using functions deprecated in `{clock}` v0.7.0).
+Bug fixes and minor improvements
+--------------------------------
+
+* `as_datetimeoffset.character()` can now parse ISO 8601 times without associated dates (#59).
+* `format()` and `format_iso8601()` can now format times without associated dates (#59).
+* `format_edtf()` now truncates the number of subsecond digits according to 
+   the `subsecond_digits` field.
+* Stops using functions deprecated in `{clock}` v0.7.0.
 
 datetimeoffset 0.3.1
 ====================

@@ -9,6 +9,8 @@ test_that("format_iso8601()", {
     # "2020-05-15T08:23:16-07:00"
     expect_equal(format_iso8601(as_datetimeoffset("2020")),
                  "2020")
+    expect_equal(format_iso8601(datetimeoffset(2020, hour = 20)),
+                 "2020")
     expect_equal(format_iso8601(as_datetimeoffset("2020-05")),
                  "2020-05")
     expect_equal(format_iso8601(as_datetimeoffset("2020-05-15")),
@@ -179,7 +181,7 @@ test_that("format_edtf()", {
     skip_if_not("America/Los_Angeles" %in% OlsonNames())
     dt <- c("2020", "2020-05-15T08:23:16.0-07:00[America/Los_Angeles]")
     expect_equal(format_edtf(as_datetimeoffset(dt)),
-                 c("2020", "2020-05-15T08:23:16.000000000-07:00"))
+                 c("2020", "2020-05-15T08:23:16.0-07:00"))
 
     skip_if_not("America/New_York" %in% OlsonNames())
     # ambiguous time so not possible to compute offset

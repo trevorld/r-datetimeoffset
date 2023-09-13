@@ -38,7 +38,7 @@ datetime_precision <- function(x, ...) {
 
 #' @rdname datetime_precision
 #' @export
-datetime_precision.datetimeoffset <- function(x, range = FALSE, unspecified = FALSE,...) {
+datetime_precision.datetimeoffset <- function(x, range = FALSE, unspecified = FALSE, ...) {
     if (length(x) == 0L) {
         if (range)
             return(c(NA_character_, NA_character_))
@@ -49,6 +49,9 @@ datetime_precision.datetimeoffset <- function(x, range = FALSE, unspecified = FA
         precision <- rep_len("missing", length(x))
         for (component in c("year", "month", "day", "hour", "minute", "second", "nanosecond"))
             precision <- ifelse(!is.na(field(x, component)), component, precision)
+        precision <- ifelse(precision == "nanosecond" & !is.na(field(x, "subsecond_digits")),
+                            subsecond_digit_to_precision(field(x, "subsecond_digits")),
+                            precision)
     } else {
         precision <- subsecond_digit_to_precision(field(x, "subsecond_digits"))
         precision <- ifelse(is.na(field(x, "nanosecond")), "second", precision)

@@ -63,9 +63,9 @@ NULL
 #' @rdname format
 #' @export
 format.datetimeoffset <- function(x, ...) {
-    x <- update_nas(x)
+    x <- update_nas(x, allow_times = TRUE)
     s <- purrr::map_chr(x, format_helper)
-    is.na(s) <- is.na(field(x, "year"))
+    is.na(s) <- is.na(field(x, "year")) & !is_time(x)
     s
 }
 
@@ -194,7 +194,8 @@ format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":"
                                   mode = "normal", ...) {
     if (is.na(x)) return(NA_character_)
 
-    precision <- precision %||% datetime_precision(x)
+    precision <- precision %||%
+        ifelse(is_time(x), datetime_precision(x, unspecified = TRUE), datetime_precision(x))
     stopifnot(precision %in% c("year", "month", "day", "hour", "minute", "second",
                                "decisecond", "centisecond", "millisecond",
                                "hundred microseconds", "ten microseconds", "microsecond",
@@ -206,7 +207,7 @@ format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":"
         x <- set_minute_offset(x, NA_integer_)
         x <- set_tz(x, NA_character_)
     }
-    x <- update_nas(x)
+    x <- update_nas(x, allow_times = TRUE)
     if (mode == "xmp") {
         if (is.na(field(x, "minute")) && !is.na(field(x, "hour")))
             field(x, "minute") <- 0L
@@ -287,21 +288,28 @@ format_edtf_helper <- function(x, offsets, precision, usetz) {
     minute_str <- my_format(field(x, "minute"), prefix = ":", edtf = TRUE, blank = precision < PRECISION_MINUTE)
     second_str <- my_format(field(x, "second"), prefix = ":", edtf = TRUE, blank = precision < PRECISION_SECOND)
     nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"), field(x, "subsecond_digits"),
-                                           edtf = TRUE, blank = precision < PRECISION_NANOSECOND)
+                                           edtf = TRUE, blank = precision <= PRECISION_SECOND)
     offset_str <- my_format_tz(x, edtf = offsets, add_tz = usetz)
     paste0(year_str, month_str, day_str,
            hour_str, minute_str, second_str, nanosecond_str,
            offset_str)
 }
 
-update_nas <- function(x, pdfmark = FALSE) {
+is_time <- function(x) {
+    is.na(get_year(x)) & is.na(get_month(x)) & is.na(get_day(x)) & !is.na(get_hour(x))
+}
+
+update_nas <- function(x, allow_times = FALSE, pdfmark = FALSE) {
     if (pdfmark) { # pdfmark years in between 0 and 9999
         year <- get_year(x)
         is.na(x) <- is.na(x) | (year < 0L) | (year > 9999L)
     }
     # No smaller time units if missing bigger time units
     x <- set_day(x, ifelse(is.na(get_month(x)), NA_integer_, get_day(x)))
-    x <- set_hour(x, ifelse(is.na(get_day(x)), NA_integer_, get_hour(x)))
+    if (allow_times)
+        x <- set_hour(x, ifelse(!is_time(x) & is.na(get_day(x)), NA_integer_, get_hour(x)))
+    else
+        x <- set_hour(x, ifelse(is.na(get_day(x)), NA_integer_, get_hour(x)))
     x <- set_minute(x, ifelse(is.na(get_hour(x)), NA_integer_, get_minute(x)))
     x <- set_second(x, ifelse(is.na(get_minute(x)), NA_integer_, get_second(x)))
     x <- set_nanosecond(x, ifelse(is.na(get_second(x)), NA_integer_, get_nanosecond(x)))

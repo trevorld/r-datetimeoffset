@@ -294,6 +294,8 @@ as_dtos_character_helper <- function(x) {
     s <- sub("^--", "XXXX", s)
     s <- sub("^([[:digit:]X]{4})[-/]([[:digit:]X]{2})", "\\1\\2", s)
     s <- sub("^([[:digit:]X]{6})[-/]([[:digit:]X]{2})", "\\1\\2", s)
+    s <- sub("^([[:digit:]]{2}:)", "XXXXXXXX\\1", s)
+    s <- sub("^([Tt])", "XXXXXXXX\\1", s)
     s <- gsub("([[:digit:]X])[Tt ]([[:digit:]+-X])", "\\1\\2", s)
     s <- gsub(":", "", s)
     # "2020-05-15T08:23:16-07:00"
