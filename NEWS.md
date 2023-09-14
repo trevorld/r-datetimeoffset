@@ -5,7 +5,7 @@ New features
 ------------
 
 * `format_iso8601()`'s `mode` argument now supports `"toml"` for outputting datetimes
-  using the subset of ISO 8601 supported by [TOML v1.0.0](https://toml.io/en/v1.0.0#offset-date-time).
+  using the subset of ISO 8601 supported by [TOML v1.0.0](https://toml.io/en/v1.0.0#offset-date-time) (#60).
 
 Bug fixes and minor improvements
 --------------------------------

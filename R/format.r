@@ -203,7 +203,7 @@ format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":"
                                "hundred nanoseconds", "ten nanoseconds", "nanosecond"))
     stopifnot(sep %in% c(":", ""))
     x <- datetime_narrow(x, precision)
-    if (isFALSE(offsets)) {
+    if (isFALSE(offsets) || (is_time(x) && mode == "toml")) {
         x <- set_hour_offset(x, NA_integer_)
         x <- set_minute_offset(x, NA_integer_)
         x <- set_tz(x, NA_character_)
@@ -218,7 +218,10 @@ format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":"
     year_str <- my_format_year(field(x, "year"))
     month_str <- my_format(field(x, "month"), prefix = "-")
     day_str <- my_format(field(x, "day"), prefix = "-")
-    hour_str <- my_format(field(x, "hour"), prefix = "T")
+    if (is_time(x) && mode == "toml")
+        hour_str <- my_format(field(x, "hour"), prefix = "")
+    else
+        hour_str <- my_format(field(x, "hour"), prefix = "T")
     minute_str <- my_format(field(x, "minute"), prefix = ":")
     second_str <- my_format(field(x, "second"), prefix = ":")
     nanosecond_str <- my_format_nanosecond(field(x, "nanosecond"), field(x, "subsecond_digits"))
