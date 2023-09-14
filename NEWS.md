@@ -1,5 +1,11 @@
-datetimeoffset 0.3.2 (development)
+datetimeoffset 0.4.0 (development)
 ==================================
+
+New features
+------------
+
+* `format_iso8601()`'s `mode` argument now supports `"toml"` for outputting datetimes
+  using the subset of ISO 8601 supported by [TOML v1.0.0](https://toml.io/en/v1.0.0#offset-date-time).
 
 Bug fixes and minor improvements
 --------------------------------

@@ -71,11 +71,12 @@ format.datetimeoffset <- function(x, ...) {
 
 #' @rdname format
 #' @param sep UTC offset separator.  Either ":" or "".
-#' @param mode  If `mode = "xmp"` only output valid XMP metadata datetime values.
-#'              If `mode = "pdf"` only output supported PDF docinfo datetime values.
+#' @param mode  If `mode = "pdf"` only output supported PDF docinfo datetime values.
+#'              If `mode = "toml"` only output supported TOML datetime values.
+#'              If `mode = "xmp"` only output valid XMP metadata datetime values.
 #' @export
 format_iso8601 <- function(x, offsets = TRUE, precision = NULL, sep = ":",
-                           mode = c("normal", "xmp"), ...) {
+                           mode = c("normal", "toml", "xmp"), ...) {
     mode <- match.arg(mode)
     purrr::map_chr(x, format_iso8601_helper, offsets = offsets, precision = precision, sep = sep, mode = mode)
 }
@@ -207,8 +208,8 @@ format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":"
         x <- set_minute_offset(x, NA_integer_)
         x <- set_tz(x, NA_character_)
     }
-    x <- update_nas(x, allow_times = TRUE)
-    if (mode == "xmp") {
+    x <- update_nas(x, allow_times = TRUE, toml = (mode == "toml"))
+    if (mode %in% c("toml", "xmp")) {
         if (is.na(field(x, "minute")) && !is.na(field(x, "hour")))
             field(x, "minute") <- 0L
         if (is.na(field(x, "minute_offset")) && !is.na(field(x, "hour_offset")))
@@ -225,6 +226,8 @@ format_iso8601_helper <- function(x, offsets = TRUE, precision = NULL, sep = ":"
     s <- paste0(year_str, month_str, day_str,
                 hour_str, minute_str, second_str, nanosecond_str,
                 offset_str)
+    if (s == "")
+        s <- NA_character_
     s
 }
 
@@ -299,12 +302,22 @@ is_time <- function(x) {
     is.na(get_year(x)) & is.na(get_month(x)) & is.na(get_day(x)) & !is.na(get_hour(x))
 }
 
-update_nas <- function(x, allow_times = FALSE, pdfmark = FALSE) {
-    if (pdfmark) { # pdfmark years in between 0 and 9999
+update_nas <- function(x, allow_times = FALSE, pdfmark = FALSE, toml = FALSE) {
+    if (pdfmark || toml) { # pdfmark years in between 0 and 9999
         year <- get_year(x)
         is.na(x) <- is.na(x) | (year < 0L) | (year > 9999L)
     }
+    # TOML doesn't allow YYYY or YYYY-MM dates as well as HH or HH:MM times
+    # If HH:MM we'll assume 00 seconds
+    # Other three cases we'll coerce to NA_datetimeoffset_
+    if (toml) {
+        x <- set_month(x, ifelse(is.na(get_day(x)), NA_integer_, get_month(x)))
+        x <- set_year(x, ifelse(is.na(get_month(x)), NA_integer_, get_year(x)))
+        x <- set_hour(x, ifelse(is.na(get_minute(x)), NA_integer_, get_minute(x)))
+        x <- set_second(x, ifelse(is.na(get_second(x)), 0L, get_second(x)))
+    }
     # No smaller time units if missing bigger time units
+    x <- set_month(x, ifelse(is.na(get_year(x)), NA_integer_, get_month(x)))
     x <- set_day(x, ifelse(is.na(get_month(x)), NA_integer_, get_day(x)))
     if (allow_times)
         x <- set_hour(x, ifelse(!is_time(x) & is.na(get_day(x)), NA_integer_, get_hour(x)))

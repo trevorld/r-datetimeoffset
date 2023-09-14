@@ -18,7 +18,7 @@ format_iso8601(
   offsets = TRUE,
   precision = NULL,
   sep = ":",
-  mode = c("normal", "xmp"),
+  mode = c("normal", "toml", "xmp"),
   ...
 )
 
@@ -58,8 +58,9 @@ If \code{NULL} then full precision for the object is shown.}
 
 \item{sep}{UTC offset separator.  Either ":" or "".}
 
-\item{mode}{If \code{mode = "xmp"} only output valid XMP metadata datetime values.
-If \code{mode = "pdf"} only output supported PDF docinfo datetime values.}
+\item{mode}{If \code{mode = "pdf"} only output supported PDF docinfo datetime values.
+If \code{mode = "toml"} only output supported TOML datetime values.
+If \code{mode = "xmp"} only output valid XMP metadata datetime values.}
 
 \item{prefix}{Prefix to use.  Either \code{"D:"} (default) or \code{""}.}
 
