@@ -313,7 +313,7 @@ update_nas <- function(x, allow_times = FALSE, pdfmark = FALSE, toml = FALSE) {
     if (toml) {
         x <- set_month(x, ifelse(is.na(get_day(x)), NA_integer_, get_month(x)))
         x <- set_year(x, ifelse(is.na(get_month(x)), NA_integer_, get_year(x)))
-        x <- set_hour(x, ifelse(is.na(get_minute(x)), NA_integer_, get_minute(x)))
+        x <- set_hour(x, ifelse(is.na(get_minute(x)), NA_integer_, get_hour(x)))
         x <- set_second(x, ifelse(is.na(get_second(x)), 0L, get_second(x)))
     }
     # No smaller time units if missing bigger time units
