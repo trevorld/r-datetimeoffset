@@ -2,6 +2,8 @@ destination: "../../websites/R/datetimeoffset/"
 url: "https://trevorldavis.com/R/datetimeoffset"
 development:
     mode: auto
+template:
+  bootstrap: 5
 reference:
   - title: '"datetimeoffset" objects'
     desc: 'Datetime object with optional UTC offsets and/or timezones'

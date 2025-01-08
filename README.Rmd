@@ -1,7 +1,7 @@
 # r-datetimeoffset <img src="man/figures/logo.png" align="right" width="200px" alt="datetimeoffset hex sticker">
 
 [![CRAN Status Badge](https://www.r-pkg.org/badges/version/datetimeoffset)](https://cran.r-project.org/package=datetimeoffset)
-[![R-CMD-check](https://github.com/trevorld/r-datetimeoffset/workflows/R-CMD-check/badge.svg)](https://github.com/trevorld/r-datetimeoffset/actions)
+[![R-CMD-check](https://github.com/trevorld/r-datetimeoffset/actions/workflows/R-CMD-check.yaml/badge.svg?branch=main)](https://github.com/trevorld/r-datetimeoffset/actions)
 [![codecov](https://codecov.io/github/trevorld/r-datetimeoffset/branch/main/graph/badge.svg)](https://app.codecov.io/github/trevorld/r-datetimeoffset)
 
 ### Table of Contents
