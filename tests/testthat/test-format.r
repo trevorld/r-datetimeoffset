@@ -125,7 +125,9 @@ test_that("format_strftime()", {
 
 test_that("format_nanotime()", {
     skip_on_cran() # failed on `r-oldrel-windows-ix86+x86_64`
-    skip_if_not_installed("nanotime")
+    skip_if_not_installed("nanotime", "0.3.10.2")
+    skip_if_not_installed("RcppCCTZ", "0.2.12") # fixes bug with `as.nanotime(NA_character_)`
+
     dt <- as_datetimeoffset("2020-04-04T10:10:10Z")
     expect_equal(format_nanotime(dt, tz = "GMT"),
                  "2020-04-04T10:10:10.000000000+00:00")
@@ -134,7 +136,6 @@ test_that("format_nanotime()", {
     skip_if_not("America/Los_Angeles" %in% OlsonNames())
     expect_equal(format_nanotime(dt, tz = "America/Los_Angeles"),
                  "2020-04-04T03:10:10.000000000-07:00")
-    skip_if_not_installed("RcppCCTZ", "0.2.12") # fixes bug with `as.nanotime(NA_character_)`
     expect_equal(format_nanotime(NA_datetimeoffset_), NA_character_)
 })
 
