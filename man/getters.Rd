@@ -22,6 +22,7 @@
 \alias{get_minute_offset.POSIXt}
 \alias{get_tz}
 \alias{get_tz.datetimeoffset}
+\alias{get_tz.Date}
 \alias{get_tz.POSIXt}
 \alias{get_tz.clock_zoned_time}
 \alias{get_tz.default}
@@ -66,6 +67,8 @@ get_minute_offset(x)
 get_tz(x)
 
 \method{get_tz}{datetimeoffset}(x)
+
+\method{get_tz}{Date}(x)
 
 \method{get_tz}{POSIXt}(x)
 
