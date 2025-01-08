@@ -14,6 +14,7 @@ Bug fixes and minor improvements
 * `format()` and `format_iso8601()` can now format times without associated dates (#59).
 * `format_edtf()` now truncates the number of subsecond digits according to 
    the `subsecond_digits` field.
+* New `get_tz.Date()` S3 method which returns `NA_character_` for "Date" objects (#62).
 * Stops using functions deprecated in `{clock}` v0.7.0.
 
 datetimeoffset 0.3.1

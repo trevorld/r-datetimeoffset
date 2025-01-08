@@ -22,7 +22,7 @@ test_that("getters", {
     expect_equal(get_hour_offset(dts), 0L)
     expect_equal(get_minute_offset(dts), 0L)
 
-    expect_equal(get_tz(Sys.Date()), "UTC")
+    expect_equal(get_tz(Sys.Date()), NA_character_)
 
     skip_if_not_installed("lubridate")
     expect_equal(lubridate::tz(dt), "Europe/Paris")

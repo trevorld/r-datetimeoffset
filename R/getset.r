@@ -386,6 +386,12 @@ get_tz.datetimeoffset <- function(x) {
 
 #' @rdname getters
 #' @export
+get_tz.Date <- function(x) {
+    rep_len(NA_character_, length(x))
+}
+
+#' @rdname getters
+#' @export
 get_tz.POSIXt <- function(x) {
     clock::date_time_zone(x)
 }
