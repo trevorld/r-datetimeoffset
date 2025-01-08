@@ -6,8 +6,9 @@ test_that("as.Date()", {
 })
 
 test_that("as.nanotime()", {
-    skip_if_not_installed("nanotime")
+    skip_if_not_installed("nanotime", "0.3.10.2")
     skip_if_not_installed("RcppCCTZ", "0.2.12") # fixes bug with `as.nanotime(NA_character_)`
+
     expect_equal(as.nanotime(as_datetimeoffset("2020-03-23Z", "2020-03-23")),
                  as.nanotime("2020-03-23T00:00:00Z", NA_character_))
     skip_if_not(all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames()))
@@ -21,6 +22,7 @@ test_that("as.nanotime()", {
 test_that("`as.parttime.datetimeoffset()` and `as_datetimeoffset.parttime()`", {
     skip_if_not_installed("lubridate")
     suppressPackageStartupMessages(skip_if_not_installed("parttime"))
+
     dto <- as_datetimeoffset("2020-02-04T01:01:05Z")
     pt <- parttime::as.parttime(dto)
     expect_equal(pt[, "year"], 2020)

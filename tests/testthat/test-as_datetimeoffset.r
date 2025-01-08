@@ -379,7 +379,8 @@ test_that("{clock} classes", {
 })
 
 test_that("as_datetimeoffset.nanotime()", {
-    skip_if_not_installed("nanotime")
+    skip_if_not_installed("nanotime", "0.3.10.2")
+
     dt <- as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16.03Z"))
     expect_equal(format(dt), "2020-05-15T08:23:16.030000000Z")
     dt <- as_datetimeoffset(nanotime::nanotime("2020-05-15T08:23:16Z"))
