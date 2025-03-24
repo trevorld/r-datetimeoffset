@@ -1,13 +1,9 @@
-* The `gcc-UBSAN` issue should now be resolved:
-
-  + The issue has been reported and fixed upstream in `{nanotime}`
-  + Tests are now skipped for earlier versions of `{nanotime}`
+* Bumps required {clock} version to prevent R CMD check ERROR on CRAN
 
 ## Test environments
 
-* local (linux, R 4.4.2)
-* mac-builder (macOS, R devel)
-* win-builder (windows, R release))
+* local (linux, R 4.4.3)
+* win-builder (windows, R devel)
 * github actions (windows, R release)
 * github actions (macOS, R release)
 * github actions (linux, R devel)

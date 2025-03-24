@@ -250,6 +250,7 @@ test_that("ISO week dates", {
 })
 
 test_that("base R classes", {
+    skip_if_not_installed("clock", "0.7.3")
     # Date
     s <- c("2020-05-15", NA_character_)
     expect_equal(format(as_datetimeoffset(as.Date(s))), s)
@@ -302,6 +303,8 @@ test_that("base R classes", {
 })
 
 test_that("{clock} classes", {
+    skip_if_not_installed("clock", "0.7.3")
+
     ymd <- clock::year_month_day(2020, c(NA, 10), 10)
     dto <- as_datetimeoffset(ymd)
     expect_equal(format(dto), c(NA_character_, "2020-10-10"))
