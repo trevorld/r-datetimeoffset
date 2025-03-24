@@ -1,3 +1,8 @@
+datetimeoffset 1.0.0
+====================
+
+Bumps required `{clock}` version to version 0.7.3 (#64).
+
 datetimeoffset 0.4.1
 ====================
 

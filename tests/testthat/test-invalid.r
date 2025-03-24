@@ -1,4 +1,6 @@
 test_that("detect_invalid()", {
+    skip_if_not_installed("clock", "0.7.3")
+
     dts <- c("2019-04-30T03:30:00", "2019-04-31T02:30:00")
     dts <- as_datetimeoffset(dts)
     expect_equal(clock::invalid_detect(dts), c(FALSE, TRUE))

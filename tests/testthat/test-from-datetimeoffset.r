@@ -69,6 +69,8 @@ test_that("`as.parttime.datetimeoffset()` and `as_datetimeoffset.parttime()`", {
 })
 
 test_that("as.POSIXct()", {
+    skip_if_not_installed("clock", "0.7.3")
+
     expect_equal(format(as.POSIXct("2020-03-23 04:04:04")),
                  format(as.POSIXct(as_datetimeoffset("2020-03-23 04:04:04", tz=""))))
     expect_equal(format(as.POSIXct("2020-03-23 04:04:04")),
@@ -101,6 +103,8 @@ test_that("as.POSIXct()", {
 })
 
 test_that("as.POSIXlt()", {
+    skip_if_not_installed("clock", "0.7.3")
+
     expect_equal(format(as.POSIXlt("2020-03-23 04:04:04")),
                  format(as.POSIXlt(as_datetimeoffset("2020-03-23 04:04:04", tz=""))))
     skip_if_not(all(c("America/Los_Angeles", "America/New_York") %in% OlsonNames()))
@@ -128,7 +132,9 @@ test_that("as.POSIXlt()", {
     expect_equal(format(as.POSIXlt(dtl), digits = 6L), "12016-02-19 10:10:10.123456")
 })
 
-test_that("clock classes", {
+test_that("{clock} classes", {
+    skip_if_not_installed("clock", "0.7.3")
+
     dt <- as_datetimeoffset("2020-03-23T04:04:04Z")
     dtn <- datetimeoffset(-7971, 5, 31, 10, tz = "GMT")
     dtl <- datetimeoffset(12016, 2, 19, 10, tz = "GMT")
